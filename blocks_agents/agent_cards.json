@@ -38,12 +38,19 @@
     "portfolio_scenario_expert.json",
     "model_validation_guardian.json",
     "matrix_research_insights_agent.json",
-    "crypto_research_communications_agent.json"
+    "crypto_research_communications_agent.json",
+    "feature_engineering_expert.json"
   ],
   "handlers": {
     "directory": "blocks_agents/handlers",
     "shared": "blocks_agents/handlers/common.py",
     "language": "python",
-    "dependencies": "Python standard library only"
+    "dependencies": "Python standard library only",
+    "featureDefinitions": {
+      "yield_momentum": "yield_trend_slope * yield_volatility",
+      "mcap_to_tvl": "mcap_end_current_usd / tvl_usd",
+      "risk_score": "beta_vs_btc * volatility_annualized_current / sharpe_ratio_current",
+      "yield_premium": "agg_current - yield_vs_category_avg"
+    }
   }
 }

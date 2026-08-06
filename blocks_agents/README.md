@@ -1,6 +1,6 @@
 # Blockchain yield expert agents
 
-This directory contains ten local Blocks.ai-compatible agent-card manifests for the crypto yield matrix project. They are file-backed expert profiles, not published network agents. No credentials, package installation, registration, or external data access is required to use the cards as local orchestration metadata.
+This directory contains eleven local Blocks.ai-compatible agent-card manifests for the crypto yield matrix project. They are file-backed expert profiles, not published network agents. No credentials, package installation, registration, or external data access is required to use the cards as local orchestration metadata.
 
 ## Compatibility contract
 
@@ -40,6 +40,7 @@ The primary evidence files are:
 | `model_validation_guardian.json` | Model validation | Blocks source duplication, target leakage, invalid splits, and overclaiming. |
 | `matrix_research_insights_agent.json` | Dashboard research insights | Converts existing matrix metrics into traceable user-facing findings. |
 | `crypto_research_communications_agent.json` | Research communication | Produces cautious, sourced, non-advisory reports with evidence locations. |
+| `feature_engineering_expert.json` | Feature engineering | Recomputes yield momentum, market-cap/TVL, risk, and yield-premium features. |
 
 ## Safety and data limitations
 
@@ -48,6 +49,8 @@ The primary evidence files are:
 - Eight quarters and 59 assets per source are suitable for prototyping and research triage, not validated production forecasting.
 - Forecast cards must use chronological splits, out-of-time evaluation, simple baselines, calibrated probabilities where relevant, and uncertainty intervals.
 - Agents should return `PASS`, `WARNING`, or `FAIL` status plus exact file/row/column references whenever possible.
+- The feature-engineering formulas are recomputed from source fields: `yield_momentum = yield_trend_slope * yield_volatility`, `mcap_to_tvl = mcap_end_current_usd / tvl_usd`, `risk_score = beta_vs_btc * volatility_annualized_current / sharpe_ratio_current`, and `yield_premium = agg_current - yield_vs_category_avg`.
+- A zero `tvl_usd` or `sharpe_ratio_current` produces an undefined (`null`) ratio with a warning; it is never silently replaced with zero.
 - Outputs are research and decision-support artifacts, not financial advice or guaranteed return predictions.
 
 ## Local use
@@ -60,4 +63,4 @@ The primary evidence files are:
 
 ## Included handlers
 
-The ten cards point to handlers in `blocks_agents/handlers/`. They use only the Python standard library and can be adapted to the official `blocks_network` SDK wrapper. `loader.py` resolves each manifest's `./handlers/...` path and invokes its `handler(task, ctx)` entry point. `common.py` accepts the Blocks request-part shape, validates the declared read-only context allowlist, loads CSVs, filters symbols/categories, reports status when a Blocks context is available, and emits a validated JSON artifact envelope.
+The eleven cards point to handlers in `blocks_agents/handlers/`. They use only the Python standard library and can be adapted to the official `blocks_network` SDK wrapper. `loader.py` resolves each manifest's `./handlers/...` path and invokes its `handler(task, ctx)` entry point. `common.py` accepts the Blocks request-part shape, validates the declared read-only context allowlist, loads CSVs, filters symbols/categories, reports status when a Blocks context is available, and emits a validated JSON artifact envelope.

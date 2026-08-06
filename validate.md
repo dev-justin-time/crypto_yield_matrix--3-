@@ -148,9 +148,9 @@ Generated after inventorying every original CSV in the project and semantically 
 
 ## Blocks.ai-compatible expert-agent scaffold
 
-Ten local expert-agent cards were created in `blocks_agents/`. They are file-backed orchestration manifests, not published network agents. The cards use a researched Blocks agent-card shape: `identity`, `capabilities.taskKinds`, `tags`, `runtime.handler`, `io.inputs`, and `io.outputs`. `blocks_agents/agent_cards.json` indexes all ten cards.
+Eleven local expert-agent cards were created in `blocks_agents/`. They are file-backed orchestration manifests, not published network agents. The cards use a researched Blocks agent-card shape: `identity`, `capabilities.taskKinds`, `tags`, `runtime.handler`, `io.inputs`, and `io.outputs`. `blocks_agents/agent_cards.json` indexes all eleven cards.
 
-### Ten expert agents
+### Eleven expert agents
 
 1. `data_provenance_auditor` — schema, hashes, source conflicts, and `source_file`/`source_row` lineage.
 2. `yield_methodology_expert` — staking, lending-equivalent, inflation, annualization, aggregates, and methodology notes.
@@ -162,6 +162,7 @@ Ten local expert-agent cards were created in `blocks_agents/`. They are file-bac
 8. `model_validation_guardian` — source duplication, circular targets, leakage, calibration, and backtesting gates.
 9. `matrix_research_insights_agent` — user-facing insights aligned with the existing matrix, timeline, legends, and tooltips.
 10. `crypto_research_communications_agent` — evidence-linked, cautious, non-advisory research notes.
+11. `feature_engineering_expert` — recomputed yield momentum, mcap/TVL, risk, and category-premium features.
 
 ### Blocks compatibility and safe boundary
 
@@ -278,6 +279,7 @@ A future canonical dataset should add `observation_status` (`observed`, `estimat
 ## Practical feature backlog
 
 - Add `observation_status`: observed, estimated, derived, target, or conflicting, with a field-level provenance map for the current synthetic/estimated claims.
+- Compute transparent derived features through `feature_engineering_expert`: `yield_momentum = yield_trend_slope * yield_volatility`; `mcap_to_tvl = mcap_end_current_usd / tvl_usd`; `risk_score = beta_vs_btc * volatility_annualized_current / sharpe_ratio_current`; `yield_premium = agg_current - yield_vs_category_avg`. Preserve `null` and a warning for zero denominators.
 - Add `as_of_date`, `measurement_window`, `source_name`, `source_url`, and `refresh_timestamp` to each record.
 - Add a canonical resolved dataset rather than using the two-source append-only consolidation for modeling.
 - Add explicit `net_yield_after_inflation` only after defining the token-price, reward, fee, and inflation assumptions.

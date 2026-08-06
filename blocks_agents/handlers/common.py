@@ -94,6 +94,22 @@ def select(rows: Iterable[dict[str, str]], payload: dict[str, Any]) -> list[dict
     return result
 
 
+def safe_divide(numerator: float, denominator: float) -> float | None:
+    return numerator / denominator if denominator != 0 else None
+
+
+def derived_features(row: dict[str, str]) -> dict[str, float | None]:
+    return {
+        "yield_momentum": value(row, "yield_trend_slope") * value(row, "yield_volatility"),
+        "mcap_to_tvl": safe_divide(value(row, "mcap_end_current_usd"), value(row, "tvl_usd")),
+        "risk_score": safe_divide(
+            value(row, "beta_vs_btc") * value(row, "volatility_annualized_current"),
+            value(row, "sharpe_ratio_current"),
+        ),
+        "yield_premium": value(row, "agg_current") - value(row, "yield_vs_category_avg"),
+    }
+
+
 def evidence(row: dict[str, str], filename: str, line: int | None = None) -> dict[str, Any]:
     return {"source_file": filename, "source_row": line, "symbol": row.get("symbol")}
 
