@@ -302,8 +302,10 @@ On Windows, they are stored under:
 
 ### Credential rules
 
-- Never commit `.env` or `BLOCKS_API_KEY`; confirm `.env` is listed in the native project’s `.gitignore`.
-- In production, inject `BLOCKS_API_KEY` through the deployment platform’s secret manager rather than storing it in a checked-in file or image layer.
+- Never commit `.env` or `BLOCKS_API_KEY`; confirm `.env` is listed in the native project’s `.gitignore` and verify with `git ls-files` that no existing secret file is tracked.
+- Use [`.env.example`](.env.example) as the blank local template; it contains no credential.
+- The local setup mirrors the key into each deployed project for development convenience only. In production, do not duplicate long-lived keys across project directories: inject `BLOCKS_API_KEY` through the deployment platform’s secret manager at runtime rather than storing it in a checked-in file, image layer, or shared artifact.
+- If a key was ever committed, backed up, or shared, disable it in Blocks and rotate it; ignore rules and local permissions cannot remove historical exposure.
 - Do not put an API key in browser JavaScript or a client bundle.
 - Use a server-side token endpoint or custom token provider for browser/mobile callers.
 - `blocks logout` removes local credentials but does not revoke the server-side key; disable a suspected leaked key from the Blocks dashboard.
@@ -320,7 +322,7 @@ On Windows PowerShell, pass the secret through the equivalent pipeline without p
 $env:BLOCKS_API_KEY | blocks login --api-key-stdin --write-env
 ```
 
-Treat the key as a secret in CI and deployment settings, not as a repository file. Prefer the CI/deployment secret manager over generating a persistent `.env` file in a build artifact.
+Treat the key as a secret in CI and deployment settings, not as a repository file. Prefer the CI/deployment secret manager over generating a persistent `.env` file in a build artifact. For a Windows service, grant the `.env` or injected-secret access only to the service identity that runs `blocks run`; the current local ACL is intentionally limited to the interactive setup user and may not be sufficient for a service account.
 
 ## 10. Register privately before publishing
 
