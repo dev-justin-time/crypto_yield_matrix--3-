@@ -1,0 +1,81 @@
+{
+  "identity": {
+    "agentName": "defi_liquidity_analyst",
+    "displayName": "DeFi Liquidity Analyst",
+    "description": "Analyzes volume, TVL, active addresses, transactions, market cap, and liquidity trend proxies from the project datasets.",
+    "version": "1.0.0",
+    "provider": {
+      "organization": "Crypto Yield Matrix"
+    }
+  },
+  "capabilities": {
+    "taskKinds": [
+      "request"
+    ]
+  },
+  "tags": [
+    {
+      "id": "liquidity",
+      "name": "DeFi liquidity and activity"
+    }
+  ],
+  "runtime": {
+    "handler": "./handler.py",
+    "handlerExport": "handler",
+    "concurrency": 1,
+    "expectedInstances": 1
+  },
+  "io": {
+    "inputs": [
+      {
+        "id": "request",
+        "description": "Liquidity question with optional symbol, category, and warning thresholds.",
+        "contentType": "application/json",
+        "required": true,
+        "schema": {
+          "type": "object",
+          "properties": {
+            "question": {
+              "type": "string"
+            },
+            "source_file": {
+              "type": "string",
+              "enum": [
+                "yield_data.csv",
+                "yield_data1.csv"
+              ]
+            },
+            "symbol": {
+              "type": "string"
+            },
+            "category": {
+              "type": "string"
+            },
+            "files": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "required": [
+            "question"
+          ]
+        },
+        "example": {
+          "question": "Analyze BTC using the repository-backed expert skill.",
+          "source_file": "yield_data.csv",
+          "symbol": "BTC"
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "id": "liquidity_report",
+        "description": "Liquidity-health report with proxy metrics and explicit blind spots.",
+        "contentType": "application/json",
+        "guaranteed": true
+      }
+    ]
+  }
+}

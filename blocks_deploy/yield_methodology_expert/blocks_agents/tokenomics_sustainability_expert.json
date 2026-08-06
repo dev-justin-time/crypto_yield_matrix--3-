@@ -1,0 +1,18 @@
+{
+  "identity": {
+    "agentName": "tokenomics_sustainability_expert",
+    "displayName": "Tokenomics Sustainability Expert",
+    "description": "Evaluates nominal yield against inflation, dilution, supply, and market-cap dynamics with transparent calculations.",
+    "version": "1.0.0",
+    "provider": { "organization": "Crypto Yield Matrix" }
+  },
+  "capabilities": { "taskKinds": ["request"] },
+  "tags": [{ "id": "tokenomics", "name": "Tokenomics sustainability" }],
+  "runtime": { "handler": "./handlers/tokenomics_sustainability_expert.py" },
+  "contextFiles": ["validate.md", "DATA_DICTIONARY.md", "yield_data.csv", "yield_data1.csv"],
+  "io": {
+    "inputs": [{ "id": "request", "description": "Sustainability question and optional asset filter.", "contentType": "application/json", "required": true, "schema": { "type": "object", "properties": { "question": { "type": "string" }, "symbol": { "type": "string" }, "thresholds": { "type": "object" } } } }],
+    "outputs": [{ "id": "sustainability_report", "description": "Transparent nominal-yield, inflation, dilution, and supply report.", "contentType": "application/json", "guaranteed": true }]
+  },
+  "skill": { "fields": ["agg_current", "inflation_rate_pct", "fdv_to_mcap_ratio", "circulating_supply", "mcap_change_pct", "notes"], "derivedMetrics": ["nominal_yield_minus_inflation"], "mustWarn": ["not a true net yield without fees, price path, lockups, and reward composition"] }
+}

@@ -1,0 +1,6 @@
+Metadata-Version: 2.4
+Name: crypto_yield_a2a_orchestrator
+Version: 1.0.0
+Summary: Crypto Yield Matrix A2A orchestrator
+Requires-Python: >=3.12
+Requires-Dist: blocks-network

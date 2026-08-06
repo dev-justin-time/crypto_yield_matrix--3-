@@ -1,0 +1,81 @@
+{
+  "identity": {
+    "agentName": "portfolio_scenario_expert",
+    "displayName": "Portfolio Scenario Expert",
+    "description": "Runs transparent, non-advisory crypto yield/risk/liquidity scenarios under user-specified constraints.",
+    "version": "1.0.0",
+    "provider": {
+      "organization": "Crypto Yield Matrix"
+    }
+  },
+  "capabilities": {
+    "taskKinds": [
+      "request"
+    ]
+  },
+  "tags": [
+    {
+      "id": "scenarios",
+      "name": "Portfolio scenarios"
+    }
+  ],
+  "runtime": {
+    "handler": "./handler.py",
+    "handlerExport": "handler",
+    "concurrency": 1,
+    "expectedInstances": 1
+  },
+  "io": {
+    "inputs": [
+      {
+        "id": "request",
+        "description": "Scenario constraints such as target yield, drawdown cap, liquidity floor, and category limits.",
+        "contentType": "application/json",
+        "required": true,
+        "schema": {
+          "type": "object",
+          "properties": {
+            "question": {
+              "type": "string"
+            },
+            "source_file": {
+              "type": "string",
+              "enum": [
+                "yield_data.csv",
+                "yield_data1.csv"
+              ]
+            },
+            "symbol": {
+              "type": "string"
+            },
+            "category": {
+              "type": "string"
+            },
+            "files": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "required": [
+            "question"
+          ]
+        },
+        "example": {
+          "question": "Analyze BTC using the repository-backed expert skill.",
+          "source_file": "yield_data.csv",
+          "symbol": "BTC"
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "id": "scenario_report",
+        "description": "Assumptions, trade-offs, constraints, sensitivity, and evidence-backed scenario output.",
+        "contentType": "application/json",
+        "guaranteed": true
+      }
+    ]
+  }
+}

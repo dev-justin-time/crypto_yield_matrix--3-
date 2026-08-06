@@ -1,0 +1,18 @@
+{
+  "identity": {
+    "agentName": "model_validation_guardian",
+    "displayName": "Model Validation Guardian",
+    "description": "Checks source duplication, target circularity, temporal leakage, split integrity, calibration, baselines, and uncertainty before a crypto model is trusted.",
+    "version": "1.0.0",
+    "provider": { "organization": "Crypto Yield Matrix" }
+  },
+  "capabilities": { "taskKinds": ["request"] },
+  "tags": [{ "id": "validation", "name": "Model validation and leakage control" }],
+  "runtime": { "handler": "./handlers/model_validation_guardian.py" },
+  "contextFiles": ["validate.md", "DATA_DICTIONARY.md", "consolidated_yield_data.csv", "yield_data.csv", "yield_data1.csv"],
+  "io": {
+    "inputs": [{ "id": "request", "description": "Model target, feature list, source selection, and proposed split/evaluation plan.", "contentType": "application/json", "required": true, "schema": { "type": "object", "required": ["question"], "properties": { "question": { "type": "string" }, "target": { "type": "string" }, "features": { "type": "array", "items": { "type": "string" } }, "source_file": { "type": "string" }, "split": { "type": "string" } } } }],
+    "outputs": [{ "id": "validation_gate", "description": "PASS, WARNING, or FAIL gate with leakage, circularity, split, calibration, and uncertainty findings.", "contentType": "application/json", "guaranteed": true }]
+  },
+  "skill": { "checks": ["source duplication", "target circularity", "current/future feature leakage", "chronological walk-forward splits", "persistence baselines", "Brier/calibration metrics", "prediction interval coverage"], "mustFail": ["training both yield source versions as independent rows", "using supplied targets as features", "random split for temporal forecasting"] }
+}

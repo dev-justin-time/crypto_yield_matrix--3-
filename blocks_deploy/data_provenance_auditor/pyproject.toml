@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "data_provenance_auditor"
+version = "1.0.0"
+description = "data_provenance_auditor agent"
+requires-python = ">=3.12"
+dependencies = [
+    "blocks-network",
+]
+
+[tool.setuptools]
+py-modules = ["handler"]
+
+packages = ["blocks_agents", "blocks_agents.handlers"]

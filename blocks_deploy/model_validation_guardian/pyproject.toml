@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "model_validation_guardian"
+version = "1.0.0"
+description = "model_validation_guardian agent"
+requires-python = ">=3.12"
+dependencies = [
+    "blocks-network",
+]
+
+[tool.setuptools]
+py-modules = ["handler"]
+
+packages = ["blocks_agents", "blocks_agents.handlers"]

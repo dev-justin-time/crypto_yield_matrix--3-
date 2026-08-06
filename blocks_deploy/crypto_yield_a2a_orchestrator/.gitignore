@@ -1,0 +1,5 @@
+.env
+pip.conf
+.npmrc
+__pycache__/
+*.pyc

@@ -1,0 +1,18 @@
+{
+  "identity": {
+    "agentName": "quant_forecasting_expert",
+    "displayName": "Quantitative Yield Forecasting Expert",
+    "description": "Designs cautious quarterly yield forecasts only after source reconciliation, chronological validation, baseline comparison, and uncertainty reporting.",
+    "version": "1.0.0",
+    "provider": { "organization": "Crypto Yield Matrix" }
+  },
+  "capabilities": { "taskKinds": ["request"] },
+  "tags": [{ "id": "forecasting", "name": "Yield forecasting" }],
+  "runtime": { "handler": "./handlers/quant_forecasting_expert.py" },
+  "contextFiles": ["validate.md", "DATA_DICTIONARY.md", "yield_data.csv", "yield_data1.csv", "consolidated_yield_data.csv"],
+  "io": {
+    "inputs": [{ "id": "request", "description": "Forecast design question with target horizon and source selection.", "contentType": "application/json", "required": true, "schema": { "type": "object", "required": ["question"], "properties": { "question": { "type": "string" }, "source_file": { "type": "string" }, "symbol": { "type": "string" }, "horizon": { "type": "string" } } } }],
+    "outputs": [{ "id": "forecast_design", "description": "Forecast specification or result with baseline, time split, uncertainty, and data-readiness gate.", "contentType": "application/json", "guaranteed": true }]
+  },
+  "skill": { "fields": ["q3_24_prior", "q4_24_prior", "q1_25_prior", "q2_25_prior", "q3_25_current", "q4_25_current", "q1_26_current", "q2_26_current", "agg_prior", "yield_trend_slope", "yield_volatility", "volatility_annualized_prior", "volume_trend_pct", "momentum_90d_pct", "inflation_rate_pct"], "gates": ["select one source version", "minimum additional dated history", "walk-forward split", "persistence and rolling-mean baselines", "prediction intervals"], "mustNot": ["claim validated production forecasting from the current eight-quarter panel"] }
+}

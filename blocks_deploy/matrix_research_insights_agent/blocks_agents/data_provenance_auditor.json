@@ -1,0 +1,18 @@
+{
+  "identity": {
+    "agentName": "data_provenance_auditor",
+    "displayName": "Data Provenance Auditor",
+    "description": "Audits CSV lineage, schema compatibility, source conflicts, and validation evidence for the crypto yield matrix.",
+    "version": "1.0.0",
+    "provider": { "organization": "Crypto Yield Matrix" }
+  },
+  "capabilities": { "taskKinds": ["request"] },
+  "tags": [{ "id": "provenance", "name": "Data provenance and audit" }],
+  "runtime": { "handler": "./handlers/data_provenance_auditor.py" },
+  "contextFiles": ["validate.md", "DATA_DICTIONARY.md", "yield_data.csv", "yield_data1.csv", "consolidated_yield_data.csv"],
+  "io": {
+    "inputs": [{ "id": "request", "description": "Audit question, symbols, or files to inspect.", "contentType": "application/json", "required": true, "schema": { "type": "object", "properties": { "question": { "type": "string" }, "files": { "type": "array", "items": { "type": "string" } }, "symbol": { "type": "string" } } } }],
+    "outputs": [{ "id": "audit_report", "description": "Structured audit with PASS, WARNING, or FAIL status and exact evidence locations.", "contentType": "application/json", "guaranteed": true }]
+  },
+  "skill": { "checks": ["schema", "duplicate keys", "source_file/source_row lineage", "yield_data version conflicts", "validate.md issue references"], "mustNot": ["silently merge conflicting values", "treat duplicate source versions as independent observations"] }
+}

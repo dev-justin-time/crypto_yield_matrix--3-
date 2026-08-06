@@ -1,0 +1,81 @@
+{
+  "identity": {
+    "agentName": "matrix_research_insights_agent",
+    "displayName": "Matrix Research Insights Agent",
+    "description": "Turns the existing crypto yield matrix, timeline, legend, and tooltip metrics into traceable research insights for users.",
+    "version": "1.0.0",
+    "provider": {
+      "organization": "Crypto Yield Matrix"
+    }
+  },
+  "capabilities": {
+    "taskKinds": [
+      "request"
+    ]
+  },
+  "tags": [
+    {
+      "id": "dashboard",
+      "name": "Dashboard research insights"
+    }
+  ],
+  "runtime": {
+    "handler": "./handler.py",
+    "handlerExport": "handler",
+    "concurrency": 1,
+    "expectedInstances": 1
+  },
+  "io": {
+    "inputs": [
+      {
+        "id": "request",
+        "description": "User question about the matrix, quarter, asset, aggregate, legend, or timeline.",
+        "contentType": "application/json",
+        "required": true,
+        "schema": {
+          "type": "object",
+          "properties": {
+            "question": {
+              "type": "string"
+            },
+            "source_file": {
+              "type": "string",
+              "enum": [
+                "yield_data.csv",
+                "yield_data1.csv"
+              ]
+            },
+            "symbol": {
+              "type": "string"
+            },
+            "category": {
+              "type": "string"
+            },
+            "files": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "required": [
+            "question"
+          ]
+        },
+        "example": {
+          "question": "Analyze BTC using the repository-backed expert skill.",
+          "source_file": "yield_data.csv",
+          "symbol": "BTC"
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "id": "insight_report",
+        "description": "Plain-language insight with exact field and source references.",
+        "contentType": "application/json",
+        "guaranteed": true
+      }
+    ]
+  }
+}

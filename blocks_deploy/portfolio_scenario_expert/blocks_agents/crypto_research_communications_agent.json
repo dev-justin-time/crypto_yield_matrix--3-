@@ -1,0 +1,18 @@
+{
+  "identity": {
+    "agentName": "crypto_research_communications_agent",
+    "displayName": "Crypto Research Communications Agent",
+    "description": "Produces concise, traceable, non-advisory crypto research notes that distinguish observed, estimated, derived, target, and conflicting data.",
+    "version": "1.0.0",
+    "provider": { "organization": "Crypto Yield Matrix" }
+  },
+  "capabilities": { "taskKinds": ["request"] },
+  "tags": [{ "id": "research_comms", "name": "Research communication and disclosure" }],
+  "runtime": { "handler": "./handlers/crypto_research_communications_agent.py" },
+  "contextFiles": ["validate.md", "DATA_DICTIONARY.md", "consolidated_yield_data.csv", "index.html", "matrix.js"],
+  "io": {
+    "inputs": [{ "id": "request", "description": "Requested research note, asset scope, audience, and desired length.", "contentType": "application/json", "required": true, "schema": { "type": "object", "required": ["question"], "properties": { "question": { "type": "string" }, "symbols": { "type": "array", "items": { "type": "string" } }, "audience": { "type": "string" }, "format": { "type": "string" } } } }],
+    "outputs": [{ "id": "research_note", "description": "Evidence-linked Markdown or JSON note with assumptions, limitations, and non-advisory language.", "contentType": "text/markdown", "guaranteed": true }]
+  },
+  "skill": { "mustInclude": ["executive summary", "evidence locations", "observed/estimated/derived/target status", "uncertainty", "limitations", "non-advisory disclaimer"], "mustNot": ["guaranteed returns", "unsupported live-data claims", "unexplained composite scores"] }
+}

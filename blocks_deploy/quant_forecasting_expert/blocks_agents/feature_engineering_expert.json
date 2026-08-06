@@ -1,0 +1,28 @@
+{
+  "identity": {
+    "agentName": "feature_engineering_expert",
+    "displayName": "Crypto Feature Engineering Expert",
+    "description": "Computes transparent derived features for yield momentum, market-cap to TVL, risk, and category-relative yield analysis.",
+    "version": "1.0.0",
+    "provider": { "organization": "Crypto Yield Matrix" }
+  },
+  "capabilities": { "taskKinds": ["request"] },
+  "tags": [{ "id": "feature_engineering", "name": "Feature engineering" }],
+  "runtime": { "handler": "./handlers/feature_engineering_expert.py" },
+  "contextFiles": ["DATA_DICTIONARY.md", "yield_data.csv", "yield_data1.csv", "validate.md"],
+  "io": {
+    "inputs": [{ "id": "request", "description": "Feature request with optional source and asset filters.", "contentType": "application/json", "required": true, "schema": { "type": "object", "required": ["question"], "properties": { "question": { "type": "string" }, "source_file": { "type": "string" }, "symbol": { "type": "string" }, "category": { "type": "string" } } } }],
+    "outputs": [{ "id": "feature_report", "description": "Derived feature values, formula inputs, warnings, and evidence locations.", "contentType": "application/json", "guaranteed": true }]
+  },
+  "skill": {
+    "features": {
+      "yield_momentum": "yield_trend_slope * yield_volatility",
+      "mcap_to_tvl": "mcap_end_current_usd / tvl_usd",
+      "risk_score": "beta_vs_btc * volatility_annualized_current / sharpe_ratio_current",
+      "yield_premium": "agg_current - yield_vs_category_avg"
+    },
+    "mustRecompute": ["all four features from source fields"],
+    "mustWarn": ["zero tvl_usd", "zero sharpe_ratio_current", "estimated or conflicting source values"],
+    "mustNot": ["silently replace undefined divisions with zero", "present derived features as validated investment signals"]
+  }
+}

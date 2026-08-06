@@ -1,0 +1,18 @@
+{
+  "identity": {
+    "agentName": "defi_liquidity_analyst",
+    "displayName": "DeFi Liquidity Analyst",
+    "description": "Analyzes volume, TVL, active addresses, transactions, market cap, and liquidity trend proxies from the project datasets.",
+    "version": "1.0.0",
+    "provider": { "organization": "Crypto Yield Matrix" }
+  },
+  "capabilities": { "taskKinds": ["request"] },
+  "tags": [{ "id": "liquidity", "name": "DeFi liquidity and activity" }],
+  "runtime": { "handler": "./handlers/defi_liquidity_analyst.py" },
+  "contextFiles": ["validate.md", "DATA_DICTIONARY.md", "yield_data.csv", "yield_data1.csv", "consolidated_yield_data.csv"],
+  "io": {
+    "inputs": [{ "id": "request", "description": "Liquidity question with optional symbol, category, and warning thresholds.", "contentType": "application/json", "required": true, "schema": { "type": "object", "properties": { "question": { "type": "string" }, "symbol": { "type": "string" }, "category": { "type": "string" }, "min_volume_m_usd": { "type": "number" } } } }],
+    "outputs": [{ "id": "liquidity_report", "description": "Liquidity-health report with proxy metrics and explicit blind spots.", "contentType": "application/json", "guaranteed": true }]
+  },
+  "skill": { "fields": ["avg_24h_volume_m_usd_prior", "avg_24h_volume_m_usd_current", "volume_trend_pct", "mcap_end_current_usd", "tvl_usd", "active_addresses", "daily_tx_count"], "mustWarn": ["not real-time", "not a slippage guarantee", "possible bot/sybil noise"] }
+}

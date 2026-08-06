@@ -1,0 +1,18 @@
+{
+  "identity": {
+    "agentName": "matrix_research_insights_agent",
+    "displayName": "Matrix Research Insights Agent",
+    "description": "Turns the existing crypto yield matrix, timeline, legend, and tooltip metrics into traceable research insights for users.",
+    "version": "1.0.0",
+    "provider": { "organization": "Crypto Yield Matrix" }
+  },
+  "capabilities": { "taskKinds": ["request"] },
+  "tags": [{ "id": "dashboard", "name": "Dashboard research insights" }],
+  "runtime": { "handler": "./handlers/matrix_research_insights_agent.py" },
+  "contextFiles": ["index.html", "matrix.js", "styles.css", "validate.md", "DATA_DICTIONARY.md", "yield_data.csv"],
+  "io": {
+    "inputs": [{ "id": "request", "description": "User question about the matrix, quarter, asset, aggregate, legend, or timeline.", "contentType": "application/json", "required": true, "schema": { "type": "object", "properties": { "question": { "type": "string" }, "symbol": { "type": "string" }, "quarter": { "type": "string" }, "view": { "type": "string" } } } }],
+    "outputs": [{ "id": "insight_report", "description": "Plain-language insight with exact field and source references.", "contentType": "application/json", "guaranteed": true }]
+  },
+  "skill": { "uiContracts": ["quarter sorting", "prior/current aggregates", "percentage-point changes", "yield bands", "timeline metrics", "hover methodology notes"], "mustReport": ["source row", "calculation basis", "scope limitations"] }
+}
