@@ -95,7 +95,7 @@ These features are computed by `blocks_agents/handlers/feature_engineering_exper
 | `yield_momentum` | `yield_trend_slope * yield_volatility` | `yield_trend_slope`, `yield_volatility` | Trend strength scaled by yield variability. |
 | `mcap_to_tvl` | `mcap_end_current_usd / tvl_usd` | `mcap_end_current_usd`, `tvl_usd` | Market-cap-to-TVL ratio; undefined when TVL is zero. |
 | `risk_score` | `beta_vs_btc * volatility_annualized_current / sharpe_ratio_current` | `beta_vs_btc`, `volatility_annualized_current`, `sharpe_ratio_current` | Combined systematic/volatility pressure scaled by current Sharpe; undefined when Sharpe is zero. |
-| `yield_premium` | `agg_current - yield_vs_category_avg` | `agg_current`, `yield_vs_category_avg` | Current aggregate yield relative to the stored category-relative metric; verify the metric's definition before interpreting as a peer premium. |
+| `yield_premium` | `agg_current - yield_vs_category_avg` | `agg_current`, `yield_vs_category_avg` | Requested transformed metric; because `yield_vs_category_avg` is already documented as an asset-minus-category value, do not assume this is a conventional peer premium. |
 
 Zero denominators are represented as `null` with a warning rather than silently converted to zero. Because both yield source files conflict, always record `source_file` and do not treat the two versions as independent observations.
 

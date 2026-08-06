@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import csv
 import json
+import math
 from pathlib import Path
 from typing import Any, Iterable
 
@@ -94,19 +95,35 @@ def select(rows: Iterable[dict[str, str]], payload: dict[str, Any]) -> list[dict
     return result
 
 
-def safe_divide(numerator: float, denominator: float) -> float | None:
-    return numerator / denominator if denominator != 0 else None
+def numeric_value(row: dict[str, str], field: str) -> float | None:
+    try:
+        parsed = float(row.get(field, ""))
+    except (TypeError, ValueError):
+        return None
+    return parsed if math.isfinite(parsed) else None
+
+
+def safe_divide(numerator: float | None, denominator: float | None) -> float | None:
+    if numerator is None or denominator is None or denominator == 0:
+        return None
+    return numerator / denominator
 
 
 def derived_features(row: dict[str, str]) -> dict[str, float | None]:
+    trend = numeric_value(row, "yield_trend_slope")
+    yield_volatility = numeric_value(row, "yield_volatility")
+    market_cap = numeric_value(row, "mcap_end_current_usd")
+    tvl = numeric_value(row, "tvl_usd")
+    beta = numeric_value(row, "beta_vs_btc")
+    price_volatility = numeric_value(row, "volatility_annualized_current")
+    sharpe = numeric_value(row, "sharpe_ratio_current")
+    aggregate = numeric_value(row, "agg_current")
+    category_metric = numeric_value(row, "yield_vs_category_avg")
     return {
-        "yield_momentum": value(row, "yield_trend_slope") * value(row, "yield_volatility"),
-        "mcap_to_tvl": safe_divide(value(row, "mcap_end_current_usd"), value(row, "tvl_usd")),
-        "risk_score": safe_divide(
-            value(row, "beta_vs_btc") * value(row, "volatility_annualized_current"),
-            value(row, "sharpe_ratio_current"),
-        ),
-        "yield_premium": value(row, "agg_current") - value(row, "yield_vs_category_avg"),
+        "yield_momentum": trend * yield_volatility if trend is not None and yield_volatility is not None else None,
+        "mcap_to_tvl": safe_divide(market_cap, tvl),
+        "risk_score": safe_divide(beta * price_volatility if beta is not None and price_volatility is not None else None, sharpe),
+        "yield_premium": aggregate - category_metric if aggregate is not None and category_metric is not None else None,
     }
 
 
