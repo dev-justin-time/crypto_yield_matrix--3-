@@ -9,7 +9,7 @@ It is based on the official Blocks.ai documentation:
 - [Key concepts](https://blocks.ai/docs/key-concepts)
 - [Authentication reference](https://blocks.ai/docs/authentication)
 
-> **Important:** `blocks_agents/` is currently a local, file-backed adapter scaffold. It contains eleven agent cards, standard-library Python handlers, and `blocks_agents/loader.py`, but it is not registered or published on Blocks Network. Do not place API keys in this repository or publish the cards until the native Blocks project wrapper has been created and tested.
+> **Important:** `blocks_agents/` is currently a local, file-backed adapter scaffold. It contains eleven agent cards, including a feature-engineering expert, standard-library Python handlers, and `blocks_agents/loader.py`, but it is not registered or published on Blocks Network. Do not place API keys in this repository or publish the cards until the native Blocks project wrapper has been created and tested.
 
 ## 1. What this project provides
 
@@ -27,8 +27,9 @@ The repository contains eleven blockchain and cryptocurrency research agents:
 | `model_validation_guardian` | Checks source duplication, leakage, target circularity, and time splits. |
 | `matrix_research_insights_agent` | Converts the dashboard matrix into traceable research insights. |
 | `crypto_research_communications_agent` | Produces cautious, evidence-linked research notes. |
+| `feature_engineering_expert` | Recomputes four transparent derived yield, liquidity, risk, and peer features. |
 
-The index is [`blocks_agents/agent_cards.json`](blocks_agents/agent_cards.json). The local loader resolves each manifest's `./handlers/...` path and calls its `handler(task, ctx)` function.
+The index is [`blocks_agents/agent_cards.json`](blocks_agents/agent_cards.json). The local loader resolves each manifest's `./handlers/...` path and calls its `handler(task, ctx)` function. The feature agent computes `yield_momentum`, `mcap_to_tvl`, `risk_score`, and `yield_premium` from source fields and preserves warnings for undefined ratios.
 
 ## 2. Requirements
 
@@ -56,7 +57,7 @@ python -m py_compile blocks_agents/*.py blocks_agents/handlers/*.py
 python -m blocks_agents.handlers
 ```
 
-The smoke test loads all eleven cards from `blocks_agents/agent_cards.json`, invokes each handler, and checks that it returns a JSON artifact.
+The smoke test loads all eleven cards from `blocks_agents/agent_cards.json`, invokes each handler, and checks that it returns a JSON artifact. The feature-engineering handler is also checked against the four documented formulas.
 
 ### Invoke one local card
 
