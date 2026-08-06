@@ -1,0 +1,646 @@
+Create a landscape financial infographic at about 1.4:1. Title it “cryptocurrentcy Underlying Asset Cash Yield Matrix” for crypto investors and researchers. The main visual is a colorful quarterly asset matrix sorted by descending value yield.
+
+Use a full-width deep navy header with the title, annualized value-yield formula, statistical window “2024.07—2025.06,” and comparison period. Build an eight-column matrix: four quarters for the prior 12-month window and four quarters for the current window, separated by a light-blue dashed rule. Label every quarter.
+
+Each quarter stacks equal-width category blocks by yield. Pair every percentage with its asset category and a small icon. Categories include bitcoin, Etherium, solana, polygon, ada, xrp; keep one consistent saturated hue per category. Use asterisks for newly listed or annualized categories with popup exspanding information
+
+Add paired “12-Month Aggregate” columns comparing prior versus current 12 months. Show direction of change in pp, and include a compact legend of common yield ranges for each asset class. Add a short timeline: first value,  [add meaningful data metrics]
+
+on hover popup expand the Included small notes explaining calculation basis, sorting rules, and asterisk meanings. Add a vertical “PERFORMANCE” label with a downward arrow. Use white background, deep navy title bar, light blue-gray divider lines, and high-contrast white or near-black text.
+
+All text is in English.
+
+print(content[:5000])
+Response
+---
+name: kimi-widget
+description: Kimi widget design system. Read this BEFORE rendering any inline widget. Defines when to use a widget and the runtime contract; the full visual style lives in references/design-system.md. Your widget runs in a sandboxed iframe with the Kimi design system pre-loaded — reference the provided CSS variables, never hardcode colors or fonts.
+---
+
+# Kimi Widget
+
+A widget is a compact visual or interactive surface rendered inline in the conversation:
+diagrams, dashboards, calculators, sliders, comparisons, timelines, state machines, small
+simulations. Use one when seeing structure helps the user understand, compare, inspect, or act
+on the answer better than prose alone.
+
+## When to generate a widget
+
+- The answer has spatial, sequential, systemic, comparative, numeric, or interactive structure.
+- The user does not need to say "show", "visualize", "chart", or "widget" — proactive widgets are
+  expected when the structure is there.
+- If the user gives a compact visual spec without a verb ("REST vs GraphQL table", "checkout state
+  machine", "pricing calculator"), render it as a widget instead of only describing it.
+
+Do **not** use a widget for: ordinary prose answers, routine line-by-line code explanations, file
+lists / galleries / final deliverables, blocking input workflows, destructive or native actions,
+or large long-lived apps.
+
+## Runtime contract
+
+The widget runs in a **sandboxed iframe with the Kimi design system CSS already loaded**. All CSS
+variables, form-element styles, and SVG classes are available at runtime — reference them, do not
+redefine them.
+
+- Allowed: HTML, SVG, CSS, inline JavaScript, native browser APIs.
+- **Not allowed**: external scripts, modules, stylesheets, images, fonts, CDN libraries, npm
+  packages, `fetch`, or WebSocket. For charts/diagrams use SVG, Canvas, CSS, or plain DOM.
+- **Text goes in your response, visuals go in the widget.** All explanatory prose, intros, and
+  summaries live OUTSIDE the widget.
+- **After the widget renders, don't narrate it.** Once you've called the widget tool and the widget
+  is done, do not re-summarize or repeat what you just did — the visual speaks for itself. Say only
+  what the widget cannot.
+- **Sending intent back.** An interactive widget may call `window.sendPrompt(text)` (when the host
+  injects it) to push the user's next intent into the conversation. Write `text` as a real user
+  message — what the user would actually type — never a robotic confirmation like "I selected
+  option A, please proceed."
+- Never hardcode colors, fonts, or border-radius — always use `var(--xxx)`. Hardcoded values break
+  dark mode and look inconsistent with the host UI.
+
+## ⚠️ Required: read the design system before you design
+
+**Unless the user has given you very explicit, precise styling instructions for this specific
+widget, you MUST read [references/design-system.md](references/design-system.md) before writing the
+widget code.** It carries the full Kimi Perspective Widget style — visual rules, typography,
+component patterns, runtime token map, and the application checklist. Do not decide a widget is too
+simple, too static, or too small to need it. Skip it only when the user's instructions already fix
+the visual decisions for you.
+
+If the widget uses icons, also read [references/icon-system.md](references/icon-system.md): the
+skill ships 105 Kimi icons (`assets/icons/`, indexed in `references/icons/manifest.json`) — pick
+from the library and inline the SVG instead of drawing your own or using emoji.
+
+
+The full visual style for every widget: visual rules, typography, components/motion/layout, the
+runtime token map, and the application checklist. Read this before writing widget code unless the
+user already fixed the visual decisions for you.
+
+---
+
+## 1. Visual rules
+
+### Core rule
+
+Black and white are the primary colors. Gray is the neutral support system for hierarchy,
+separators, disabled states, metadata, hover/active tints, and subtle borders. Accent colors come
+only from the runtime tokens (never invented) and are the last resort — use them only after black,
+white, and gray are insufficient to express required differences such as status, priority, chart
+series, file/category markers, progress groups, or multiple avatars.
+
+Interaction emphasis is dark, not blue: focus rings, hover states, selected items, active tabs,
+and primary buttons use `--kimi-color-text-primary` and gray tints. The accent blue
+(`--kimi-color-accent`) is reserved for data visualization and true semantic accents — never for
+generic "this is interactive" styling. Training data associates blue with interactive; Kimi does
+not.
+
+Do not set a page, body, canvas, card, or panel base background color unless explicitly asked.
+Preserve the existing background, or use `transparent` / `inherit`; the host provides the
+background.
+
+### Visual discipline
+
+- Do not prescribe a visible base fill. No default page, card, panel, or canvas background.
+- UI chrome is black/white first: primary text, key values, active states, primary controls,
+  high-emphasis icons.
+- Use gray only for hierarchy and structure: secondary/tertiary text, borders, separators,
+  disabled states, hover/active tints.
+- Use accent colors only for multi-color semantics: status (`--kimi-color-danger`,
+  `--kimi-color-positive`, `--kimi-color-warning`), priority dots, chart series (`--kimi-chart-*`),
+  tags, category chips, progress fills, avatars. For tag/chip/status backgrounds, tint the token to
+  10–25% — `color-mix(in srgb, var(--kimi-color-danger) 12%, transparent)` — instead of a solid
+  fill. Never use any accent as a dominant fill, page tint, or background theme.
+- Avoid colorful gradients. If a gradient is necessary for a data mark, keep it subtle and within
+  one hue family (opacity steps of a single token, not hue blends).
+- Avoid decorative base fills, gradient orbs, bokeh, heavy color washes, nested decorative cards,
+  marketing-page hero treatment, heavy shadows, blur, and glassmorphism. Keep surfaces clean/flat.
+- Use fine borders and compact radii: 0.5–1px separators, 6px chips, 8px icon buttons, 10px list
+  cards/inputs, 12px elevated panels.
+
+### Chart colors
+
+Color explains data, not decorates it. Sequential is the default; categorical is the exception;
+diverging is the last resort. Derive every chart color from the runtime tokens.
+
+- **Categorical** (truly independent series), in this order: `--kimi-chart-1` (blue) →
+  `--kimi-chart-2` (red) → `--kimi-chart-3` (green) → `--kimi-chart-4` (purple) →
+  `--kimi-chart-5` (neutral gray). Maximum 5 hues; beyond that differentiate with line style
+  (solid / dashed / dotted), not new colors.
+- **Comparable series** (same metric across categories — revenue by region, temperature by city):
+  same-hue opacity instead of categorical. Steps 100 / 70 / 50 / 40 / 25% via
+  `color-mix(in srgb, var(--kimi-chart-1) 70%, transparent)`.
+- **Positive vs baseline** (actual vs target): blue vs neutral gray. **Positive vs negative**
+  (profit/loss, risk): blue vs red. **Deviation from a true midpoint**: red ↔ neutral ↔ blue
+  diverging — only when a real zero/break-even center exists.
+- Baseline, reference lines, grid, and "no data" use `--kimi-color-text-quaternary`.
+- Heatmaps and stacked areas are always sequential, never categorical. Pie/donut prefers blue
+  sequential — slices are parts of one whole; use categorical only for independent competitors.
+- Colorblind safety: never pair green with red in one chart (`--kimi-chart-3` with
+  `--kimi-chart-2`, or `--kimi-color-positive` with `--kimi-color-danger`); colors must stay
+  distinguishable in grayscale; never rely on color alone — add labels or patterns.
+
+---
+
+## 2. Typography
+
+Use the Kimi client fonts, not artifact-specific or presentation fonts.
+
+- UI/body must use `font-family: var(--kimi-font-sans)`.
+- Every HTML widget starts with a local font reset: set the root wrapper to
+  `font-family: var(--kimi-font-sans)`, set `button, input, select, textarea { font: inherit; }`,
+  and set `svg text { font-family: var(--kimi-font-sans); }` when using inline SVG text.
+- Primary display values must use `var(--kimi-font-sans)`, including timers, prices, counts,
+  percentages, dates, times, generated passwords, BMI values, counters, and chart labels.
+- For numeric display values, use
+  `font-variant-numeric: tabular-nums; font-feature-settings: "tnum" 1;` instead of switching to a
+  mono font.
+- Reserve `var(--kimi-font-mono)` for code, hashes, raw identifiers, logs, and genuinely technical
+  monospace tables only. Keep mono small and secondary; never use mono for large hero metrics,
+  timers, generated passwords, BMI values, counters, prices, percentages, or slider values.
+- Do not hardcode font stacks (`Inter`, `SF Pro Text`, `PingFang SC`, `system-ui`, `Poppins`,
+  `Oswald`, `JetBrains Mono`). Do not introduce decorative display fonts. If a fallback is
+  required, keep it inside the variable fallback: `font-family: var(--kimi-font-sans, sans-serif)`.
+
+### Scale
+
+The base body size is **16px (`t2`, line-height 24px)** — the foundation sets this on `body`, so
+plain text is already correct; don't shrink it back down.
+
+- Body text: 16px (`t2`), line-height 24px. Emphasized body: 16px weight 500 (`t2Emphasized`).
+- Title / page labels: 17–20px, weight 500 (`pageTitle` 17 / `t0` 20).
+- Secondary text and dense table cells: 14–15px (`b2` / `b1`).
+- Metadata and compact labels: 12px (`c1`).
+- Primary display values: usually 28–42px, never larger than 48px in a compact widget; weight
+  500, line-height at least 1.08 so glyphs don't crop.
+- Letter spacing must be 0 or positive — never negative.
+- **Two weights only**: 400 regular and 500 bold. Avoid 600/700 — they look heavy against the host.
+- **Sentence case always** — never Title Case or ALL CAPS, including SVG text labels and headings.
+- No mid-sentence bolding. Entity, class, and function names go in `code style`, not bold.
+
+---
+
+## 3. Components, motion & layout
+
+### Controls & icons
+
+- Native controls (sliders, switches, checkboxes, radios, progress bars) are UI chrome, not data
+  accents. Keep them neutral: `accent-color: var(--kimi-color-text-primary)` or gray
+  border/surface tokens. Do not use browser default blue or `accent-color: var(--kimi-color-accent)`
+  for generic controls — only when the control itself is a semantic accent/state selector.
+- **Destructive and secondary row actions are hover-revealed, not always visible.** Delete,
+  remove, clear, and similar per-item actions on list rows, cards, chips, and table rows stay
+  hidden by default and appear on the parent's `:hover` (or `:focus-within` for keyboard users):
+
+  ```css
+  .row .row-actions { opacity: 0; transition: opacity var(--t-fast) var(--ease-out); }
+  .row:hover .row-actions, .row:focus-within .row-actions { opacity: 1; }
+  ```
+
+  Use `opacity`/`visibility`, not `display: none`, so the layout doesn't shift and the control
+  stays keyboard-reachable. A permanently visible delete button on every row reads as noisy and
+  dangerous. Exception: a single, deliberate destructive action that is the widget's point (e.g.
+  a confirm dialog's "Delete" button) stays visible.
+- Icons: prefer the shipped Kimi icon library — read
+  [icon-system.md](icon-system.md) and pick from `references/icons/manifest.json`, then inline the
+  SVG from `assets/icons/` with `currentColor`. Only build a custom icon (same 1.8px outlined
+  style, 24×24 grid) when no library icon matches. Do notimport, link, or fetch external icon
+  assets. Do not use emoji as UI icons; if emoji are decorative, set `font-size` explicitly.
+  **24px is the maximum icon size** — if a spot seems to need a larger icon (empty state, hero
+  mark, big decorative glyph), don't use an icon there at all; solve it with typography or layout.
+
+### Spacing & radius
+
+All spacing snaps to the token scale: **4 / 8 / 12 / 16 / 20 / 24 / 32px**. No values off the
+scale — `7px`, `13px`, `17px` read as accidents, not decisions. When a gap needs to sit between
+two steps, pick the smaller one; widgets are compact surfaces.
+
+All radii come from the radius scale: **4 / 6 / 8 / 10 / 12 / 16px / full**. Usage mapping: 6px
+chips, 8px icon buttons, 10px list cards/inputs, 12px elevated panels, full for pills/avatars.
+
+**Nested radii: outer is always larger than inner.** When a rounded element sits inside another
+rounded container, the inner radius must be smaller — compute it as
+`inner = outer − padding` (e.g. a 12px panel with 8px padding holds 4px-radius children), and
+never let it go below 4px or above the container's radius. Equal radii inside each other, or an
+inner element rounder than its container, read as broken corners. Concentric corners are the
+check: the two curves should share a center.
+
+### Animation & layout
+
+- Use small CSS transitions or inline JavaScript with native browser APIs only. No Motion, GSAP,
+  React, Vue, npm packages, CDN scripts, or external modules. Keep motion purposeful and short;
+  avoid loops that don't communicate progress or state. Use the shared motion tokens instead of
+  arbitrary values: durations `--t-micro` / `--t-fast` / `--t-normal` / `--t-slow` (60–300ms),
+  easings `--ease-out` / `--ease-in` / `--ease-standard`.
+- Responsive, natural width `100%`; the host card fills the content column. No `position: fixed` —
+  everything stays in normal document flow. Avoid nested scrolling; let height follow content,
+  don't reserve empty vertical space. Keep text readable in both light and dark mode.
+
+### Spatial depth (optional)
+
+Use only when it helps; keep it subtle, no visible base backgrounds.
+
+```css
+.scene  { perspective: 1400px; transform-style: preserve-3d; }
+.layer-bg  { background: transparent; transform: translateZ(-100px) rotateX(3deg); }
+.layer-mid { background: transparent; transform: translateZ(-50px) rotateX(1.5deg); }
+.widget    { background: transparent; transform: rotateX(5deg) rotateY(-3deg); transform-style: preserve-3d; }
+```
+
+Optional parallax (low intensity); guide lines / isometric grids stay extremely low opacity and
+neutral gray — they support spatial reading, not decoration.
+
+### Streaming-friendly authoring order
+
+Output streams token by token; scripts run only after markup is complete. Structure code so useful
+content appears early:
+
+1. `<style>` (short) and static HTML/SVG that looks useful immediately.
+2. Local data inlined into the HTML.
+3. `<script>` last for interactivity.
+
+Prefer inline `style="..."` over `<style>` blocks so controls look correct mid-stream. Keep
+`<style>` short (~15 lines). No `<!-- comments -->` or `/* comments */` (waste tokens, hurt
+streaming). For SVG, put `<defs>` (markers) first, then visual elements immediately. Use solid flat
+fills — gradients, shadows, and blur flash during streaming DOM diffs.
+
+---
+
+## 4. Runtime token mapping
+
+The iframe has the Kimi design system pre-loaded. Map the style onto these runtime variables;
+prefer runtime variables over hardcoded values.
+
+- Text: `--kimi-color-text-primary`, `--kimi-color-text-secondary`, `--kimi-color-text-tertiary`,
+  `--kimi-color-text-quaternary`
+- Surfaces: `--kimi-color-surface`, `--kimi-color-surface-muted`, `--kimi-color-surface-raised`,
+  `--kimi-color-surface-strong`
+- Structure: `--kimi-color-border`
+- Status: `--kimi-color-danger`, `--kimi-color-positive`, `--kimi-color-warning`
+- Accent (data visualization and semantic accents only, never generic interaction):
+  `--kimi-color-accent`
+- Chart series: `--kimi-chart-1` … `--kimi-chart-5` (blue, red, green, purple, neutral)
+- Motion: `--t-micro`, `--t-fast`, `--t-normal`, `--t-slow`, `--ease-out`, `--ease-in`,
+  `--ease-standard`
+- Fonts: `--kimi-font-sans`, `--kimi-font-mono`
+
+Raw client tokens (`--seo-chat-*`) and compatibility aliases (`--color-text-primary`,
+`--color-background-secondary`, `--color-border-tertiary`) are also available when they fit better.
+Do not use `prefers-color-scheme` or maintain a separate light/dark token table — the client syncs
+the active theme into the iframe. 
+
+---
+
+## 5. Application checklist
+
+1. Preserve the existing background.
+2. Convert main UI color decisions to black/white first; interaction emphasis uses
+   `--kimi-color-text-primary`, never accent blue.
+3. Use gray for hierarchy and structure.
+4. Add accent tokens only for required multi-state or multi-category distinctions (status,
+   priority, chart series, tags) — tinted 10–25% for backgrounds, following the chart color rules
+   for data marks.
+5. Replace presentation typography with `var(--kimi-font-sans)` / `var(--kimi-font-mono)`.
+6. Tighten large decorative spacing into app-like density; every gap and padding snaps to the
+   4 / 8 / 12 / 16 / 20 / 24 / 32 scale, nested radii are outer-large-inner-small.
+7. Verify no accent color has become a base fill or dominant theme color.
+
+Read this when a widget uses icons — buttons with icons, toolbars, status markers, empty states,
+or any icon-bearing element. The skill ships 105 Kimi icons as inline-ready SVG — a curated
+widget subset of the full Kimi library (brand logos, rich-text formatting, and host-app-specific
+icons are intentionally excluded).
+
+## Where icons live
+
+- `assets/icons/*.svg` — the icon source files (24×24 viewBox, `fill="currentColor"`)
+- `references/icons/manifest.json` — machine-readable index: `name`, `file`, `category`,
+  `aliases` (English + Chinese), `use_for`, `avoid_for`, `default_size`
+- `references/icons/categories/*.json` — the same index split by domain: `general`, `arrows`,
+  `chat`, `input`, `navigation`, `editor`, `media`, `file`, `status`, `image`, `data`, `social`,
+  `system`
+
+## How to use an icon in a widget
+
+The widget runs in a sandboxed iframe with no imports, no modules, and no external assets —
+**inlining the SVG is the only correct way**. Copy the SVG content from `assets/icons/` directly
+into the widget markup. Keep `fill="currentColor"` so the icon follows the surrounding text color
+and both themes for free.
+
+```html
+<button aria-label="Search" style="color: var(--kimi-color-text-secondary)">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="..." fill="currentColor"/>
+  </svg>
+</button>
+```
+
+Set the rendered size via the `width`/`height` attributes (or CSS); never edit the `viewBox` and
+never restyle the path data.
+
+## Selection flow
+
+1. Identify the UI intent in English or Chinese ("search", "delete", "上传").
+2. Search `references/icons/manifest.json` by `aliases`, `category`, and `use_for`
+   (grep is enough; category files are smaller if you already know the domain).
+3. Check `avoid_for` to eliminate wrong matches — do not use `UploadIcon` for "download" or
+   `ShareIcon` for "export to file".
+4. Prefer the non-suffixed name. Suffixes mean variants: `_b` alternative style,
+   `_c` directional variant, `_r` rotated/reversed. Use them only when context demands.
+5. Read the matched file from `assets/icons/` and inline it.
+
+If no icon matches the semantic need, build a custom one following the construction rules below —
+do not substitute a vaguely-related icon, and never draw from memory of Lucide / Material /
+FontAwesome shapes.
+
+## Style & construction (also for custom icons)
+
+- **Type**: outlined linear icons, 1.8px stroke weight rendered as filled paths
+- **Grid**: 24×24 viewBox
+- **Color**: `currentColor` only — no hard-coded hex, no gradients, no shadows, no fills beyond
+  the stroke shape
+- **Construction**: consistent caps and joins; match the optical density of the shipped icons
+- Custom icons must be visually indistinguishable in weight and style from the library ones;
+  reference a shipped icon of similar complexity as the construction guide
+
+## Size
+
+Icon size follows the host element, not arbitrary choice:
+
+| Context | Icon size |
+|---|---|
+| Inline with 16px body text | 16px |
+| Default buttons, chips, tabs (~32px controls) | 18px |
+| Toolbar buttons, primary actions | 20px |
+| Standalone icon buttons | 20–24px |
+| Badge dots / micro indicators only | 12px |
+
+Icon containers are square (`width == height`) for optical alignment. Do not scale outside this
+table.
+
+**24px is the hard ceiling.** If a spot seems to call for a larger icon — an empty-state
+illustration, a hero mark, a big decorative glyph in a stat card — that is not an icon use case:
+drop the icon entirely and solve it with typography, a number, or plain text hierarchy instead.
+Icons scaled past 24px turn into decoration, and their 1.8px-stroke construction visibly degrades.
+Never work around the ceiling by drawing a "bigger custom icon".
+
+## Color
+
+- Default: `currentColor`, inheriting the text color of the context
+  (`--kimi-color-text-primary` for high-emphasis, `--kimi-color-text-secondary/tertiary` for
+  supporting icons)
+- Semantic overrides only: destructive `--kimi-color-danger`, success `--kimi-color-positive`,
+  warning `--kimi-color-warning`, disabled `--kimi-color-text-quaternary`
+- Icons are UI chrome under the black/white-first rule — never accent blue for a generic icon
+
+## Accessibility
+
+- Icon-only buttons need an accessible name: `aria-label` or visually hidden text.
+- Decorative icons get `aria-hidden="true"`.
+- Loading spinners expose `aria-busy="true"` on the parent control.
+
+## Don't
+
+- Do not use emoji as UI icons.
+- Do not render any icon larger than 24px. If the design wants a bigger one, remove the icon and
+  use text or layout instead.
+- Do not fetch, link, or import icons from anywhere — inline only.
+- Do not use external icon libraries' shapes when a Kimi icon exists for the intent.
+- Do not guess meaning from the filename alone — check the manifest's `use_for`/`avoid_for`.
+- Do not use brand logos or wordmarks as UI icons in widgets.
+- Do not put more than one leading + one trailing icon in a single button
+DataIcon ['data', '数据'] ['data related action']
+DownIcon ['down', '向下', '下降', '下载'] ['arrows related action']
+DownloadIcon ['download', '下载', '导出'] ['file download', 'export to local device']
+GroupIcon ['group', '群组', '分组'] ['social related action']
+InfoIcon ['info', '信息', '提示'] ['information', 'help tip', 'details']
+LinechartIcon ['linechart', '折线图'] ['data related action']
+UpIcon ['up'] ['arrows related action']
+UpDownIcon ['updown'] ['arrows related action']
+UpdateIcon ['update', '更新', '升级'] ['system related action']
+UploadIcon ['upload', '上传'] ['file upload', 'asset import', 'upload from local device']
+UpperRightIcon ['upperright', '右上箭头'] ['arrows related action']
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+rypto Asset Yield Matrix
+Create a landscape financial infographic at about 1.4:1. Title it “cryptocurrentcy Underlying Asset Cash Yield Matrix” for crypto investors and researchers. The main visual is a colorful quarterly asset matrix sorted by descending value yield.
+
+Use a full-width deep navy header with the title, annualized value-yield formula, statistical window “2024.07—2025.06,” and comparison period. Build an eight-column matrix: four quarters for the prior 12-month window and four quarters for the current window, separated by a light-blue dashed rule. Label every quarter.
+
+Each quarter stacks equal-width category blocks by yield. Pair every percentage with its asset category and a small icon. Categories include bitcoin, Etherium, solana, polygon, ada, xrp; keep one consistent saturated hue per category. Use asterisks for newly listed or annualized categories with popup exspanding information
+
+Add paired “12-Month Aggregate” columns comparing prior versus current 12 months. Show direction of change in pp, and include a compact legend of common yield ranges for each asset class. Add a short timeline: first value,  [add meaningful data metrics]
+
+on hover popup expand the Included small notes explaining calculation basis, sorting rules, and asterisk meanings. Add a vertical “PERFORMANCE” label with a downward arrow. Use white background, deep navy title bar, light blue-gray divider lines, and high-contrast white or near-black text.
+
+All text is in English.
+Copy
+Share
+Design Complex Widget with Interactive Legend Timeline and Hover Popups
+Fetch URLs
+1 pages
+Think
+continue
+Copy
+Share
+**Widget Skill: Performance Dashboard** - **Legend**: Common yield ranges displayed with color-coded bands. - **Timeline**: Short, interactive timeline showing key metrics (e.g., yield, revenue, volume) with tooltips for exact values. - **Hover Pop‑ups**: Expandable notes on calculation basis, sorting rules, and asterisk meanings. - **Label**: Vertical “PERFORMANCE” label with a downward arrow indicating trend direction. - **Design**: White background, deep navy title bar, light blue‑gray divider lines, high‑contrast text. - **Language**: All text in English.
+
+Since this is a financial infographic with specific color requirements (deep navy header, saturated hues per category), the user has given explicit styling instructions, so I can follow them rather than strictly adhering to the black/white-first rule. The deep navy and category colors are part of the data visualization requirements.
+Let me create realistic crypto yield data for the matrix. I'll use approximate staking/DeFi yield data for these assets.
+For the icons, I'll use simple inline SVGs since there are no crypto-specific icons in the library. I'll create small circle/dot icons for each category.
+Let me design the layout carefully:
+Aspect ratio: ~1.4:1 (landscape) - so if width is 100%, height should be about 71%
+Header: deep navy (#0a1628 or similar), full width
+Matrix: 8 quarter columns + 2 aggregate columns = 10 columns total
+Each quarter column shows stacked blocks by yield
+Let me create the widget now. I'll use inline SVG for the crypto category icons (simple geometric shapes).
+Data I'll use (approximate annualized staking yields):
+Bitcoin: ~0.5-1.5% (via lending/staking)
+Ethereum: ~3-4% (staking)
+Solana: ~6-7% (staking)
+Polygon: ~4-5% (staking)
+ADA: ~3-4% (staking)
+XRP: ~0.5-1% (limited yield
+
+import, link, or fetch external icon
+  assets. Do not use emoji as UI icons; if emoji are decorative, set `font-size` explicitly.
+  **24px is the maximum icon size** — if a spot seems to need a larger icon (empty state, hero
+  mark, big decorative glyph), don't use an icon there at all; solve it with typography or layout.
+
+### Spacing & radius
+
+All spacing snaps to the token scale: **4 / 8 / 12 / 16 / 20 / 24 / 32px**. No values off the
+scale — `7px`, `13px`, `17px` read as accidents, not decisions. When a gap needs to sit between
+two steps, pick the smaller one; widgets are compact surfaces.
+
+All radii come from the radius scale: **4 / 6 / 8 / 10 / 12 / 16px / full**. Usage mapping: 6px
+chips, 8px icon buttons, 10px list cards/inputs, 12px elevated panels, full for pills/avatars.
+
+**Nested radii: outer is always larger than inner.** When a rounded element sits inside another
+rounded container, the inner radius must be smaller — compute it as
+`inner = outer − padding` (e.g. a 12px panel with 8px padding holds 4px-radius children), and
+never let it go below 4px or above the container's radius. Equal radii inside each other, or an
+inner element rounder than its container, read as broken corners. Concentric corners are the
+check: the two curves should share a center.
+
+### Animation & layout
+
+- Use small CSS transitions or inline JavaScript with native browser APIs only. No Motion, GSAP,
+  React, Vue, npm packages, CDN scripts, or external modules. Keep motion purposeful and short;
+  avoid loops that don't communicate progress or state. Use the shared motion tokens instead of
+  arbitrary values: durations `--t-micro` / `--t-fast` / `--t-normal` / `--t-slow` (60–300ms),
+  easings `--ease-out` / `--ease-in` / `--ease-standard`.
+- Responsive, natural width `100%`; the host card fills the content column. No `position: fixed` —
+  everything stays in normal document flow. Avoid nested scrolling; let height follow content,
+  don't reserve empty vertical space. Keep text readable in both light and dark mode.
+
+### Spatial depth (optional)
+
+Use only when it helps; keep it subtle, no visible base backgrounds.
+
+```css
+.scene  { perspective: 1400px; transform-style: preserve-3d; }
+.layer-bg  { background: transparent; transform: translateZ(-100px) rotateX(3deg); }
+.layer-mid { background: transparent; transform: translateZ(-50px) rotateX(1.5deg); }
+.widget    { background: transparent; transform: rotateX(5deg) rotateY(-3deg); transform-style: preserve-3d; }
+```
+
+Optional parallax (low intensity); guide lines / isometric grids stay extremely low opacity and
+neutral gray — they support spatial reading, not decoration.
+
+### Streaming-friendly authoring order
+
+Output streams token by token; scripts run only after markup is complete. Structure code so useful
+content appears early:
+
+1. `<style>` (short) and static HTML/SVG that looks useful immediately.
+2. Local data inlined into the HTML.
+3. `<script>` last for interactivity.
+
+Prefer inline `style="..."` over `<style>` blocks so controls look correct mid-stream. Keep
+`<style>` short (~15 lines). No `<!-- comments -->` or `/* comments */` (waste tokens, hurt
+streaming). For SVG, put `<defs>` (markers) first, then visual elements immediately. Use solid flat
+fills — gradients, shadows, and blur flash during streaming DOM diffs.
+
+---
+
+## 4. Runtime token mapping
+
+The iframe has the Kimi design system pre-loaded. Map the style onto these runtime variables;
+prefer runtime variables over hardcoded values.
+
+- Text: `--kimi-color-text-primary`, `--kimi-color-text-secondary`, `--kimi-color-text-tertiary`,
+  `--kimi-color-text-quaternary`
+- Surfaces: `--kimi-color-surface`, `--kimi-color-surface-muted`, `--kimi-color-surface-raised`,
+  `--kimi-color-surface-strong`
+- Structure: `--kimi-color-border`
+- Status: `--kimi-color-danger`, `--kimi-color-positive`, `--kimi-color-warning`
+- Accent (data visualization and semantic accents only, never generic interaction):
+  `--kimi-color-accent`
+- Chart series: `--kimi-chart-1` … `--kimi-chart-5` (blue, red, green, purple, neutral)
+- Motion: `--t-micro`, `--t-fast`, `--t-normal`, `--t-slow`, `--ease-out`, `--ease-in`,
+  `--ease-standard`
+- Fonts: `--kimi-font-sans`, `--kimi-font-mono`
+
+Raw client tokens (`--seo-chat-*`) and compatibility aliases (`--color-text-primary`,
+`--color-background-secondary`, `--color-border-tertiary`) are also available when they fit better.
+Do not use `prefers-color-scheme` or maintain a separate light/dark token table — the client syncs
+the active theme into the iframe. 
+
+---
+
+## 5. Application checklist
+
+1. Preserve the existing background.
+2. Convert main UI color decisions to black/white first; interaction emphasis uses
+   `--kimi-color-text-primary`, never accent blue.
+3. Use gray for hierarchy and structure.
+4. Add accent tokens only for required multi-state or multi-category distinctions (status,
+   priority, chart series, tags) — tinted 10–25% for backgrounds, following the chart color rules
+   for data marks.
+5. Replace presentation typography with `var(--kimi-font-sans)` / `var(--kimi-font-mono)`.
+6. Tighten large decorative spacing into app-like density; every gap and padding snaps to the
+   4 / 8 / 12 / 16 / 20 / 24 / 32 scale, nested radii are outer-large-inner-small.
+7. Verify no accent color has become a base fill or dominant theme color.
+
+
+
+
+
+
+ Here's your **cryptocurrentcy Underlying Asset Cash Yield Matrix** — a landscape infographic showing eight quarters of stacked yield data across six major crypto assets, with prior vs. current 12-month aggregates, directional change in basis points, a category legend, key market-cap metrics, and hoverable notes on methodology.
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <!-- CSP：frame-ancestors / X-Frame-Options 由 CDN 响应头补充，meta 不支持。 -->
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'none'; script-src 'unsafe-inline' https://esm.sh; style-src 'unsafe-inline'; font-src https://assets.kimi.com data:; img-src data: blob: https:; media-src data: blob: https:; connect-src https://esm.sh; form-action 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; worker-src 'none';"
+    />
+    <title>Kimi Widget Sandbox</title>
+    <style>
+      :root{color-scheme:light dark;--color-bg: #ffffff;--color-border: #e5e5e5;--color-text-secondary: #737373;--font-sans: Inter, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;--font-mono: "SF Mono", Monaco, "Fira Code", "Courier New", monospace;--seo-chat-Colors-KMBlue: #1783ff;--seo-chat-Colors-KMBlue-hover: rgba(22, 127, 247, 1);--seo-chat-Colors-Red: #ff3849;--seo-chat-Colors-Green: #16c456;--seo-chat-Colors-Yellow: #ffd230;--seo-chat-Colors-Orange: #ff9500;--seo-chat-Colors-Purple: #985ffb;--seo-chat-Chart-Green: #7eb233;--seo-chat-Chart-Purple: #a44185;--seo-chat-Chart-Neutral: #b2b2b2;--seo-chat-Bg-Primary: #ffffff;--seo-chat-Bg-Primary-hover: rgba(247, 247, 247, 1);--seo-chat-Bg-Secondary: #f5f5f5;--seo-chat-BgGp-Secondary: #ffffff;--seo-chat-BgGp-Secondary-hover: rgba(247, 247, 247, 1);--seo-chat-Labels-Primary: rgba(0, 0, 0, .9);--seo-chat-Labels-Primary-hover: rgba(37, 37, 37, 1);--seo-chat-Labels-Primary-active: rgba(0, 0, 0, .905);--seo-chat-Labels-Secondary: rgba(0, 0, 0, .6);--seo-chat-Labels-Tertiary: rgba(0, 0, 0, .45);--seo-chat-Labels-Quaternary: rgba(0, 0, 0, .27);--seo-chat-Fills-F1: rgba(0, 0, 0, .03);--seo-chat-Fills-F1-hover: rgba(0, 0, 0, .06);--seo-chat-Fills-F1-active: rgba(0, 0, 0, .079);--seo-chat-Fills-F2: rgba(0, 0, 0, .05);--seo-chat-Fills-F2-hover: rgba(0, 0, 0, .079);--seo-chat-Fills-F2-active: rgba(0, 0, 0, .098);--seo-chat-Fills-F3: rgba(0, 0, 0, .15);--seo-chat-Fills-F4: rgba(0, 0, 0, .25);--seo-chat-MaskBg-Icon: rgba(0, 0, 0, .3);--seo-chat-MaskBg-Icon-hover: rgba(0, 0, 0, .5);--seo-chat-Separators-S1: rgba(0, 0, 0, .13);--seo-chat-Separators-S1-hover: rgba(0, 0, 0, .156);--seo-chat-Separators-S1-active: rgba(0, 0, 0, .173);--seo-chat-Others-BubbleGray_PC: #f5f5f5;--seo-chat-Others-LightRedBg: rgba(255, 77, 77, .1);--seo-chat-Others-LightGreenBg: rgba(22, 196, 86, .1);--seo-chat-Others-LightOrangeBg: rgba(255, 149, 0, .1);--seo-chat-Others-LightYellowBg: rgba(255, 200, 0, .2);--seo-chat-Others-KMBlue10: rgba(23, 131, 255, .1);--seo-chat-Always-White: #ffffff;--seo-chat-ui-B1-font-size: 15px;--seo-chat-ui-B1-line-height: 22px;--seo-chat-markdown-H1-font-size: 20px;--seo-chat-markdown-H1-line-height: 32px;--seo-chat-markdown-H2-font-size: 18px;--seo-chat-markdown-H2-line-height: 28px;--seo-chat-markdown-B1-font-size: 16px;--seo-chat-markdown-B1-line-height: 26px;--seo-chat-markdown-B3-font-size: 14px;--seo-chat-markdown-B3-line-height: 22px;--seo-chat-markdown-code-font-size: 14px;--seo-chat-markdown-code-line-height: 22px;--Colors-KMBlue: var(--seo-chat-Colors-KMBlue);--Colors-KMBlue-hover: var(--seo-chat-Colors-KMBlue-hover);--Colors-KMBlue-active: var(--seo-chat-Colors-KMBlue-hover);--Bg-Primary: var(--seo-chat-Bg-Primary);--Bg-Secondary: var(--seo-chat-Bg-Secondary);--BgGp-Secondary: var(--seo-chat-BgGp-Secondary);--Labels-Primary: var(--seo-chat-Labels-Primary);--Labels-Secondary: var(--seo-chat-Labels-Secondary);--Labels-Tertiary: var(--seo-chat-Labels-Tertiary);--Labels-Quaternary: var(--seo-chat-Labels-Quaternary);--Fills-F1: var(--seo-chat-Fills-F1);--Fills-F2: var(--seo-chat-Fills-F2);--Fills-F3: var(--seo-chat-Fills-F3);--Separators-S1: var(--seo-chat-Separators-S1);--markdown-H1_Content-font-size: var(--seo-chat-markdown-H1-font-size);--markdown-H1_Content-line-height: var(--seo-chat-markdown-H1-line-height);--markdown-H2_Content-font-size: var(--seo-chat-markdown-H2-font-size);--markdown-H2_Content-line-height: var(--seo-chat-markdown-H2-line-height);--markdown-B1_Content-font-size: var(--seo-chat-markdown-B1-font-size);--markdown-B1_Content-line-height: var(--seo-chat-markdown-B1-line-height);--markdown-B1_Content_Emphasized-font-size: var(--seo-chat-markdown-B1-font-size);--markdown-B1_Content_Emphasized-line-height: var(--seo-chat-markdown-B1-line-height);--markdown-B3_Content-font-size: var(--seo-chat-markdown-B3-font-size);--markdown-B3_Content-line-height: var(--seo-chat-markdown-B3-line-height);--markdown-Codeblocks-font-size: var(--seo-chat-markdown-code-font-size);--markdown-Codeblocks-line-height: var(--seo-chat-markdown-code-line-height);--t-micro: 60ms;--t-fast: .12s;--t-normal: .2s;--t-slow: .3s;--ease-out: cubic-bezier(0, 0, .2, 1);--ease-in: cubic-bezier(.4, 0, 1, 1);--ease-standard: cubic-bezier(.4, 0, .2, 1);--ease-motion-out: cubic-bezier(.23, 1, .32, 1);--ease-motion-standard: cubic-bezier(.4, 0, .2, 1);--ease-motion-panel: cubic-bezier(.32, .72, 0, 1);--motion-popover-duration: .14s;--motion-popover-offset: 4px;--motion-dialog-duration: .18s;--motion-dialog-exit-duration: 135ms;--motion-view-duration: .18s;--motion-panel-duration: .24s;--motion-list-duration: .18s;--app-scrollbar-size: 8px;--app-scrollbar-thumb: var(--seo-chat-Separators-S1);--app-scrollbar-thumb-hover: var(--seo-chat-Labels-Tertiary);--kimi-color-text-primary: var(--seo-chat-Labels-Primary);--kimi-color-text-secondary: var(--seo-chat-Labels-Secondary);--kimi-color-text-tertiary: var(--seo-chat-Labels-Tertiary);--kimi-color-text-quaternary: var(--seo-chat-Labels-Quaternary);--kimi-color-surface: var(--seo-chat-Bg-Primary);--kimi-color-surface-muted: var(--seo-chat-Fills-F1);--kimi-color-surface-raised: var(--seo-chat-BgGp-Secondary);--kimi-color-surface-strong: var(--seo-chat-Fills-F2);--kimi-color-border: var(--seo-chat-Separators-S1);--kimi-color-accent: var(--seo-chat-Colors-KMBlue);--kimi-color-danger: var(--seo-chat-Colors-Red);--kimi-color-positive: var(--seo-chat-Colors-Green);--kimi-color-warning: var(--seo-chat-Colors-Orange);--kimi-chart-1: var(--seo-chat-Colors-KMBlue);--kimi-chart-2: var(--seo-chat-Colors-Red);--kimi-chart-3: var(--seo-chat-Chart-Green);--kimi-chart-4: var(--seo-chat-Chart-Purple);--kimi-chart-5: var(--seo-chat-Chart-Neutral);--kimi-font-sans: var(--font-sans);--kimi-font-mono: var(--font-mono);--color-text-primary: var(--seo-chat-Labels-Primary);--color-text-secondary: var(--seo-chat-Labels-Secondary);--color-background-primary: var(--seo-chat-Bg-Primary);--color-background-secondary: var(--seo-chat-Fills-F1);--color-border-tertiary: var(--seo-chat-Separators-S1);--color-accent: var(--seo-chat-Colors-KMBlue);--color-danger: var(--seo-chat-Colors-Red)}:root.dark{color-scheme:dark;--color-bg: #121212;--color-border: #404040;--color-text-secondary: #a3a3a3;--seo-chat-Colors-KMBlue: #1a88ff;--seo-chat-Colors-KMBlue-hover: rgba(37, 142, 255, 1);--seo-chat-Colors-Red: #ff4756;--seo-chat-Colors-Green: #32ff7d;--seo-chat-Colors-Yellow: #ffd230;--seo-chat-Colors-Orange: #ff9f0a;--seo-chat-Colors-Purple: #a16bff;--seo-chat-Chart-Green: #dcdcaa;--seo-chat-Chart-Purple: #ce9178;--seo-chat-Chart-Neutral: #424242;--seo-chat-Bg-Primary: #121212;--seo-chat-Bg-Primary-hover: rgba(30, 30, 30, 1);--seo-chat-Bg-Secondary: #1f1f1f;--seo-chat-BgGp-Secondary: #1f1f1f;--seo-chat-BgGp-Secondary-hover: rgba(42, 42, 42, 1);--seo-chat-Labels-Primary: rgba(255, 255, 255, .84);--seo-chat-Labels-Primary-hover: rgba(255, 255, 255, .848);--seo-chat-Labels-Primary-active: rgba(255, 255, 255, .856);--seo-chat-Labels-Secondary: rgba(255, 255, 255, .56);--seo-chat-Labels-Tertiary: rgba(255, 255, 255, .42);--seo-chat-Labels-Quaternary: rgba(255, 255, 255, .28);--seo-chat-Fills-F1: rgba(255, 255, 255, .05);--seo-chat-Fills-F1-hover: rgba(255, 255, 255, .08);--seo-chat-Fills-F1-active: rgba(255, 255, 255, .145);--seo-chat-Fills-F2: rgba(255, 255, 255, .1);--seo-chat-Fills-F2-hover: rgba(255, 255, 255, .145);--seo-chat-Fills-F2-active: rgba(255, 255, 255, .19);--seo-chat-Fills-F3: rgba(255, 255, 255, .18);--seo-chat-Fills-F4: rgba(255, 255, 255, .25);--seo-chat-MaskBg-Icon: rgba(0, 0, 0, .45);--seo-chat-MaskBg-Icon-hover: rgba(0, 0, 0, .65);--seo-chat-Separators-S1: rgba(255, 255, 255, .12);--seo-chat-Separators-S1-hover: rgba(255, 255, 255, .164);--seo-chat-Separators-S1-active: rgba(255, 255, 255, .208);--seo-chat-Others-BubbleGray_PC: #292929;--seo-chat-Others-LightRedBg: rgba(255, 82, 82, .1);--seo-chat-Others-LightGreenBg: rgba(22, 196, 86, .1);--seo-chat-Others-LightOrangeBg: rgba(255, 159, 10, .1);--seo-chat-Others-LightYellowBg: rgba(255, 210, 48, .2);--seo-chat-Others-KMBlue10: rgba(26, 136, 255, .1)}*{box-sizing:border-box;margin:0;padding:0}html,body{width:100%;background:transparent}body{margin:0;color:var(--kimi-color-text-primary, var(--seo-chat-Labels-Primary));font-family:var( --kimi-font-sans, var(--font-sans, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif) );font-size:16px;line-height:1.5;font-synthesis:none;text-rendering:optimizeLegibility;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}input,select,textarea,button{font:inherit}button{cursor:pointer}button:disabled{cursor:not-allowed}a{color:var(--kimi-color-accent, var(--color-accent, currentColor))}html,body{scrollbar-width:none}html::-webkit-scrollbar,body::-webkit-scrollbar{width:0;height:0}::-webkit-scrollbar{width:var(--app-scrollbar-size, 8px);height:var(--app-scrollbar-size, 8px)}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{border-radius:4px;background:var(--app-scrollbar-thumb, var(--seo-chat-Separators-S1))}::-webkit-scrollbar-thumb:hover{background:var(--app-scrollbar-thumb-hover, var(--seo-chat-Labels-Tertiary))}#widget-root{width:100%;position:relative;overflow:hidden}#widget-root>svg{display:block;margin-inline:auto;max-width:100%;height:auto;overflow:visible}#widget-root.streaming :where(svg,circle,rect,path,polygon,polyline,line,ellipse,g,text):not([transform]):not([opacity]){transition:fill .4s ease-out,stroke .4s ease-out,opacity .4s ease-out;animation:svgFadeInScale .5s ease-out;transform-origin:center}@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}}
+    </style>
+  </head>
+  <body>
+    <div id="widget-root"></div>
+    <script>
+      "use strict";(()=>{var j=Object.create;var x=Object.defineProperty;var Q=Object.getOwnPropertyDescriptor;var Z=Object.getOwnPropertyNames;var K=Object.getPrototypeOf,$=Object.prototype.hasOwnProperty;var V=(t,e,r)=>e in t?x(t,e,{enumerable:!0,configurable:!0,writable:!0,value:r}):t[e]=r;var R=(t=>typeof require<"u"?require:typeof Proxy<"u"?new Proxy(t,{get:(e,r)=>(typeof require<"u"?require:e)[r]}):t)(function(t){if(typeof require<"u")return require.apply(this,arguments);throw Error('Dynamic require of "'+t+'" is not supported')});var Y=(t,e,r,n)=>{if(e&&typeof e=="object"||typeof e=="function")for(let o of Z(e))!$.call(t,o)&&o!==r&&x(t,o,{get:()=>e[o],enumerable:!(n=Q(e,o))||n.enumerable});return t};var O=(t,e,r)=>(r=t!=null?j(K(t)):{},Y(e||!t||!t.__esModule?x(r,"default",{value:t,enumerable:!0}):r,t));var p=(t,e,r)=>V(t,typeof e!="symbol"?e+"":e,r);var P={SANDBOX_INIT:"request/sandbox-init"},c={INITIALIZED:"ui/notifications/initialized",SIZE_CHANGED:"ui/notifications/size-changed",SCRIPT_LOADING_STARTED:"notifications/script-loading-started",SCRIPT_LOADING_FINISHED:"notifications/script-loading-finished",MESSAGE:"ui/message",OPEN_LINK:"ui/open-link",ERROR:"ui/notifications/error",LOG:"notifications/message"},u={TOOL_INPUT_PARTIAL:"notifications/tool-input-partial",TOOL_INPUT:"notifications/tool-input",TOOL_RESULT:"notifications/tool-result",HOST_CONTEXT_CHANGE:"notifications/host-context-change"};var tt=["https://www.kimi.com","https://kimi.com","https://kimi.moonshot.cn","https://*.kimi.team"];function _(t){try{let e=new URL(t),r=e.hostname,n=e.protocol.replace(":","");return r==="localhost"||r==="127.0.0.1"?!0:tt.some(o=>{let[s,i]=o.split("://");if(n!==s)return!1;if(i?.startsWith("*.")){let d=i.slice(2);return r.endsWith("."+d)}return r===i})}catch{return!1}}var et=new Set(Object.values(u)),b=t=>!!t&&typeof t=="object",rt=t=>b(t)?typeof t.id=="number"&&!("method"in t):!1,nt=t=>b(t)?typeof t.method=="string"&&et.has(t.method):!1,w=class extends Error{constructor(r,n,o){super(n);p(this,"code");p(this,"data");this.name="RpcError",this.code=r,this.data=o}},l=class l{constructor(){p(this,"hostOrigin",l.WILD_CARD_ORIGIN);p(this,"nextId",0);p(this,"pending",new Map);p(this,"notificationHandlers",new Map);p(this,"handleMessage",e=>{let r=e.data;if(!(e.source!==window.parent||!_(e.origin))){if(l.setHostOrigin(e.origin),rt(r)){let n=this.pending.get(r.id);if(!n)return;this.pending.delete(r.id),clearTimeout(n.timer),r.error?n.reject(new w(r.error.code,r.error.message,r.error.data)):n.resolve(r.result);return}if(nt(r))try{this.notificationHandlers.get(r.method)?.(r.params)}catch(n){console.warn("[transport] notification handler failed:",r.method,n);let s={type:"notification_error",fatal:!1,message:n instanceof Error?n.message:String(n??"")};this.sendNotification(c.ERROR,s)}}});p(this,"sendRequest",(e,r,n)=>new Promise((o,s)=>{let i=this.nextId++,d=setTimeout(()=>{this.pending.delete(i),s(new w(-32e3,`request timed out: ${e}`))},n);this.pending.set(i,{resolve:o,reject:s,timer:d});let g={id:i,method:e,params:r};window.parent.postMessage(g,this.hostOrigin)}));p(this,"sendNotification",(e,r)=>{let n={method:e,params:r};window.parent.postMessage(n,this.hostOrigin)});p(this,"onNotification",(e,r)=>{this.notificationHandlers.set(e,r)});window.addEventListener("message",this.handleMessage)}static getInstance(){return l.instance??(l.instance=new l),l.instance}static setHostOrigin(e){let r=l.getInstance();r.hostOrigin===l.WILD_CARD_ORIGIN&&(r.hostOrigin=e)}};p(l,"WILD_CARD_ORIGIN","*"),p(l,"instance",null);var E=l;var a=E.getInstance();var ot=t=>{a.sendNotification(c.MESSAGE,{prompt:t})};window.sendPrompt=ot;var it=t=>t instanceof Error?t.message:typeof t=="string"?t:t==null?void 0:String(t),f=(t,e,r=!1)=>{let n=it(e)??"",o={type:t,fatal:r,message:n};a.sendNotification(c.ERROR,o)},k=()=>{window.addEventListener("error",t=>{f("runtime_error",t.error??t.message)}),window.addEventListener("unhandledrejection",t=>{f("runtime_error",t.reason)})};var M=async()=>{try{let t=await a.sendRequest(P.SANDBOX_INIT,{},1e4);return a.sendNotification(c.INITIALIZED,{}),t.hostContext}catch{f("init_timeout","",!0)}};var at=t=>{let e=document.documentElement;for(let[r,n]of Object.entries(t??{}))e.style.setProperty(r,n)},ct=t=>{let e=document.documentElement;e.classList.toggle("dark",t==="dark"),e.style.colorScheme=t},C=t=>{t&&(at(t.styles.variables),ct(t.styles.colorScheme))},F=()=>{a.onNotification(u.HOST_CONTEXT_CHANGE,t=>{C(t?.hostContext)})};var pt=t=>{a.sendNotification(c.OPEN_LINK,{url:t})},G=t=>{t.addEventListener("click",e=>{let n=e.target?.closest?.("a[href]");if(!n)return;e.preventDefault();let o=n.getAttribute("href");if(!o)return;let s;try{s=new URL(o)}catch{return}s.protocol!=="http:"&&s.protocol!=="https:"||pt(s.href)})};async function lt(){let[t,e,r,n]=await Promise.all([import("https://esm.sh/htmlparser2@9.1.0"),import("https://esm.sh/domhandler@5.0.3"),import("https://esm.sh/dom-serializer@2.0.0"),import("https://esm.sh/morphdom@2.7.4")]),o="default"in n?n.default:n;return{Parser:t.Parser,DomHandler:e.DomHandler,render:r.default,morphdom:o}}function H(t={}){let{stripScripts:e=!1,widgetName:r="Widget",shouldRender:n=()=>!0,onFirstRender:o,loadDeps:s=lt}=t,i=!1,d=()=>{i||(i=!0,o?.())},g=null,y=null,I=null,S="";async function q(){if(g)return g;try{return g=await s(),g}catch(m){return console.warn(`[${r}] streaming deps load failed, falling back to innerHTML:`,m),null}}function J(m){I=new m.DomHandler,y=new m.Parser(I,{decodeEntities:!1,lowerCaseAttributeNames:!1,lowerCaseTags:!1,recognizeSelfClosing:!0}),S=""}async function W(m,h){if(!h)return;let T=await q();if(!T){m.innerHTML=h,d();return}(h.length<S.length||!y||!I)&&J(T);let L=y,A=I;if(!L||!A)return;let v=h.substring(S.length);v&&(L.write(v),S=h);let N=T.render(A.root.children,{encodeEntities:!1});if(!N||(e&&(N=N.replace(/<script[\s\S]*?<\/script>/gi,"")),!n(N)))return;let D=m.cloneNode(!1);D.innerHTML=N,T.morphdom(m,D,{childrenOnly:!0}),d()}return{renderPartial:W}}var dt=t=>t.trimStart().startsWith("<svg"),B=t=>!!t&&/<(rect|circle|ellipse|line|polyline|polygon|path|text|image|use|g|foreignObject)[\s>]/i.test(t.replace(/<style[\s\S]*?<\/style>/gi,"").replace(/<defs[\s\S]*?<\/defs>/gi,"")),U=t=>!!t&&t.replace(/<style[\s\S]*?<\/style>/gi,"").replace(/<script[\s\S]*?<\/script>/gi,"").replace(/<!--[\s\S]*?-->/g,"").trim().length>0,mt=t=>t.includes("<script")&&(U(t)||B(t)),ut=H({widgetName:"kimi-widget-svg",stripScripts:!0,shouldRender:B}),ft=H({widgetName:"kimi-widget-html",stripScripts:!0,shouldRender:U}),gt=async t=>{let e=Array.from(t.querySelectorAll("script"));for(let r of e){let n=document.createElement("script");Array.from(r.attributes).forEach(i=>{n.setAttribute(i.name,i.value)}),n.textContent=r.textContent;let s=n.hasAttribute("src")?new Promise(i=>{n.onload=()=>{i()},n.onerror=()=>{f("script_load_error",n.getAttribute("src")??void 0),i()}}):Promise.resolve();r.parentNode?.replaceChild(n,r),await s}},ht=async(t,e)=>{e.classList.add("streaming");let r=dt(t)?ut.renderPartial(e,t):ft.renderPartial(e,t);if(mt(t)){let n=e.classList.contains("scripts-loading");e.classList.add("scripts-loading"),n||a.sendNotification(c.SCRIPT_LOADING_STARTED,{})}await r},Nt=async(t,e)=>{e.classList.remove("streaming");let r=e.classList.contains("scripts-loading");e.innerHTML=t;try{await gt(e)}finally{e.classList.remove("scripts-loading"),r&&a.sendNotification(c.SCRIPT_LOADING_FINISHED,{})}};function X(t){let e=Promise.resolve(),r=!1,n=o=>{e=e.then(o).catch(i=>{console.warn("[kimi-widget] render failed:",i),f("render_error",i)})};a.onNotification(u.TOOL_INPUT_PARTIAL,o=>{r||!o.code||n(()=>r?Promise.resolve():ht(o.code,t))}),a.onNotification(u.TOOL_INPUT,o=>{r=!0,o.code&&n(()=>Nt(o.code,t))})}var z=()=>{let t=-1,e=-1;new ResizeObserver(()=>{let{body:r,documentElement:n}=document,o=getComputedStyle(n),s=r.getBoundingClientRect(),i=Math.ceil(s.width),d=Math.ceil(s.height+(parseFloat(o.borderTop)||0)+(parseFloat(o.borderBottom)||0));i===t&&d===e||(t=i,e=d,a.sendNotification(c.SIZE_CHANGED,{width:i,height:d}))}).observe(document.body)};var It=async()=>{k();let t=document.getElementById("widget-root");if(!t)return;z(),X(t),G(t),F();let e=await M();C(e)};It();})();
+    </script>
+  </body>
+</html>
+ Your enhanced package is ready — the CSV now carries **59 columns** (17 original + 42 prediction/modeling features) across **59 assets**:
+
+**[crypto_yield_matrix.zip](sandbox:///mnt/agents/output/crypto_yield_matrix.zip)**
+
+### What's new in `yield_data.csv`
+
+| Feature Group | Columns | Use Case |
+|---|---|---|
+| **Market data** | category, mcap start/end, price start/end, price change % | Feature: size, growth trajectory |
+| **Liquidity & on-chain** | volatility, 24h volume, volume trend, active addresses, daily tx count, TVL | Feature: market depth, adoption, DeFi engagement |
+| **Supply & tokenomics** | circulating supply, inflation rate, FDV/mcap ratio | Feature: dilution risk, scarcity |
+| **Risk metrics** | max drawdown, Sharpe ratio (prior + current), beta vs BTC/ETH | Feature: risk-adjusted quality, systematic exposure |
+| **Correlation & technical** | correlation BTC/ETH, RSI, MA50/200 cross, 90d momentum | Feature: market regime, mean-reversion signals |
+| **Yield analytics** | yield volatility, yield trend slope, yield vs category avg | Feature: yield stability, relative value |
+| **Prediction targets** | forward Q3 '26 yield, yield direction (0/1), risk-adjusted yield, outperformance pp, investment score | **Labels for supervised learning** |
+
+### Prediction targets included
+
+- **`q3_26_forward_yield`** — regression target for next-quarter yield forecasting
+- **`yield_direction_next_q`** — binary classification target (1 = yield rises)
+- **`risk_adjusted_yield`** — regression target for Sharpe-like yield quality
+- **`outperformance_vs_market_pp`** — regression target for alpha generation
+- **`investment_score`** — composite 0–100 attractiveness score for ranking models
+
+### New file: `DATA_DICTIONARY.md`
+
+A full reference inside the ZIP explaining every column, data types, and suggested feature engineering for model training — including ideas like `yield_momentum = slope × volatility`, `mcap_to_tvl`, and `risk_score = beta × vol / sharpe`.
+
+Extract and open `index.html` to view the visual matrix, or load `yield_data.csv` directly into pandas/sklearn for modeling.
