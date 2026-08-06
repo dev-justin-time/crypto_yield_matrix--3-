@@ -432,7 +432,53 @@ client.destroy();
 
 For a browser/mobile app, replace the API-key configuration with a protected token endpoint. The proxy must authenticate your application user before requesting a Blocks consumer token; an unprotected proxy could allow anyone to consume your quota.
 
-## 15. Operational checklist
+## 15. Agent-to-agent (A2A) orchestration
+
+The repository now includes a native Blocks Provider project at `blocks_deploy/crypto_yield_a2a_orchestrator/`. It calls these private specialists in parallel through `TaskContext.task_client`:
+
+- `data_provenance_auditor`
+- `feature_engineering_expert`
+- `crypto_risk_analyst`
+- `defi_liquidity_analyst`
+- `tokenomics_sustainability_expert`
+
+The orchestrator uses the Python SDK's `SendMessageRequestPart`, omits `ownerId`, applies a 30-second specialist timeout, downloads non-inline artifacts, tolerates terminal/artifact event reordering, and merges partial failures into one JSON artifact.
+
+### Local A2A validation
+
+```bash
+cd blocks_deploy/crypto_yield_a2a_orchestrator
+.venv/Scripts/python test_handler.py
+```
+
+The native card passes `blocks check`. Test the deployed orchestrator with:
+
+```bash
+python trigger.py
+```
+
+### Private-agent permissions
+
+The orchestrator and specialists are private agents. A user invitation does not grant A2A access. Each specialist must invite the orchestrator machine identity:
+
+```bash
+blocks invite send data_provenance_auditor --email crypto_yield_a2a_orchestrator@blocks.ai
+blocks invite send feature_engineering_expert --email crypto_yield_a2a_orchestrator@blocks.ai
+blocks invite send crypto_risk_analyst --email crypto_yield_a2a_orchestrator@blocks.ai
+blocks invite send defi_liquidity_analyst --email crypto_yield_a2a_orchestrator@blocks.ai
+blocks invite send tokenomics_sustainability_expert --email crypto_yield_a2a_orchestrator@blocks.ai
+```
+
+These invitations have been sent and are currently pending. The target machine identity must accept each invitation before network A2A calls can succeed. The current CLI has no local workflow to auto-accept an invitation on behalf of the orchestrator machine identity; A2A remains unavailable until all five pending invitations become active. Check state with:
+
+```bash
+blocks invite grants data_provenance_auditor
+blocks invite list data_provenance_auditor
+```
+
+The CLI accepts invitations with `blocks invite accept <token>`. The token must be accepted by the invitee identity; do not substitute the invitation ID, and do not publish the agents publicly to bypass private access controls.
+
+## 16. Operational checklist
 
 ### Before registration
 
@@ -463,7 +509,7 @@ For a browser/mobile app, replace the API-key configuration with a protected tok
 - [ ] Credential rotation and monitoring procedures are documented.
 - [ ] Public/private listing and free/paid billing flags are explicitly reviewed.
 
-## 16. Troubleshooting
+## 17. Troubleshooting
 
 ### `blocks` is not found
 
@@ -503,7 +549,7 @@ Do not execute a handler file directly if it uses package-relative imports.
 
 This is intentional. The project currently has conflicting source versions and insufficient dated history for validated production forecasting. Resolve source identity, add dated observations, define independently observed future outcomes, and implement chronological evaluation before relaxing the gate.
 
-## 17. Official references
+## 18. Official references
 
 - [Blocks docs home](https://blocks.ai/docs)
 - [Blocks Quickstart](https://blocks.ai/docs/quickstart)

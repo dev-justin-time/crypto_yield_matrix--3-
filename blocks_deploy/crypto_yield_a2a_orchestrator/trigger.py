@@ -36,7 +36,10 @@ def main():
     session.on_progress(on_progress)
     session.on_artifact(on_artifact)
     session.on_terminal(on_terminal)
-    done.wait(timeout=90)
+    if not done.wait(timeout=90):
+        session.close()
+        client.destroy()
+        raise TimeoutError("A2A orchestrator did not reach a terminal state within 90 seconds")
     session.close()
     client.destroy()
 

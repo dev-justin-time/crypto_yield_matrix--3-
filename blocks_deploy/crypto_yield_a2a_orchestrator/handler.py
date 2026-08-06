@@ -5,7 +5,7 @@ from __future__ import annotations
 import base64
 import json
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from threading import Event
+from threading import Event, Timer
 from typing import Any, Optional
 
 from blocks_network import SendMessageRequestPart, StartTaskMessage, TaskContext
@@ -49,41 +49,68 @@ def decode_artifact(event: Any) -> Any:
 
 
 def execute_subtask(task_client: Any, agent_name: str, payload: dict[str, Any]) -> dict[str, Any]:
+    sender = ThreadPoolExecutor(max_workers=1)
+    send_future = sender.submit(
+        task_client.send_message,
+        agent_name=agent_name,
+        request_parts=[SendMessageRequestPart(part_id="request", text=json.dumps(payload))],
+    )
     try:
-        session = task_client.send_message(
-            agent_name=agent_name,
-            request_parts=[SendMessageRequestPart(part_id="request", text=json.dumps(payload))],
-        )
+        session = send_future.result(timeout=5)
     except Exception as exc:
-        return {"agent": agent_name, "status": "failed", "error": str(exc)}
+        send_future.cancel()
+        return {"agent": agent_name, "status": "timeout" if exc.__class__.__name__ == "TimeoutError" else "failed", "error": str(exc)}
+    finally:
+        sender.shutdown(wait=False, cancel_futures=True)
 
     finished = Event()
     state: dict[str, Any] = {"terminal": None, "artifact": None}
 
+    def maybe_finish() -> None:
+        if state["terminal"] in {"failed", "canceled"}:
+            finished.set()
+        elif state["terminal"] == "completed" and state["artifact"] is not None:
+            finished.set()
+
     def on_artifact(event: Any) -> None:
-        reference = getattr(event, "artifact_ref", None) or getattr(event, "artifactRef", None)
-        if reference is not None and getattr(reference, "kind", None) != "inline":
-            downloaded = session.download_artifact(reference)
-            raw = getattr(downloaded, "data", downloaded)
-            text = raw.decode("utf-8") if isinstance(raw, bytes) else str(raw)
-            try:
-                state["artifact"] = json.loads(text)
-            except json.JSONDecodeError:
-                state["artifact"] = text
-        else:
-            state["artifact"] = decode_artifact(event)
+        try:
+            reference = getattr(event, "artifact_ref", None) or getattr(event, "artifactRef", None)
+            if reference is not None and getattr(reference, "kind", None) != "inline":
+                downloaded = session.download_artifact(reference)
+                raw = getattr(downloaded, "data", downloaded)
+                text = raw.decode("utf-8") if isinstance(raw, bytes) else str(raw)
+                try:
+                    state["artifact"] = json.loads(text)
+                except json.JSONDecodeError:
+                    state["artifact"] = text
+            else:
+                state["artifact"] = decode_artifact(event)
+        except Exception as exc:
+            state["error"] = f"artifact handling failed: {exc}"
+        maybe_finish()
+
+    def fail_missing_artifact() -> None:
+        if state["terminal"] == "completed" and state["artifact"] is None:
+            state["error"] = "completed without an artifact"
+            finished.set()
 
     def on_terminal(event: Any) -> None:
         state["terminal"] = getattr(event, "state", None)
-        finished.set()
+        maybe_finish()
+        if state["terminal"] == "completed" and state["artifact"] is None:
+            Timer(1.0, fail_missing_artifact).start()
 
     session.on_artifact(on_artifact)
     session.on_terminal(on_terminal)
     try:
         if not finished.wait(timeout=SUBTASK_TIMEOUT_SECONDS):
             return {"agent": agent_name, "status": "timeout", "error": "specialist timed out"}
-        if state["terminal"] == "completed":
+        if state.get("error"):
+            return {"agent": agent_name, "status": "failed", "error": state["error"]}
+        if state["terminal"] == "completed" and state["artifact"] is not None:
             return {"agent": agent_name, "status": "completed", "artifact": state["artifact"]}
+        if state["terminal"] == "completed":
+            return {"agent": agent_name, "status": "failed", "error": "completed without an artifact"}
         return {"agent": agent_name, "status": "failed", "error": state["terminal"] or "unknown terminal state", "artifact": state["artifact"]}
     finally:
         session.close()
@@ -102,6 +129,7 @@ def merge_results(results: list[dict[str, Any]], payload: dict[str, Any]) -> dic
     for item in successful:
         artifact = item.get("artifact")
         if not isinstance(artifact, dict):
+            statuses.append("WARNING")
             findings.append({"agent": item["agent"], "status": "WARNING", "issue": "non-object artifact"})
             continue
         statuses.append(str(artifact.get("status", "WARNING")))
@@ -149,10 +177,20 @@ def handler(task: StartTaskMessage, ctx: Optional[TaskContext] = None) -> dict:
     if ctx is not None:
         ctx.report_status("Dispatching specialist analyses in parallel...")
     results: list[dict[str, Any]] = []
-    with ThreadPoolExecutor(max_workers=len(SPECIALISTS)) as executor:
-        futures = [executor.submit(execute_subtask, task_client, name, payload) for name in SPECIALISTS]
-        for future in as_completed(futures):
-            results.append(future.result())
+    executor = ThreadPoolExecutor(max_workers=len(SPECIALISTS))
+    futures = [executor.submit(execute_subtask, task_client, name, payload) for name in SPECIALISTS]
+    try:
+        for future in as_completed(futures, timeout=SUBTASK_TIMEOUT_SECONDS + 5):
+            try:
+                results.append(future.result())
+            except Exception as exc:
+                results.append({"agent": "unknown_specialist", "status": "failed", "error": str(exc)})
+    except TimeoutError:
+        for future in futures:
+            future.cancel()
+        results.extend({"agent": SPECIALISTS[index], "status": "timeout", "error": "orchestrator collection timed out"} for index, future in enumerate(futures) if not future.done())
+    finally:
+        executor.shutdown(wait=False, cancel_futures=True)
     if ctx is not None:
         ctx.report_status("Merging specialist artifacts...")
     merged = merge_results(results, payload)

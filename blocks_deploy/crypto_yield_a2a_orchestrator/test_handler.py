@@ -30,7 +30,13 @@ def test_merge_partial_results():
     assert output["provenance"]["context_files"] == ["DATA_DICTIONARY.md"]
 
 
+def test_non_object_artifact_warns():
+    output = merge_results([{"agent": "specialist", "status": "completed", "artifact": "not-json"}], {"question": "test"})
+    assert output["status"] == "WARNING"
+
+
 if __name__ == "__main__":
     test_request_payload()
     test_merge_partial_results()
+    test_non_object_artifact_warns()
     print("A2A mocked tests pass")
