@@ -1,3 +1,6 @@
 .env
 pip.conf
 .npmrc
+.venv/
+__pycache__/
+*.pyc

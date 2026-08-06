@@ -3,3 +3,4 @@ pip.conf
 .npmrc
 __pycache__/
 *.pyc
+.venv/

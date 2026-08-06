@@ -1,0 +1,6 @@
+.env
+.venv/
+blocks_deploy/**/.env
+blocks_deploy/**/.venv/
+*.pem
+*.key
