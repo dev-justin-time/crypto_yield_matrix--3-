@@ -29,6 +29,7 @@ def test_merge_partial_results():
     assert output["provenance"]["source_file"] == "yield_data.csv"
     assert output["provenance"]["context_files"] == ["DATA_DICTIONARY.md"]
     assert {"decision_use", "review_next", "do_not_infer"} <= set(output["user_value"])
+    assert output["asset_catalog"]["available"] is False
 
 
 def test_non_object_artifact_warns():

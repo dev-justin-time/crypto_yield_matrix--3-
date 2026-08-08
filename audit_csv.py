@@ -110,6 +110,14 @@ catalog_symbols = {row.get("symbol", "") for row in catalog_rows}
 if catalog_symbols != set(symbols):
     issues.append("asset catalog symbols do not match canonical unique symbols")
 if catalog_rows:
+    catalog_by_symbol = {row.get("symbol", ""): row for row in catalog_rows}
+    for path in asset_files:
+        rows_for_asset = read_rows(path)
+        symbol = path.stem
+        if len(rows_for_asset) != 1 or rows_for_asset[0].get("symbol") != symbol:
+            issues.append(f"per-asset catalog file does not contain exactly its named symbol: {path.relative_to(ROOT)}")
+        elif catalog_by_symbol.get(symbol) != rows_for_asset[0]:
+            issues.append(f"per-asset catalog row differs from asset_catalog.csv: {path.relative_to(ROOT)}")
     coverage = Counter(row.get("snapshot_status", "") for row in catalog_rows)
 else:
     coverage = Counter()

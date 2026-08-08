@@ -189,6 +189,13 @@ def merge_results(results: list[dict[str, Any]], payload: dict[str, Any]) -> dic
             "review_next": "Inspect each specialist's cited provenance and confirm live permissions, data freshness, and assumptions before acting.",
             "do_not_infer": "Partial or merged specialist output is not a validated forecast, recommendation, or guarantee.",
         },
+        "asset_catalog": {
+            "available": False,
+            "rows": 0,
+            "source_snapshot_rows": 0,
+            "canonical_only_rows": 0,
+            "policy": "The orchestrator remains data-free; specialist artifacts carry any available generated catalog coverage.",
+        },
         "findings": findings,
         "assumptions": assumptions,
         "limitations": list(dict.fromkeys(limitations + [
