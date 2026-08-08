@@ -13,7 +13,7 @@
  *   POST /agents/:agentName/invoke  (Bearer gateway client auth required)
  */
 import 'dotenv/config';
-import { createGateway, parseClientAgents, parseClientKeys } from './server.js';
+import { createGateway, isLoopbackHost, parseClientAgents, parseClientKeys } from './server.js';
 import { AGENTS } from './agents.js';
 
 const apiKey = process.env.BLOCKS_API_KEY;
@@ -51,7 +51,16 @@ if (!Number.isFinite(maxDailySpendUsd) || maxDailySpendUsd < 0 || !Number.isFini
   process.exit(1);
 }
 const maxQuestionChars = positiveIntegerEnv('GATEWAY_MAX_QUESTION_CHARS', 4_000);
+const maxArtifactBytes = positiveIntegerEnv('GATEWAY_MAX_ARTIFACT_BYTES', 5 * 1024 * 1024);
+const maxArtifactCount = positiveIntegerEnv('GATEWAY_MAX_ARTIFACT_COUNT', 32);
 const budgetStateFile = process.env.GATEWAY_BUDGET_STATE_FILE || '.gateway-budget.json';
+const killSwitchFile = process.env.GATEWAY_KILL_SWITCH_FILE || '';
+const releaseId = process.env.GATEWAY_RELEASE_ID || 'unversioned';
+const host = process.env.GATEWAY_HOST || '127.0.0.1';
+if (!isLoopbackHost(host) && process.env.GATEWAY_ALLOW_PUBLIC_BIND !== 'true') {
+  console.error('[gateway] refusing non-loopback bind; set GATEWAY_ALLOW_PUBLIC_BIND=true only behind a verified private edge');
+  process.exit(1);
+}
 const rawClientKeys = process.env.GATEWAY_CLIENT_KEYS;
 let clientAgents: Record<string, ReadonlySet<string>>;
 try {
@@ -89,12 +98,16 @@ const gateway = createGateway({
   maxDailySpendUsd,
   taskCostUsd,
   maxQuestionChars,
+  maxArtifactBytes,
+  maxArtifactCount,
+  killSwitchFile: killSwitchFile || undefined,
+  releaseId,
   budgetStateFile,
 });
 
-gateway.server.listen(port, () => {
-  console.log(`[gateway] listening on http://localhost:${port}`);
-  console.log(`[gateway] serving ${AGENTS.length} agents (billing: paid, $0.10/task; client auth required)`);
+gateway.server.listen(port, host, () => {
+  console.log(`[gateway] listening on http://${host}:${port}`);
+  console.log(`[gateway] serving ${AGENTS.length} agents (billing: paid, $0.10/task; client auth required; release: ${releaseId})`);
 });
 
 let shuttingDown = false;

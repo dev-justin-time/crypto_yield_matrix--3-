@@ -9,7 +9,7 @@ It is based on the official Blocks.ai documentation:
 - [Key concepts](https://blocks.ai/docs/key-concepts)
 - [Authentication reference](https://blocks.ai/docs/authentication)
 
-> **Important:** `blocks_agents/` is currently a local, file-backed adapter scaffold. It contains eleven agent cards, including a feature-engineering expert, standard-library Python handlers, and `blocks_agents/loader.py`, but it is not registered or published on Blocks Network. Do not place API keys in this repository or publish the cards until the native Blocks project wrapper has been created and tested.
+> **Important:** `blocks_agents/` is the local, file-backed source scaffold. It contains eleven agent cards and standard-library Python handlers. Native adapter wrappers and deployment metadata are now generated into the corresponding `blocks_deploy/<agent>/` projects, but those projects are not proven registered or published on Blocks Network. Do not place API keys in this repository.
 
 ## 1. What this project provides
 
@@ -29,7 +29,7 @@ The repository contains eleven blockchain and cryptocurrency research agents:
 | `crypto_research_communications_agent` | Produces cautious, evidence-linked research notes. |
 | `feature_engineering_expert` | Recomputes four transparent derived yield, liquidity, risk, and peer features. |
 
-The index is [`blocks_agents/agent_cards.json`](blocks_agents/agent_cards.json). The local loader resolves each manifest's `./handlers/...` path and calls its `handler(task, ctx)` function. The feature agent computes `yield_momentum`, `mcap_to_tvl`, `risk_score`, and `yield_premium` from source fields and preserves warnings for undefined ratios. Run `python build_asset_catalog.py` to generate the evidence-first `asset_catalog.csv` and one `csv/assets/<SYMBOL>.csv` file for every canonical symbol; the generator uses the nine supplied market snapshots where available and labels the other assets `canonical_only` instead of inventing values.
+The index is [`blocks_agents/agent_cards.json`](blocks_agents/agent_cards.json). The local loader resolves each manifest's `./handlers/...` path and calls its `handler(task, ctx)` function. Use `python generate_deployments.py --write` to materialize standard native adapters and deployment metadata from the root cards, then `python sync_deployments.py --write` to mirror approved source files with recorded hashes. The feature agent computes `yield_momentum`, `mcap_to_tvl`, `risk_score`, and `yield_premium` from source fields and preserves warnings for undefined ratios. Run `python build_asset_catalog.py` to generate the evidence-first `asset_catalog.csv` and one `csv/assets/<SYMBOL>.csv` file for every canonical symbol; the generator uses the nine supplied market snapshots where available and labels the other assets `canonical_only` instead of inventing values.
 
 ## 2. Requirements
 
@@ -46,7 +46,7 @@ For a native Blocks Provider project, the official Quickstart lists:
 - The latest Blocks CLI.
 - A Blocks account and an organization for registration/publishing.
 
-The existing local scaffold does not include a CLI-generated `pyproject.toml`, `.env`, `trigger.py`, or native `blocks_network` SDK dependency. Those are created by the official Provider scaffold and should be kept separate from the local validation layer until integration is deliberate. The native Blocks adapter described later is a future integration plan; it is not currently implemented in this repository.
+The local scaffold intentionally keeps Python standard-library business logic separate from native deployment dependencies. Each `blocks_deploy/<agent>/` project contains its native `pyproject.toml`, ignored `.env` boundary, trigger utility, card, and generated transport adapter. Run `python generate_deployments.py --check` and `python sync_deployments.py --check` before native validation; these checks never call the network or Blocks.
 
 ## 3. Run the local agents first
 
@@ -108,12 +108,25 @@ The project data has important limitations documented in [`validate.md`](validat
 2. `asset_catalog.csv`, `csv/assets/*.csv`, and `csv/quotes/*.csv` are generated evidence-first enrichment/export views, not alternative handler sources; rebuild them with `python build_asset_catalog.py`.
 3. Repeated symbols in `yield_data.csv` are provenance-labeled rows, not independent time observations; use an explicit row-selection policy for modeling.
 4. The data includes source-like, estimated, derived, and supplied target fields.
-4. The current panel has only eight quarterly yield observations per asset.
-5. **Corrected forecasting caveat:** The current dataset is not suitable for validated production forecasting until source identity is resolved, additional dated observations are added, leakage-controlled walk-forward testing is performed, and independently observed outcomes are available. The full audit wording is maintained in [`validate.md`](validate.md).
+5. The current panel has only eight quarterly yield observations per asset.
+6. **Corrected forecasting caveat:** The current dataset is not suitable for validated production forecasting until source identity is resolved, additional dated observations are added, leakage-controlled walk-forward testing is performed, and independently observed outcomes are available. The full audit wording is maintained in [`validate.md`](validate.md).
 
 Do not publish an agent that presents these files as live market data, guaranteed returns, or validated investment advice. Keep the current `WARNING` and `FAIL` statuses where the handlers intentionally expose unresolved data or model-readiness issues.
 
-## 5. Install the Blocks CLI
+## 5. Deterministic packaging and no-spend checks
+
+Before any native Blocks operation, run:
+
+```bash
+python generate_deployments.py --check
+python sync_deployments.py --check
+python test_packaging.py
+python trigger_guarded.py --agent crypto_risk_analyst --dry-run
+```
+
+These commands do not import the Blocks SDK, access the network, register agents, or create paid tasks. The source-to-deployment manifest is `deployment_mirror_manifest.json`; the A2A orchestrator is excluded from ordinary source mirroring because it has custom behavior. The complete packaging and external rollout sequence is documented in [`packaging.md`](packaging.md).
+
+## 6. Install the Blocks CLI
 
 The official Quickstart provides three installation routes.
 
@@ -161,7 +174,7 @@ blocks init crypto_yield_matrix_provider_12345 --mode provider --yes --language 
 cd crypto_yield_matrix_provider_12345
 ```
 
-The CLI-generated Provider project includes a native handler, trigger script, `agent-card.json`, `.env`, `.gitignore`, and Python project metadata. Keep the generated native project separate from the repository’s local `blocks_agents/` package until the handler adapter has been implemented and tested.
+The CLI-generated Provider project includes a native handler, trigger script, `agent-card.json`, `.env`, `.gitignore`, and Python project metadata. In this repository, standard native adapters are generated and tested from the root cards; keep the native project boundary separate from the local `blocks_agents/` package and run `blocks check` before registration.
 
 ### Install native Python dependencies
 
@@ -225,7 +238,7 @@ def handler(
     }
 ```
 
-When a future native adapter is implemented, it should:
+The generated native adapter should:
 
 1. Parse the first `request` part as JSON.
 2. Call the selected local expert logic.
@@ -235,7 +248,7 @@ When a future native adapter is implemented, it should:
 6. Never expose `BLOCKS_API_KEY` or unrestricted filesystem access to a caller.
 7. Keep the source/version warning in every research result.
 
-The local handlers currently import from `blocks_agents.handlers.common`; they are intentionally independent of the external SDK. A native wrapper should translate between the Blocks SDK task types and this local handler contract rather than silently rewriting the data logic.
+The local handlers currently import from `blocks_agents.handlers.common`; they are intentionally independent of the external SDK. Generated native wrappers translate between Blocks SDK task types and this local handler contract without rewriting the data logic. The wrapper generator does not run `blocks check`, register, publish, or dispatch paid tasks.
 
 ## 8. Review the native agent card
 
@@ -642,7 +655,7 @@ blocks login --write-env   # writes BLOCKS_API_KEY to the ignored .env
 npm start                  # http://localhost:3000
 ```
 
-Environment variables: `GATEWAY_PORT` (default 3000), `GATEWAY_TASK_TIMEOUT_MS` (default 120000), `GATEWAY_MAX_BODY_BYTES` (default 1000000), `GATEWAY_MAX_QUESTION_CHARS` (default 4000), `GATEWAY_MAX_CONCURRENT_TASKS` (default 8), `GATEWAY_MAX_REQUESTS_PER_MINUTE` (default 30), `GATEWAY_MAX_DAILY_TASKS` (default 100), `GATEWAY_MAX_DAILY_SPEND_USD` (default 10), `GATEWAY_TASK_COST_USD` (default 0.10), `GATEWAY_BUDGET_STATE_FILE` (default `.gateway-budget.json`), and required `GATEWAY_CLIENT_KEYS` (`clientId=secret,...`), plus optional `GATEWAY_CLIENT_AGENTS` (`clientId=agent|agent,...`). The gateway client secret is separate from `BLOCKS_API_KEY`. The concurrency cap and daily ledger are single-instance and deliberate; the Compose deployment persists the ledger at `GATEWAY_BUDGET_STATE_FILE`. Keep one gateway instance unless a shared quota ledger is added. Excess requests receive HTTP 429/503 instead of creating an unbounded billable backlog.
+Environment variables: `GATEWAY_HOST` (default `127.0.0.1`), `GATEWAY_ALLOW_PUBLIC_BIND` (default false; non-loopback binds require explicit opt-in behind a verified authenticated edge), `GATEWAY_PORT` (default 3000), `GATEWAY_RELEASE_ID`, `GATEWAY_TASK_TIMEOUT_MS` (default 120000), `GATEWAY_MAX_BODY_BYTES` (default 1000000), `GATEWAY_MAX_QUESTION_CHARS` (default 4000), `GATEWAY_MAX_ARTIFACT_BYTES` (default 5242880), `GATEWAY_MAX_ARTIFACT_COUNT` (default 32), `GATEWAY_MAX_CONCURRENT_TASKS` (default 8), `GATEWAY_MAX_REQUESTS_PER_MINUTE` (default 30), `GATEWAY_MAX_DAILY_TASKS` (default 100), `GATEWAY_MAX_DAILY_SPEND_USD` (default 10), `GATEWAY_TASK_COST_USD` (default 0.10), `GATEWAY_BUDGET_STATE_FILE` (default `.gateway-budget.json`), `GATEWAY_KILL_SWITCH_FILE` (optional pause-file path), and required `GATEWAY_CLIENT_KEYS` (`clientId=secret,...`), plus optional `GATEWAY_CLIENT_AGENTS` (`clientId=agent|agent,...`). The gateway client secret is separate from `BLOCKS_API_KEY`. Responses expose remaining budget headers and the current release/schema version. The concurrency cap and daily ledger are single-instance and deliberate; the Compose deployment persists the ledger at `GATEWAY_BUDGET_STATE_FILE`. Keep one gateway instance unless a shared quota ledger is added. Excess requests receive HTTP 429/503 instead of creating an unbounded billable backlog.
 
 Example invocation:
 
@@ -661,7 +674,7 @@ npm run check   # tsc --noEmit
 npm run smoke   # routing/validation only — never dispatches a paid task
 ```
 
-The smoke test uses placeholder Blocks and gateway credentials and exercises health, readiness, metrics, listing, authentication rejection, unknown-agent 404s, malformed-body 400s, required-question validation, and idempotency-header validation; it never calls a real agent.
+The smoke test uses placeholder Blocks and gateway credentials and exercises health, readiness, metrics, listing, authentication rejection, unknown-agent 404s, malformed-body 400s, required-question validation, and idempotency-header validation; `npm run resilience` additionally verifies deterministic capacity saturation and timeout metrics. Neither test calls a real agent.
 
 The gateway process is also managed by [`Restart-BlocksAgents.ps1`](Restart-BlocksAgents.ps1): it starts `node --import tsx index.ts` from this directory (state entry `gateway`, logs under `blocks-agent-logs/gateway/`). Use `-AgentName gateway` to manage only the gateway or `-SkipGateway` to leave it out of fleet restarts. The gateway reads `BLOCKS_API_KEY` from its ignored `.env` and honors `GATEWAY_PORT` from its environment or `.env`.
 

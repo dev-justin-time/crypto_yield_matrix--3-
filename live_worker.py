@@ -47,18 +47,85 @@ def _mirror_snapshot(snapshot: dict[str, object]) -> int:
     return count
 
 
+def _read_previous_snapshot() -> dict[str, object]:
+    if not DEFAULT_OUTPUT.exists():
+        return {}
+    try:
+        value = json.loads(DEFAULT_OUTPUT.read_text(encoding="utf-8"))
+        return value if isinstance(value, dict) else {}
+    except (OSError, json.JSONDecodeError):
+        return {}
+
+
+def _merge_observations(previous: dict[str, object], current: dict[str, object], key: str, identity: str) -> None:
+    previous_section = previous.get(key, {}) if isinstance(previous.get(key), dict) else {}
+    current_section = current.get(key, {}) if isinstance(current.get(key), dict) else {}
+    previous_items = previous_section.get(identity, {}) if isinstance(previous_section.get(identity), dict) else {}
+    current_items = current_section.get(identity, {}) if isinstance(current_section.get(identity), dict) else {}
+    merged = dict(previous_items)
+    merged.update(current_items)
+    for item_id, item in merged.items():
+        if item_id not in current_items and isinstance(item, dict):
+            retained = dict(item)
+            retained["observation_status"] = "retained_from_previous_cycle"
+            retained["retained_from"] = previous.get("generated_at")
+            merged[item_id] = retained
+    current_section[identity] = merged
+    current_section["asset_count"] = len(merged) if identity == "assets" else current_section.get("asset_count", len(merged))
+    current[key] = current_section
+
+
+def merge_with_previous(previous: dict[str, object], current: dict[str, object]) -> dict[str, object]:
+    """Preserve healthy observations during partial outages, but mark them old."""
+    if not previous:
+        return current
+    merged = dict(current)
+    _merge_observations(previous, merged, "market", "assets")
+    # Chain and RPC arrays are keyed by chain and merged into maps temporarily.
+    for section, list_key in (("defi", "chains"), ("blockchain", "observations")):
+        old_section = previous.get(section, {}) if isinstance(previous.get(section), dict) else {}
+        new_section = merged.get(section, {}) if isinstance(merged.get(section), dict) else {}
+        old_rows = old_section.get(list_key, []) if isinstance(old_section.get(list_key), list) else []
+        new_rows = new_section.get(list_key, []) if isinstance(new_section.get(list_key), list) else []
+        by_chain = {str(row.get("chain")): row for row in old_rows if isinstance(row, dict) and row.get("chain")}
+        by_chain.update({str(row.get("chain")): row for row in new_rows if isinstance(row, dict) and row.get("chain")})
+        for chain, row in by_chain.items():
+            if not any(isinstance(item, dict) and str(item.get("chain")) == chain for item in new_rows):
+                row = dict(row)
+                row["observation_status"] = "retained_from_previous_cycle"
+                row["retained_from"] = previous.get("generated_at")
+                by_chain[chain] = row
+        new_section[list_key] = list(by_chain.values())
+        new_section[f"{list_key[:-1]}_count"] = len(new_section[list_key])
+        merged[section] = new_section
+    current_errors = current.get("errors", []) if isinstance(current.get("errors"), list) else []
+    if current_errors:
+        merged["data_status"] = "live_overlay_degraded"
+    return merged
+
+
 def run_once(collector: LiveDataCollector, mirror: bool = True) -> dict[str, object]:
     started = time.monotonic()
-    snapshot = collector.collect()
+    previous = _read_previous_snapshot()
+    current_snapshot = collector.collect()
+    current_observation_count = (
+        int(current_snapshot.get("market", {}).get("asset_count", 0))
+        + int(current_snapshot.get("defi", {}).get("chain_count", 0))
+        + int(current_snapshot.get("blockchain", {}).get("observation_count", 0))
+    )
+    snapshot = merge_with_previous(previous, current_snapshot)
     # A successful cycle is one with at least one current market, chain, or RPC
     # observation. If every upstream failed, retain the prior snapshot on disk
     # and expose the failure in status rather than presenting an empty feed.
+    market_section = snapshot.get("market", {}) if isinstance(snapshot.get("market"), dict) else {}
+    defi_section = snapshot.get("defi", {}) if isinstance(snapshot.get("defi"), dict) else {}
+    blockchain_section = snapshot.get("blockchain", {}) if isinstance(snapshot.get("blockchain"), dict) else {}
     observation_count = (
-        int(snapshot["market"]["asset_count"])
-        + int(snapshot["defi"]["chain_count"])
-        + int(snapshot["blockchain"]["observation_count"])
+        int(market_section.get("asset_count", 0))
+        + int(defi_section.get("chain_count", 0))
+        + int(blockchain_section.get("observation_count", 0))
     )
-    if observation_count > 0:
+    if observation_count > 0 or previous:
         write_snapshot(snapshot, DEFAULT_OUTPUT)
         mirrored = _mirror_snapshot(snapshot) if mirror else 0
         outcome = "updated"
@@ -67,15 +134,16 @@ def run_once(collector: LiveDataCollector, mirror: bool = True) -> dict[str, obj
         outcome = "retained_previous_snapshot"
     status = {
         "worker": "crypto_yield_matrix_live_data",
-        "status": "ok" if observation_count > 0 else "degraded",
+        "status": "ok" if current_observation_count > 0 and not snapshot.get("errors") else "degraded",
         "last_cycle_at": snapshot["generated_at"],
-        "last_outcome": outcome,
+        "last_outcome": outcome if current_observation_count > 0 else "retained_previous_snapshot",
         "observations": observation_count,
         "errors": len(snapshot.get("errors", [])),
         "deployment_mirrors": mirrored,
         "cycle_duration_ms": round((time.monotonic() - started) * 1000),
         "canonical_source_unchanged": "yield_data.csv",
         "providers": snapshot.get("provider_status", []),
+        "current_observations": current_observation_count,
     }
     _write_status(status)
     return status

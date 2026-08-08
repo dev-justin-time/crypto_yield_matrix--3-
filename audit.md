@@ -2,7 +2,7 @@
 
 **Project:** Crypto Yield Matrix / Blocks.ai agent fleet
 **Audit date:** 2026-08-07
-**Audit type:** Repository, local-runtime, security-control, deployment-topology, and no-spend validation review
+**Audit type:** Repository, local-runtime, security-control, deterministic-packaging, deployment-topology, and no-spend validation review
 **Requested outcome:** Prepare the system for public and unattended paid production
 **Current verdict:** **NO-GO for public or unattended paid production; CONDITIONAL PRIVATE-PILOT READY after external verification**
 
@@ -20,8 +20,14 @@ The repository has materially improved production protections:
 - The data dictionary, canonical CSV mirrors, asset catalog, and 59 per-asset files are validated.
 - The forecasting handler remains blocked rather than presenting unsupported predictions.
 - A2A orchestration has mocked timeout, partial-failure, artifact, and cleanup coverage.
+- Deterministic source mirroring now records SHA-256 hashes for 151 files across 11 data-consuming deployments.
+- Standard native adapter wrappers and deployment metadata are generated from card contracts; native `agent-card.json` files are consistency-validated, and the custom A2A adapter is preserved explicitly.
+- Native Python dependencies and the Node SDK are pinned to version 1.0.11.
+- Guarded trigger tooling defaults to a no-spend dry run, requires explicit paid acknowledgement, and rejects failed/canceled terminal states.
+- Packaging tests exercise the root scaffold and a materialized native deployment package.
+- Artifacts explicitly preserve missing numeric values as JSON `null` instead of silently converting them to zero.
 
-Those controls make the project appropriate for local development and a supervised private pilot. They do **not** prove that the live Blocks agents are registered, reachable, paid-configured, correctly permissioned, or monitored. The current gateway also remains a single-instance financial-control design, and its direct Node listener has no explicit host-binding configuration; the provided Compose file is localhost-bound, but another deployment could accidentally expose the process on all interfaces.
+Those controls make the project appropriate for local development and a supervised private pilot. They do **not** prove that the live Blocks agents are registered, reachable, paid-configured, correctly permissioned, or monitored. The gateway now defaults to an explicit loopback bind, refuses non-loopback binds unless an operator explicitly opts in, exposes a file-based emergency stop, caps artifact responses, emits release/schema/budget metadata, and has deterministic no-spend resilience coverage. The budget ledger remains a deliberate single-instance financial-control design; horizontal scaling still requires shared atomic quota accounting.
 
 ### Release decision
 
@@ -71,6 +77,13 @@ The authoritative local suite completed without network calls or paid task dispa
 | Dashboard syntax | **PASS** | `node --check matrix.js` |
 | Git whitespace | **PASS** | `git diff --check` |
 | Tracked secret scan | **PASS** | No real `.env`, PEM, key, or credential file tracked by the inspected patterns |
+| Card-contract adapter check | **PASS** | 23 generated wrapper/metadata outputs plus native-card consistency validation; 0 differences |
+| Deterministic mirror check | **PASS** | 151 source files across 11 deployments; 0 missing and 0 mismatched |
+| Packaging tests | **PASS** | 8 standard-library no-spend tests, including root and materialized deployment behavior |
+| Guarded trigger safety | **PASS** | Dry-run, acknowledgement, missing-key, and failed-terminal-state tests pass |
+| Native dependency pin check | **PASS** | Python and Node Blocks SDK dependencies pinned to 1.0.11 |
+| Gateway resilience suite | **PASS** | No-spend deterministic capacity saturation, timeout cleanup path, and metrics checks |
+| Gateway bind/stop/response controls | **PASS** | Explicit loopback policy, kill-switch readiness, schema marker, budget headers, release ID, artifact caps |
 
 The gateway smoke test uses a fake `TaskClient` and a placeholder key. Its successful result proves local routing and safety checks only; it is not evidence of a successful Blocks call.
 
@@ -80,7 +93,8 @@ The gateway smoke test uses a fake `TaskClient` and a placeholder key. Its succe
 - Data-consuming deployments synchronized: **11**.
 - A2A orchestrator: intentionally data-free and excluded from data-copy checks.
 - Gateway agents served: **12**.
-- Gateway package lock resolves `@blocks-network/sdk` to **1.0.11**, while `package.json` declares the dependency as `latest`.
+- Gateway `package.json` and lockfile pin `@blocks-network/sdk` to **1.0.11**.
+- All 12 native Python projects pin `blocks-network==1.0.11`.
 - Native agent cards provide bounded runtime settings: most specialists use concurrency 4, backlog 20, and 45-second runtime; the orchestrator uses concurrency 2, backlog 8, and 90-second runtime.
 
 ## 4. Verified controls
@@ -110,8 +124,11 @@ The configured Blocks client uses `billingMode: 'paid'`; the gateway does not ex
 Verified in the repository:
 
 - `/health` is a no-spend liveness endpoint.
-- `/ready` checks SDK-client initialization and local budget availability without dispatching a task.
+- `/ready` checks SDK-client initialization, local budget availability, and the emergency kill switch without dispatching a task.
 - `/metrics` is authenticated and no-spend.
+- The default listener is loopback-only; non-loopback startup requires explicit `GATEWAY_ALLOW_PUBLIC_BIND=true`.
+- A configured kill-switch file pauses new paid dispatches and makes readiness fail closed.
+- Responses expose a release ID, request schema version, remaining task/spend budget headers, and bounded artifact behavior.
 - Structured logs include request correlation and omit payloads/secrets.
 - Docker runs as non-root `node` and includes a restart policy, readiness health check, and persistent budget volume.
 - Compose binds the gateway to `127.0.0.1:3000` by default.
@@ -126,6 +143,22 @@ Verified in the repository:
 - Common artifacts include `user_value.decision_use`, `user_value.review_next`, and `user_value.do_not_infer`.
 - Forecasting remains a deliberate `FAIL` until dated history, independent outcomes, chronological validation, and uncertainty reporting are available.
 - Context-file access is read-only and restricted to an explicit allowlist; absolute and traversal paths are rejected.
+- `common.py` now exposes a `data_quality` policy: missing, blank, invalid, NaN, and infinite numeric values serialize as JSON `null`; supplied zero remains zero.
+
+### 4.4 Remediation status since the previous audit
+
+| Prior concern | Current status | Evidence |
+|---|---|---|
+| Shared-handler mirror drift | **Resolved for approved mirrors** | `sync_deployments.py --check`; 151 files, 11 deployments, 0 mismatches |
+| Manual native adapter drift | **Reduced and guarded** | `generate_deployments.py`; 11 generated wrappers, 12 metadata records, native cards consistency-validated, stable card/runtime checks |
+| Floating Blocks SDK versions | **Resolved for current revision** | Python `blocks-network==1.0.11`; Node `@blocks-network/sdk` `1.0.11`; CI pin check |
+| Unsafe local/private trigger flow | **Resolved locally** | `trigger_guarded.py`; default dry run, explicit paid acknowledgement, non-success rejection |
+| Missing scaffold/package coverage | **Resolved locally** | 8 standard-library packaging tests cover source and materialized deployment behavior |
+| Silent numeric fallback to zero | **Resolved in artifacts** | `value()` preserves unavailable values; `data_quality` documents `null` semantics |
+| Live Blocks/platform verification | **Open** | No CLI, registration, provider, A2A, billing, or paid-canary evidence in this environment |
+| Production-scale resilience evidence | **Partially resolved locally** | Deterministic no-spend capacity/timeout suite passes; live load, restart, resource, and multi-instance budget evidence remains open |
+
+These resolved items improve repository integrity and release repeatability; they do not establish live platform readiness.
 
 ## 5. Findings and improvement opportunities
 
@@ -134,7 +167,7 @@ Severity reflects risk to public unattended paid operation, not only local code 
 ### CR-001 — Live paid production state is unverified
 
 **Status:** Open; external blocker.
-**Evidence:** The `blocks` CLI is not on PATH, and no live registration, runtime, billing, trigger, or published-agent evidence was supplied. Local smoke tests deliberately do not dispatch a task.
+**Evidence:** The `blocks` CLI is not on PATH, and no live registration, runtime, billing, trigger, or published-agent evidence was supplied. Local smoke tests and `trigger_guarded.py --dry-run` deliberately do not dispatch a task. The guarded live path explicitly requests `billing_mode="paid"`, but it has not been executed here.
 
 **Risk:** The fleet may fail registration, use different live card versions, reject paid calls, be unavailable, or partially fail A2A despite local success.
 
@@ -142,12 +175,12 @@ Severity reflects risk to public unattended paid operation, not only local code 
 
 ### CR-002 — Public exposure depends on deployment topology, not gateway code alone
 
-**Status:** Open; high risk until the edge is verified.
-**Evidence:** Compose binds `127.0.0.1:3000`, but `index.ts` calls `server.listen(port)` without an explicit host and the gateway has no built-in TLS or reverse-proxy identity integration. A direct container/VM deployment can therefore expose the service more broadly than intended.
+**Status:** Repository remediation complete; external edge verification remains open.
+**Evidence:** `index.ts` now calls `server.listen(port, host)`, defaults `GATEWAY_HOST` to `127.0.0.1`, and refuses every non-loopback host unless `GATEWAY_ALLOW_PUBLIC_BIND=true`. Compose keeps host publication loopback-only while allowing the container to bind its private interface. The application still has no built-in TLS or reverse-proxy identity integration.
 
 **Risk:** Public callers could reach operational endpoints or attempt billable invocation if the deployment omits a trusted authenticated edge. Authentication keys may also be exposed over an unsafe transport.
 
-**Required action:** Make host binding explicit and keep the application private behind a TLS-terminating, identity-aware reverse proxy or private network. Document firewall rules, allowed origins if a browser client is added, TLS renewal, and an authenticated edge-to-gateway trust boundary. Add an integration check that the production listener is not publicly reachable without the edge policy.
+**Remaining external action:** Keep the application private behind a TLS-terminating, identity-aware reverse proxy or private network. Verify firewall rules, TLS renewal, edge-to-gateway trust, and that no unauthenticated public path exists. The no-spend smoke test now covers the loopback/non-loopback policy parser; network reachability must still be tested in the actual host environment.
 
 ### CR-003 — Aggregate spend protection is single-instance
 
@@ -167,10 +200,10 @@ Severity reflects risk to public unattended paid operation, not only local code 
 
 ### HI-002 — Readiness is configuration readiness, not fleet readiness
 
-**Status:** Open.
-**Evidence:** `/ready` initializes the shared SDK client and checks local budget; it does not verify every published agent, each provider runtime, A2A grants, or a live task.
+**Status:** Repository remediation complete; fleet verification remains external.
+**Evidence:** `/ready` remains no-spend and now checks SDK initialization, budget availability, and the kill switch while reporting release ID and remaining budget. It intentionally does not verify every published agent, provider runtime, A2A grant, or live task.
 
-**Required action:** Keep `/ready` no-spend, but add an operator-only fleet verification job that checks registry metadata and provider health without creating paid tasks where the platform permits. Report the last successful paid canary separately from liveness/readiness; do not make readiness depend on an uncontrolled paid call.
+**Remaining external action:** Keep `/ready` no-spend and run an operator-only fleet verification job that checks registry metadata and provider health without creating paid tasks where the platform permits. Record the last successful paid canary separately from liveness/readiness; do not make readiness depend on an uncontrolled paid call.
 
 ### HI-003 — Native service supervision is not production-proven
 
@@ -179,14 +212,14 @@ Severity reflects risk to public unattended paid operation, not only local code 
 
 **Required action:** Run the gateway and provider runtimes under a supported supervised platform with restart policy, CPU/memory/process limits, immutable versioned images, health-based replacement, secret injection, persistent ledger backup, and rollback. Treat the PowerShell script as development tooling, not HA supervision.
 
-### HI-004 — Dependency reproducibility is weakened by `latest`
+### HI-004 — Dependency upgrades require controlled release evidence
 
-**Status:** Open.
-**Evidence:** `package.json` declares `@blocks-network/sdk: "latest"`, while the lockfile currently resolves 1.0.11.
+**Status:** Resolved for the current repository revision; upgrade process remains operational.
+**Evidence:** The Node gateway pins `@blocks-network/sdk` to `1.0.11` in both `package.json` and `package-lock.json`; all 12 native Python projects pin `blocks-network==1.0.11`. CI checks the Python pins, and packaging metadata records the external `blocks check` requirement.
 
-**Risk:** A future clean install or lockfile refresh can change SDK behavior without an application change, especially around paid billing, cancellation, artifact APIs, or task schemas.
+**Residual risk:** A future dependency upgrade can still change paid billing, cancellation, artifact, or task-schema behavior.
 
-**Required action:** Pin the SDK to the tested exact version, use lockfile-only installs in CI/builds, review updates deliberately, and run the no-spend suite plus a private canary before upgrading.
+**Required action:** Treat upgrades as deliberate release changes: run no-spend checks, native `blocks check`, and an owner-approved private canary before promotion. Do not revert to floating `latest` dependencies.
 
 ### HI-005 — Live A2A permissions are unverified
 
@@ -202,16 +235,17 @@ Severity reflects risk to public unattended paid operation, not only local code 
 
 **Required action:** Inject `BLOCKS_API_KEY`, `GATEWAY_CLIENT_KEYS`, and optional allowlists at runtime. Test dual-key rotation, old-key revocation, expired-key behavior, recovery, least-privilege access, and audit logging. Never bake secrets into images or `.env` artifacts.
 
-### ME-001 — No load, resilience, or resource-budget test suite
+### ME-001 — Production-scale load, resilience, and resource-budget evidence
 
-**Status:** Open.
-**Evidence:** Tests cover routing and mocked logic, but there is no repeatable load test for concurrency, queue saturation, large artifacts, slow providers, process restart, or memory growth.
+**Status:** Repository baseline improved; production-scale evidence remains open.
+**Evidence:** `crypto_yield_matrix_node_gateway/resilience.ts` now provides a deterministic no-spend fake-provider check for capacity saturation, timeout handling, and metrics. Smoke coverage also verifies bind policy, kill-switch readiness, schema rejection, and remaining-budget headers. There is still no repeatable production-scale load test for process restart, resource limits, large live artifacts, or multi-instance accounting.
 
-**Improvement:** Add a no-spend fake-provider load harness that proves 401/403/429/503 behavior, bounded memory, request correlation, ledger atomicity, graceful shutdown, and timeout cleanup. Add a separately approved private load/canary plan that never runs in ordinary CI.
+**Remaining action:** Run an approved private load/restart/resource test and keep it out of ordinary CI if it can dispatch paid work. Before a second gateway replica, deploy shared atomic quota/spend accounting.
 
 ### ME-002 — Paid canary and rollback are not evidenced
 
 **Status:** Open; mandatory before paid unattended release.
+**Repository control:** The guarded trigger now requires `--live --confirm-paid`, forces the paid SDK mode, and exits nonzero for failure, cancellation, or timeout. That safety control is locally tested; it is not a live canary.
 **Required action:** Define an owner-approved maximum spend and one or a few test requests. Verify billing, artifact retrieval, idempotency behavior, timeout/cancel behavior, logs, metrics, ledger reservation, and rollback. Stop immediately on unexpected task count, cost, agent, or output.
 
 ### ME-003 — Data freshness and coverage limit user value
@@ -256,8 +290,14 @@ The following must all be true before changing the verdict to **GO**:
 - [x] Gateway typecheck and no-spend smoke pass.
 - [x] Python handlers, JSON cards, dashboard syntax, and mocked A2A tests pass.
 - [x] Forecasting `FAIL` gate and provenance restrictions remain intact.
-- [ ] SDK dependency is pinned to the tested exact version and build provenance is recorded.
-- [ ] No-spend load/resilience tests pass.
+- [x] Deterministic source mirrors and card-contract wrapper/metadata outputs pass local and CI checks.
+- [x] SDK dependency is pinned to the tested exact version and build provenance is recorded in packaging metadata.
+- [x] Deterministic adapter generation and source-to-deployment hash checks pass in CI.
+- [x] Root scaffold and one materialized deployment package pass no-spend tests.
+- [x] Guarded trigger requires explicit paid acknowledgement and rejects non-success terminal states.
+- [x] Gateway response/schema, release, budget-header, artifact-cap, and kill-switch controls are implemented and no-spend tested.
+- [x] Deterministic no-spend gateway resilience test passes for capacity saturation, timeout, and metrics.
+- [ ] Production-scale load, restart, resource, and multi-instance accounting evidence passes.
 
 ### Blocks platform
 
@@ -272,7 +312,8 @@ The following must all be true before changing the verdict to **GO**:
 ### Edge, identity, and secrets
 
 - [ ] Gateway is private by default and reachable publicly only through a TLS, authenticated, rate-limited edge.
-- [ ] Direct listener host binding and firewall behavior are verified; no unauthenticated public path exists.
+- [x] Repository listener policy defaults to loopback and rejects non-loopback binds without explicit opt-in.
+- [ ] Production listener, firewall, TLS edge, and unauthenticated reachability are verified in the target environment.
 - [ ] Per-user/org authentication and agent authorization are mapped to a documented policy.
 - [ ] Production secrets are injected by a secret manager and are absent from images, logs, and repository artifacts.
 - [ ] Key rotation, revocation, expiry alerting, access review, and recovery are tested.
@@ -284,22 +325,24 @@ The following must all be true before changing the verdict to **GO**:
 - [ ] Centralized structured logs, metrics, dashboards, alert routing, retention, and incident ownership are active.
 - [ ] Alerts cover failures, latency, cancellations, A2A grants, auth abuse, capacity, budget, and spend anomalies.
 - [ ] Owner-approved paid canary completes under a hard spend ceiling and results are reconciled to Blocks billing.
-- [ ] Emergency stop/kill-switch procedure is tested.
+- [x] Repository kill-switch file blocks new paid dispatches and fails readiness; no-spend smoke coverage exercises it.
+- [ ] Production emergency stop/kill-switch procedure is tested by the accountable operator.
 - [ ] Public disclosures identify data age, provenance, coverage, limitations, and non-advisory status.
 - [ ] Incident runbook and release record are approved by an accountable owner.
 
 ## 8. Recommended execution order
 
-1. Pin the SDK dependency and add no-spend load/resilience tests.
-2. Install/authenticate the Blocks CLI in the controlled release environment.
-3. Validate, privately register, and version all 12 native projects.
-4. Verify provider connectivity and every A2A invitation/grant.
-5. Harden deployment edge behavior: explicit private bind, TLS/auth proxy, firewall, and one-instance budget policy.
-6. Configure secret manager injection, rotation, centralized logs/metrics, alerts, backups, and rollback.
-7. Run private functional and failure triggers without exceeding the approved test budget.
-8. Run the smallest owner-approved paid canary; reconcile task count, spend, outputs, and logs.
-9. Approve public disclosures and incident ownership.
-10. Promote to public/unattended paid production only after every GO checkbox is evidenced in a dated release record.
+1. Keep the pinned SDK versions, generated-adapter checks, and SHA-256 mirror checks mandatory in CI.
+2. Add no-spend load/resilience tests for concurrency, artifacts, restart, and resource limits.
+3. Install/authenticate the Blocks CLI in the controlled release environment.
+4. Validate, privately register, and version all 12 native projects.
+5. Verify provider connectivity and every A2A invitation/grant.
+6. Harden deployment edge behavior: explicit private bind, TLS/auth proxy, firewall, and one-instance budget policy.
+7. Configure secret manager injection, rotation, centralized logs/metrics, alerts, backups, and rollback.
+8. Run private functional and failure triggers without exceeding the approved test budget.
+9. Run the smallest owner-approved paid canary; reconcile task count, spend, outputs, and logs.
+10. Approve public disclosures and incident ownership.
+11. Promote to public/unattended paid production only after every GO checkbox is evidenced in a dated release record.
 
 ## 9. Release-record template
 

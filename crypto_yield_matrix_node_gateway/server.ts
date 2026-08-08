@@ -17,6 +17,7 @@
  */
 import { randomUUID, timingSafeEqual } from 'node:crypto';
 import { existsSync, readFileSync, renameSync, writeFileSync } from 'node:fs';
+import { isIP } from 'node:net';
 import { createServer, type IncomingMessage, type ServerResponse } from 'node:http';
 import { TaskClient, textPart } from '@blocks-network/sdk';
 import type {
@@ -37,6 +38,22 @@ const DEFAULT_DAILY_TASKS = 100;
 const DEFAULT_DAILY_SPEND_USD = 10;
 const DEFAULT_REQUESTS_PER_MINUTE = 30;
 const DEFAULT_MAX_QUESTION_CHARS = 4_000;
+const DEFAULT_MAX_ARTIFACT_BYTES = 5 * 1024 * 1024;
+const DEFAULT_MAX_ARTIFACT_COUNT = 32;
+const REQUEST_SCHEMA_VERSION = '1';
+
+export const GATEWAY_REQUEST_SCHEMA_VERSION = REQUEST_SCHEMA_VERSION;
+
+/** Return true only for hosts that are loopback without DNS resolution. */
+export function isLoopbackHost(host: string): boolean {
+  const normalized = host.trim().toLowerCase().replace(/^\[|\]$/g, '');
+  if (normalized === 'localhost' || normalized === '::1') return true;
+  if (isIP(normalized) === 4) {
+    const octets = normalized.split('.').map(Number);
+    return octets.length === 4 && octets[0] === 127;
+  }
+  return false;
+}
 
 export interface GatewayOptions {
   apiKey: string;
@@ -62,6 +79,14 @@ export interface GatewayOptions {
   taskClientFactory?: () => Promise<TaskClient>;
   /** Optional durable JSON ledger path for a single gateway instance. */
   budgetStateFile?: string;
+  /** A file whose presence immediately stops new paid dispatches. */
+  killSwitchFile?: string;
+  /** Maximum downloaded artifact size accepted into a response. */
+  maxArtifactBytes?: number;
+  /** Maximum number of artifacts downloaded for one response. */
+  maxArtifactCount?: number;
+  /** Release/image identifier exposed in safe operational responses. */
+  releaseId?: string;
 }
 
 export interface Gateway {
@@ -96,6 +121,9 @@ interface GatewayMetrics {
   rateLimitRejected: number;
   budgetRejected: number;
   capacityRejected: number;
+  killSwitchRejected: number;
+  artifactRejected: number;
+  taskTimeouts: number;
 }
 
 class HttpError extends Error {
@@ -271,17 +299,46 @@ async function sendTaskWithDeadline(
   }
 }
 
-async function downloadArtifacts(session: TaskSession, taskTimeoutMs: number): Promise<unknown[]> {
-  const refs: ArtifactRef[] = session.listArtifacts();
+async function downloadArtifacts(
+  session: TaskSession,
+  taskTimeoutMs: number,
+  maxArtifactBytes: number,
+  maxArtifactCount: number,
+): Promise<unknown[]> {
+  const refs = session.listArtifacts();
   const downloadTimeoutMs = Math.min(30_000, taskTimeoutMs);
   const out: unknown[] = [];
-  for (const ref of refs) {
+  if (refs.length > maxArtifactCount) {
+    out.push({
+      error: `artifact count exceeds gateway limit of ${maxArtifactCount}`,
+      omittedCount: refs.length - maxArtifactCount,
+    });
+  }
+  for (const ref of refs.slice(0, maxArtifactCount)) {
     try {
+      if (typeof ref.size === 'number' && ref.size > maxArtifactBytes) {
+        out.push({
+          fileName: ref.fileName ?? null,
+          mimeType: ref.mimeType ?? '',
+          size: ref.size,
+          error: `artifact exceeds gateway limit of ${maxArtifactBytes} bytes`,
+        });
+        continue;
+      }
       const downloaded = await withDeadline(
         session.downloadArtifact(ref),
         downloadTimeoutMs,
         'artifact download timed out',
       );
+      if (downloaded.data.byteLength > maxArtifactBytes) {
+        out.push({
+          fileName: ref.fileName ?? downloaded.fileName ?? null,
+          mimeType: downloaded.mimeType || ref.mimeType || '',
+          size: downloaded.data.byteLength,
+          error: `artifact exceeds gateway limit of ${maxArtifactBytes} bytes`,
+        });
+        continue;
+      }
       const text = new TextDecoder().decode(downloaded.data);
       const mimeType = downloaded.mimeType || ref.mimeType || '';
       const isJson = mimeType.includes('json') || /^[{[]/.test(text.trim());
@@ -322,6 +379,8 @@ async function invokeAgent(
   maxProgressEvents: number,
   idempotencyKey: string | undefined,
   correlationId: string,
+  maxArtifactBytes: number,
+  maxArtifactCount: number,
 ): Promise<InvokeResult> {
   const session = await sendTaskWithDeadline(
     client,
@@ -363,7 +422,7 @@ async function invokeAgent(
 
   try {
     if (terminal.state === 'completed') {
-      result.artifacts = await downloadArtifacts(session, taskTimeoutMs);
+      result.artifacts = await downloadArtifacts(session, taskTimeoutMs, maxArtifactBytes, maxArtifactCount);
     } else if (terminal.reason !== undefined) {
       result.reason = terminal.reason;
     } else if (terminal.error !== undefined) {
@@ -421,6 +480,9 @@ export function createGateway(options: GatewayOptions): Gateway {
   const maxBodyBytes = options.maxBodyBytes ?? 1_000_000;
   const maxProgressEvents = options.maxProgressEvents ?? 50;
   const maxQuestionChars = options.maxQuestionChars ?? DEFAULT_MAX_QUESTION_CHARS;
+  const maxArtifactBytes = options.maxArtifactBytes ?? DEFAULT_MAX_ARTIFACT_BYTES;
+  const maxArtifactCount = options.maxArtifactCount ?? DEFAULT_MAX_ARTIFACT_COUNT;
+  const releaseId = options.releaseId ?? process.env.GATEWAY_RELEASE_ID ?? 'unversioned';
   const maxConcurrentTasks = options.maxConcurrentTasks ?? 8;
   const maxRequestsPerMinute = options.maxRequestsPerMinute ?? DEFAULT_REQUESTS_PER_MINUTE;
   const maxDailyTasks = options.maxDailyTasks ?? DEFAULT_DAILY_TASKS;
@@ -430,6 +492,8 @@ export function createGateway(options: GatewayOptions): Gateway {
   positiveInteger(maxBodyBytes, 'maxBodyBytes');
   positiveInteger(maxProgressEvents, 'maxProgressEvents');
   positiveInteger(maxQuestionChars, 'maxQuestionChars');
+  positiveInteger(maxArtifactBytes, 'maxArtifactBytes');
+  positiveInteger(maxArtifactCount, 'maxArtifactCount');
   positiveInteger(maxConcurrentTasks, 'maxConcurrentTasks');
   positiveInteger(maxRequestsPerMinute, 'maxRequestsPerMinute');
   positiveInteger(maxDailyTasks, 'maxDailyTasks');
@@ -457,6 +521,9 @@ export function createGateway(options: GatewayOptions): Gateway {
     rateLimitRejected: 0,
     budgetRejected: 0,
     capacityRejected: 0,
+    killSwitchRejected: 0,
+    artifactRejected: 0,
+    taskTimeouts: 0,
   };
   let clientPromise: Promise<TaskClient> | null = null;
   let clientReady = false;
@@ -488,6 +555,24 @@ export function createGateway(options: GatewayOptions): Gateway {
       budget = { day, tasks: 0, spendUsd: 0 };
       persistBudget();
     }
+  };
+
+  const killSwitchActive = (): boolean => Boolean(options.killSwitchFile && existsSync(options.killSwitchFile));
+
+  const budgetSnapshot = (): Record<string, number | string> => {
+    resetBudgetIfNeeded();
+    return {
+      day: budget.day,
+      remainingTasks: Math.max(0, maxDailyTasks - budget.tasks),
+      remainingSpendUsd: Number(Math.max(0, maxDailySpendUsd - budget.spendUsd).toFixed(2)),
+    };
+  };
+
+  const setBudgetHeaders = (res: ServerResponse): void => {
+    const snapshot = budgetSnapshot();
+    res.setHeader('x-gateway-budget-day', String(snapshot.day));
+    res.setHeader('x-gateway-remaining-tasks', String(snapshot.remainingTasks));
+    res.setHeader('x-gateway-remaining-spend-usd', String(snapshot.remainingSpendUsd));
   };
 
   const reserveBudget = (clientId: string): void => {
@@ -563,6 +648,8 @@ export function createGateway(options: GatewayOptions): Gateway {
             agents: AGENTS.length,
             billingMode: BILLING_MODE,
             authRequired: true,
+            releaseId,
+            killSwitchActive: killSwitchActive(),
             inFlightTasks,
             maxConcurrentTasks,
           });
@@ -578,9 +665,14 @@ export function createGateway(options: GatewayOptions): Gateway {
           }
           resetBudgetIfNeeded();
           const budgetAvailable = budget.tasks < maxDailyTasks && budget.spendUsd + taskCostUsd <= maxDailySpendUsd;
-          sendJson(res, budgetAvailable ? 200 : 503, {
-            status: budgetAvailable ? 'ready' : 'budget_exhausted',
+          const operationallyReady = budgetAvailable && !killSwitchActive();
+          setBudgetHeaders(res);
+          sendJson(res, operationallyReady ? 200 : 503, {
+            status: operationallyReady ? 'ready' : killSwitchActive() ? 'kill_switch_active' : 'budget_exhausted',
             configurationReady: true,
+            operationallyReady,
+            releaseId,
+            killSwitchActive: killSwitchActive(),
             // Readiness initializes the SDK client but never sends a task;
             // a successful paid canary is still required before promotion.
             clientReady,
@@ -589,13 +681,15 @@ export function createGateway(options: GatewayOptions): Gateway {
             budget: {
               day: budget.day,
               reservedTasks: budget.tasks,
+              remainingTasks: Math.max(0, maxDailyTasks - budget.tasks),
+              remainingSpendUsd: Number(Math.max(0, maxDailySpendUsd - budget.spendUsd).toFixed(2)),
               maxDailyTasks,
               reservedSpendUsd: budget.spendUsd,
               maxDailySpendUsd,
               taskCostUsd,
             },
           });
-          recordStatus(budgetAvailable ? 200 : 503);
+          recordStatus(operationallyReady ? 200 : 503);
           return;
         }
 
@@ -642,6 +736,10 @@ export function createGateway(options: GatewayOptions): Gateway {
             throw new HttpError(400, 'request body must be a JSON object');
           }
           const request = payload as Record<string, unknown>;
+          const requestedSchema = req.headers['x-gateway-schema-version'];
+          if (requestedSchema !== undefined && requestedSchema !== REQUEST_SCHEMA_VERSION) {
+            throw new HttpError(400, `unsupported gateway request schema '${requestedSchema}'`);
+          }
           if (request.source_file !== undefined && request.source_file !== 'yield_data.csv') {
             throw new HttpError(400, 'source_file must be the canonical yield_data.csv');
           }
@@ -650,6 +748,9 @@ export function createGateway(options: GatewayOptions): Gateway {
           }
           if (request.question.length > maxQuestionChars) {
             throw new HttpError(413, `question exceeds ${maxQuestionChars} characters`);
+          }
+          if (killSwitchActive()) {
+            throw new HttpError(503, 'gateway kill switch is active; paid dispatch is disabled');
           }
           if (inFlightTasks >= maxConcurrentTasks) {
             res.setHeader('retry-after', '5');
@@ -661,6 +762,7 @@ export function createGateway(options: GatewayOptions): Gateway {
           }
           const idempotencyKey = Array.isArray(idempotencyHeader) ? undefined : idempotencyHeader;
           reserveBudget(clientId);
+          setBudgetHeaders(res);
           metrics.invokeAccepted += 1;
           inFlightTasks += 1;
           try {
@@ -673,9 +775,20 @@ export function createGateway(options: GatewayOptions): Gateway {
               maxProgressEvents,
               idempotencyKey,
               correlationId,
+              maxArtifactBytes,
+              maxArtifactCount,
             );
-            sendJson(res, 200, result);
-            metrics.invokeCompleted += 1;
+            sendJson(res, 200, {
+              ...result,
+              schemaVersion: REQUEST_SCHEMA_VERSION,
+              releaseId,
+              budget: budgetSnapshot(),
+            });
+            if (result.state === 'completed') metrics.invokeCompleted += 1;
+            else metrics.invokeFailed += 1;
+            if (result.artifacts?.some((artifact) => typeof artifact === 'object' && artifact !== null && 'error' in artifact)) {
+              metrics.artifactRejected += 1;
+            }
             recordStatus(200);
           } finally {
             inFlightTasks -= 1;
@@ -694,6 +807,9 @@ export function createGateway(options: GatewayOptions): Gateway {
         if (status === 429 && message.includes('request rate limit')) metrics.rateLimitRejected += 1;
         if (status === 429 && message.includes('daily paid-task budget')) metrics.budgetRejected += 1;
         if (status === 503 && message.includes('capacity')) metrics.capacityRejected += 1;
+        if (status === 503 && message.includes('kill switch')) metrics.killSwitchRejected += 1;
+        if (message.includes('artifact exceeds gateway limit')) metrics.artifactRejected += 1;
+        if (status === 504) metrics.taskTimeouts += 1;
         if (agentName && status >= 500) metrics.invokeFailed += 1;
         if (err instanceof HttpError && err.retryAfterSeconds !== undefined) {
           res.setHeader('retry-after', String(err.retryAfterSeconds));

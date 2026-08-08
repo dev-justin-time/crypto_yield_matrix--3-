@@ -137,7 +137,6 @@ def catalog_by_symbol() -> dict[str, dict[str, str]]:
     return {row.get("symbol", "").upper(): row for row in load_asset_catalog() if row.get("symbol")}
 
 
-@lru_cache(maxsize=1)
 def load_live_snapshot() -> dict[str, Any]:
     """Read the worker's overlay without making network calls in a paid task."""
     if not LIVE_SNAPSHOT.exists():
@@ -151,19 +150,43 @@ def load_live_snapshot() -> dict[str, Any]:
 
 def live_enrichment(symbol: str) -> dict[str, Any]:
     snapshot = load_live_snapshot()
-    market = snapshot.get("market", {}).get("assets", {})
+    market_section = snapshot.get("market") if isinstance(snapshot.get("market"), dict) else {}
+    market = market_section.get("assets") if isinstance(market_section.get("assets"), dict) else {}
     observation = market.get(str(symbol).upper(), {}) if isinstance(market, dict) else {}
     generated_at = snapshot.get("generated_at")
+    observation = observation if isinstance(observation, dict) else {}
+    observation_fresh = _observation_is_fresh(observation, snapshot)
+    defi_section = snapshot.get("defi") if isinstance(snapshot.get("defi"), dict) else {}
+    blockchain_section = snapshot.get("blockchain") if isinstance(snapshot.get("blockchain"), dict) else {}
+    data_status = snapshot.get("data_status", "unavailable") if snapshot else "unavailable"
+    usable = bool(observation_fresh and _snapshot_is_fresh(snapshot) and data_status == "live_overlay_only" and observation.get("observation_status") != "retained_from_previous_cycle")
     return {
-        "status": snapshot.get("data_status", "unavailable") if snapshot else "unavailable",
+        "status": data_status,
         "generated_at": generated_at,
         "freshness": snapshot.get("freshness", {}),
         "is_fresh": _snapshot_is_fresh(snapshot),
-        "market": observation if isinstance(observation, dict) else {},
-        "defi_chain_observations": snapshot.get("defi", {}).get("chains", []) if snapshot else [],
-        "blockchain_observations": snapshot.get("blockchain", {}).get("observations", []) if snapshot else [],
+        "usable": usable,
+        "market": observation if usable else None,
+        "market_observation": observation,
+        "defi_chain_observations": defi_section.get("chains", []) if snapshot else [],
+        "blockchain_observations": blockchain_section.get("observations", []) if snapshot else [],
         "provider_errors": snapshot.get("errors", []) if snapshot else [],
     }
+
+
+def _observation_is_fresh(observation: dict[str, Any], snapshot: dict[str, Any]) -> bool:
+    observed_at = observation.get("observed_at")
+    if not observed_at:
+        return False
+    try:
+        from datetime import datetime, timezone
+        observed = datetime.fromisoformat(str(observed_at).replace("Z", "+00:00"))
+        age = (datetime.now(timezone.utc) - observed).total_seconds()
+        freshness = snapshot.get("freshness") if isinstance(snapshot.get("freshness"), dict) else {}
+        limit = float(freshness.get("stale_after_seconds", 900))
+        return age >= 0 and age <= limit
+    except (TypeError, ValueError, OverflowError):
+        return False
 
 
 def _snapshot_is_fresh(snapshot: dict[str, Any]) -> bool:
@@ -173,7 +196,8 @@ def _snapshot_is_fresh(snapshot: dict[str, Any]) -> bool:
         from datetime import datetime, timezone
         generated = datetime.fromisoformat(str(snapshot["generated_at"]).replace("Z", "+00:00"))
         age = (datetime.now(timezone.utc) - generated).total_seconds()
-        limit = float(snapshot.get("freshness", {}).get("stale_after_seconds", 900))
+        freshness = snapshot.get("freshness") if isinstance(snapshot.get("freshness"), dict) else {}
+        limit = float(freshness.get("stale_after_seconds", 900))
         return age >= 0 and age <= limit
     except (TypeError, ValueError, OverflowError):
         return False
@@ -203,11 +227,26 @@ def asset_enrichment(symbol: str) -> dict[str, Any]:
     }
 
 
-def value(row: dict[str, str], field: str, default: float = 0.0) -> float:
-    try:
-        return float(row.get(field, default))
-    except (TypeError, ValueError):
-        return default
+def value(row: dict[str, str], field: str, default: float | None = None) -> float | None:
+    """Return a finite number, preserving unavailable values as ``None``.
+
+    Missing, blank, invalid, NaN, and infinite values are not silently converted
+    to zero. JSON artifacts therefore serialize unavailable numeric evidence as
+    ``null`` and retain the distinction between missing and a supplied zero.
+    """
+    parsed = numeric_value(row, field)
+    return default if parsed is None else parsed
+
+
+def display_number(value_to_display: float | None, suffix: str = "") -> str:
+    """Render a user-facing numeric value without disguising missing evidence."""
+    return "unavailable" if value_to_display is None else f"{value_to_display:.2f}{suffix}"
+
+
+def safe_subtract(left: float | None, right: float | None) -> float | None:
+    if left is None or right is None:
+        return None
+    return left - right
 
 
 def select(rows: Iterable[dict[str, str]], payload: dict[str, Any]) -> list[dict[str, str]]:
@@ -287,6 +326,11 @@ def report(agent: str, status: str, summary: str, findings: list[dict[str, Any]]
         "assumptions": assumptions or [],
         "limitations": limitations or [],
         "user_value": USER_VALUE_GUIDANCE.get(agent, DEFAULT_USER_VALUE),
+        "data_quality": {
+            "missing_numeric_values": "null",
+            "zero_semantics": "A numeric zero is preserved only when supplied by the source.",
+            "policy": "Missing, blank, invalid, NaN, and infinite numeric values remain explicit and are never substituted with zero.",
+        },
         "asset_catalog": {
             "available": bool(ASSET_CATALOG.exists()),
             "rows": len(load_asset_catalog()),
@@ -308,7 +352,7 @@ def report(agent: str, status: str, summary: str, findings: list[dict[str, Any]]
             "context_files": accessed,
         },
     }
-    required = {"agent", "status", "summary", "findings", "assumptions", "limitations", "user_value", "asset_catalog", "live_overlay", "provenance"}
+    required = {"agent", "status", "summary", "findings", "assumptions", "limitations", "user_value", "data_quality", "asset_catalog", "live_overlay", "provenance"}
     if set(payload) != required:
         raise RuntimeError("common artifact envelope failed validation")
     return {"artifacts": [{"data": json.dumps(payload, indent=2), "mimeType": "application/json"}]}

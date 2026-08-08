@@ -8,7 +8,7 @@ version = "1.0.0"
 description = "defi_liquidity_analyst agent"
 requires-python = ">=3.12"
 dependencies = [
-    "blocks-network",
+    "blocks-network==1.0.11",
 ]
 
 [tool.setuptools]

@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "generated_by": "generate_deployments.py",
+  "generator_version": "1",
+  "agent_name": "model_validation_guardian",
+  "source_card": "blocks_agents/model_validation_guardian.json",
+  "source_card_sha256": "24af319691ff74c6e0a5d4e0613271d47bdfba10c99c2880fb524505af8e1cdb",
+  "source_card_version": "1.0.0",
+  "native_card_version": "1.1.0",
+  "version_policy": "Root card version describes local source semantics; native card version describes the registered package. Native version changes require blocks check and a controlled canary.",
+  "runtime_policy": "Native runtime limits are package deployment policy and must remain positive, bounded, and explicitly reviewed; the adapter must remain ./handler.py:handler.",
+  "source_handler": "./handlers/model_validation_guardian.py",
+  "deployment_project": "model_validation_guardian",
+  "deployment_card": "model_validation_guardian/agent-card.json",
+  "deployment_card_sha256": "a61ed453d02f9486bb5aa704f42500488501488e74314221a0e1509b66c50aad",
+  "card_contract": {
+    "identity": {
+      "agentName": "model_validation_guardian",
+      "displayName": "Model Validation Guardian",
+      "description": "Checks duplicate provenance rows, target circularity, temporal leakage, split integrity, calibration, baselines, and uncertainty before a crypto model is trusted.",
+      "provider": {
+        "organization": "Crypto Yield Matrix"
+      }
+    },
+    "taskKinds": [
+      "request"
+    ],
+    "tags": [
+      {
+        "id": "validation",
+        "name": "Model validation and leakage control"
+      }
+    ]
+  },
+  "native_adapter": {
+    "path": "model_validation_guardian/handler.py",
+    "kind": "delegating_standard_handler",
+    "generated": true
+  },
+  "blocks_validation": {
+    "required": true,
+    "executed_by_generator": false,
+    "command": "blocks check",
+    "note": "Requires the official Blocks CLI and project credentials; never run as part of no-spend local generation."
+  }
+}

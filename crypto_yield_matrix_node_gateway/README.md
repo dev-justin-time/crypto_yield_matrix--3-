@@ -13,21 +13,27 @@ GATEWAY_CLIENT_AGENTS=research_app=crypto_risk_analyst|matrix_research_insights_
 GATEWAY_MAX_DAILY_TASKS=100
 GATEWAY_MAX_DAILY_SPEND_USD=10
 GATEWAY_TASK_COST_USD=0.10
+GATEWAY_HOST=127.0.0.1
+GATEWAY_ALLOW_PUBLIC_BIND=false
+GATEWAY_RELEASE_ID=release-or-image-digest
 GATEWAY_MAX_REQUESTS_PER_MINUTE=30
 GATEWAY_MAX_CONCURRENT_TASKS=8
+GATEWAY_MAX_ARTIFACT_BYTES=5242880
+GATEWAY_MAX_ARTIFACT_COUNT=32
 GATEWAY_BUDGET_STATE_FILE=.gateway-state/budget.json
+GATEWAY_KILL_SWITCH_FILE=.gateway-state/PAUSE_PAID_TASKS
 ```
 
-`GATEWAY_CLIENT_KEYS` contains caller credentials in `clientId=secret` form. Use a different secret from the Blocks API key. Secrets are compared in constant time and are never logged. `GATEWAY_CLIENT_AGENTS` can restrict each caller to named agents; omit it only for a trusted single-tenant gateway. This built-in ledger is intentionally single-instance and persisted at `GATEWAY_BUDGET_STATE_FILE`; the supplied Compose file mounts a durable volume. Run one gateway instance unless an external shared quota ledger is added. Providers can scale independently through Blocks runtime settings.
+`GATEWAY_CLIENT_KEYS` contains caller credentials in `clientId=secret` form. Use a different secret from the Blocks API key. Secrets are compared in constant time and are never logged. `GATEWAY_CLIENT_AGENTS` can restrict each caller to named agents; omit it only for a trusted single-tenant gateway. The default listener is loopback-only; every non-loopback bind requires `GATEWAY_ALLOW_PUBLIC_BIND=true` and must sit behind a verified private, TLS-terminating authenticated edge. This built-in ledger is intentionally single-instance and persisted at `GATEWAY_BUDGET_STATE_FILE`; the supplied Compose file mounts a durable volume. Run one gateway instance unless an external shared quota ledger is added. Providers can scale independently through Blocks runtime settings.
 
-The gateway reserves a task before calling Blocks. The reservation is conservative: uncertain, failed, or canceled remote outcomes still consume the configured daily allowance so a network ambiguity cannot cause uncontrolled spend. The `X-Idempotency-Key` header is forwarded to Blocks for caller retries; the gateway itself never retries an uncertain paid send.
+The gateway reserves a task before calling Blocks. The reservation is conservative: uncertain, failed, or canceled remote outcomes still consume the configured daily allowance so a network ambiguity cannot cause uncontrolled spend. Create the configured kill-switch file to stop new paid dispatches immediately. Responses include remaining task/spend budget headers and a release identifier. `X-Gateway-Schema-Version: 1` is the current optional request contract marker. Artifact count and declared/downloaded byte limits prevent unbounded response growth; over-limit artifacts are reported explicitly rather than silently dropped. The `X-Idempotency-Key` header is forwarded to Blocks for caller retries; the gateway itself never retries an uncertain paid send.
 
 ## Endpoints
 
 - `GET /health` — no-spend liveness.
-- `GET /ready` — no-spend configuration and daily-budget readiness.
+- `GET /ready` — no-spend configuration, kill-switch, and daily-budget readiness.
 - `GET /agents` — served agent catalog.
-- `GET /metrics` — authenticated no-spend process counters for request status, auth rejection, accepted/completed/failed invokes, and separated rate/budget/capacity rejection; it requires the gateway bearer credential and should still be restricted to a trusted operational network.
+- `GET /metrics` — authenticated no-spend process counters for request status, auth rejection, accepted/completed/failed invokes, rate/budget/capacity/kill-switch/artifact rejection, and timeouts; it requires the gateway bearer credential and should still be restricted to a trusted operational network.
 - `POST /agents/:agentName/invoke` — requires `Authorization: Bearer <gateway-client-secret>` and JSON containing a non-empty `question`.
 
 Example:
@@ -48,6 +54,7 @@ Responses include an `x-request-id` correlation header and task results include 
 npm install
 npm run check
 npm run smoke
+npm run resilience
 ```
 
 The smoke test uses placeholder credentials and never dispatches to Blocks.

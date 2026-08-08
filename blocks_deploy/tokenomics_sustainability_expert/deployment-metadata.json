@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "generated_by": "generate_deployments.py",
+  "generator_version": "1",
+  "agent_name": "tokenomics_sustainability_expert",
+  "source_card": "blocks_agents/tokenomics_sustainability_expert.json",
+  "source_card_sha256": "59b4e1e75669be54fce5a1c1fbd3305a462fe1786f10f9c770163fe859856c90",
+  "source_card_version": "1.0.0",
+  "native_card_version": "1.1.0",
+  "version_policy": "Root card version describes local source semantics; native card version describes the registered package. Native version changes require blocks check and a controlled canary.",
+  "runtime_policy": "Native runtime limits are package deployment policy and must remain positive, bounded, and explicitly reviewed; the adapter must remain ./handler.py:handler.",
+  "source_handler": "./handlers/tokenomics_sustainability_expert.py",
+  "deployment_project": "tokenomics_sustainability_expert",
+  "deployment_card": "tokenomics_sustainability_expert/agent-card.json",
+  "deployment_card_sha256": "e104a3694d721572115949ee2ad9fd39a8b8cab9669def6b34f861ded0eac4a5",
+  "card_contract": {
+    "identity": {
+      "agentName": "tokenomics_sustainability_expert",
+      "displayName": "Tokenomics Sustainability Expert",
+      "description": "Evaluates nominal yield against inflation, dilution, supply, and market-cap dynamics with transparent calculations.",
+      "provider": {
+        "organization": "Crypto Yield Matrix"
+      }
+    },
+    "taskKinds": [
+      "request"
+    ],
+    "tags": [
+      {
+        "id": "tokenomics",
+        "name": "Tokenomics sustainability"
+      }
+    ]
+  },
+  "native_adapter": {
+    "path": "tokenomics_sustainability_expert/handler.py",
+    "kind": "delegating_standard_handler",
+    "generated": true
+  },
+  "blocks_validation": {
+    "required": true,
+    "executed_by_generator": false,
+    "command": "blocks check",
+    "note": "Requires the official Blocks CLI and project credentials; never run as part of no-spend local generation."
+  }
+}

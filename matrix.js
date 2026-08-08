@@ -189,10 +189,18 @@
         const liveAsset = liveSnapshot && liveSnapshot.market && liveSnapshot.market.assets
           ? liveSnapshot.market.assets[asset.symbol]
           : null;
-        if (liveAsset && liveAsset.price_usd != null) {
-          card.append(element('div', 'catalog-live', `Live overlay · ${formatUsd(liveAsset.price_usd)} · ${signed(liveAsset.change_24h_pct)}% 24h · ${liveAsset.provider || 'provider'} · ${liveAsset.observed_at || 'time unavailable'}`));
+        const generatedAt = liveSnapshot && liveSnapshot.generated_at ? new Date(liveSnapshot.generated_at) : null;
+        const staleAfterMs = Number(liveSnapshot && liveSnapshot.freshness && liveSnapshot.freshness.stale_after_seconds || 900) * 1000;
+        const snapshotFresh = generatedAt && Number.isFinite(generatedAt.getTime()) && Date.now() - generatedAt.getTime() >= 0 && Date.now() - generatedAt.getTime() <= staleAfterMs;
+        const observedAt = liveAsset && liveAsset.observed_at ? new Date(liveAsset.observed_at) : null;
+        const assetFresh = observedAt && Number.isFinite(observedAt.getTime()) && Date.now() - observedAt.getTime() >= 0 && Date.now() - observedAt.getTime() <= staleAfterMs;
+        const usableLiveAsset = liveAsset && liveAsset.price_usd != null && liveAsset.observation_status !== 'retained_from_previous_cycle' && snapshotFresh && assetFresh && liveSnapshot.data_status === 'live_overlay_only';
+        if (usableLiveAsset) {
+          card.append(element('div', 'catalog-live', `Live overlay · ${formatUsd(liveAsset.price_usd)} · ${signed(liveAsset.change_24h_pct)}% 24h · ${liveAsset.provider_coverage || liveAsset.provider || 'provider'} · ${liveAsset.observed_at || 'time unavailable'}`));
+        } else if (liveAsset && liveAsset.price_usd != null) {
+          card.append(element('div', 'catalog-live stale', 'Live value retained but stale/degraded; do not treat it as current.'));
         } else {
-          card.append(element('div', 'catalog-live', 'Live overlay unavailable for this asset; historical evidence remains unchanged.'));
+          card.append(element('div', 'catalog-live unavailable', 'Live overlay unavailable for this asset; historical evidence remains unchanged.'));
         }
         card.append(element('div', 'catalog-cta', asset.quote_status === 'source_snapshot' ? 'Inspect quote + yield evidence →' : 'Explore yield evidence →'));
         grid.append(card);

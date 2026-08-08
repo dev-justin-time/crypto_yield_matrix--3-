@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "generated_by": "generate_deployments.py",
+  "generator_version": "1",
+  "agent_name": "portfolio_scenario_expert",
+  "source_card": "blocks_agents/portfolio_scenario_expert.json",
+  "source_card_sha256": "391d254cea2bd63071f5bb54806204f5ff671f58421cf273675425b1db6c728a",
+  "source_card_version": "1.0.0",
+  "native_card_version": "1.1.0",
+  "version_policy": "Root card version describes local source semantics; native card version describes the registered package. Native version changes require blocks check and a controlled canary.",
+  "runtime_policy": "Native runtime limits are package deployment policy and must remain positive, bounded, and explicitly reviewed; the adapter must remain ./handler.py:handler.",
+  "source_handler": "./handlers/portfolio_scenario_expert.py",
+  "deployment_project": "portfolio_scenario_expert",
+  "deployment_card": "portfolio_scenario_expert/agent-card.json",
+  "deployment_card_sha256": "7396c8fc8478a5ad904ab7a6f69279422ce5fdb050466e783127a6d1efa20d10",
+  "card_contract": {
+    "identity": {
+      "agentName": "portfolio_scenario_expert",
+      "displayName": "Portfolio Scenario Expert",
+      "description": "Runs transparent, non-advisory crypto yield/risk/liquidity scenarios under user-specified constraints.",
+      "provider": {
+        "organization": "Crypto Yield Matrix"
+      }
+    },
+    "taskKinds": [
+      "request"
+    ],
+    "tags": [
+      {
+        "id": "scenarios",
+        "name": "Portfolio scenarios"
+      }
+    ]
+  },
+  "native_adapter": {
+    "path": "portfolio_scenario_expert/handler.py",
+    "kind": "delegating_standard_handler",
+    "generated": true
+  },
+  "blocks_validation": {
+    "required": true,
+    "executed_by_generator": false,
+    "command": "blocks check",
+    "note": "Requires the official Blocks CLI and project credentials; never run as part of no-spend local generation."
+  }
+}

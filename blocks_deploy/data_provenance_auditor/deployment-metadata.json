@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "generated_by": "generate_deployments.py",
+  "generator_version": "1",
+  "agent_name": "data_provenance_auditor",
+  "source_card": "blocks_agents/data_provenance_auditor.json",
+  "source_card_sha256": "ff4f11bd564381e734577d2b8c7b8257697a805643fe55f300badafabc3404a1",
+  "source_card_version": "1.0.0",
+  "native_card_version": "1.1.0",
+  "version_policy": "Root card version describes local source semantics; native card version describes the registered package. Native version changes require blocks check and a controlled canary.",
+  "runtime_policy": "Native runtime limits are package deployment policy and must remain positive, bounded, and explicitly reviewed; the adapter must remain ./handler.py:handler.",
+  "source_handler": "./handlers/data_provenance_auditor.py",
+  "deployment_project": "data_provenance_auditor",
+  "deployment_card": "data_provenance_auditor/agent-card.json",
+  "deployment_card_sha256": "d7dd2248fe79ff5d512d48b4a9ad7c3090973f1ff627eabed9b0db4416ad166b",
+  "card_contract": {
+    "identity": {
+      "agentName": "data_provenance_auditor",
+      "displayName": "Data Provenance Auditor",
+      "description": "Audits CSV lineage, schema compatibility, source conflicts, and validation evidence for the crypto yield matrix.",
+      "provider": {
+        "organization": "Crypto Yield Matrix"
+      }
+    },
+    "taskKinds": [
+      "request"
+    ],
+    "tags": [
+      {
+        "id": "provenance",
+        "name": "Data provenance and audit"
+      }
+    ]
+  },
+  "native_adapter": {
+    "path": "data_provenance_auditor/handler.py",
+    "kind": "delegating_standard_handler",
+    "generated": true
+  },
+  "blocks_validation": {
+    "required": true,
+    "executed_by_generator": false,
+    "command": "blocks check",
+    "note": "Requires the official Blocks CLI and project credentials; never run as part of no-spend local generation."
+  }
+}

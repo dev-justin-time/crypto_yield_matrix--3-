@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "generated_by": "generate_deployments.py",
+  "generator_version": "1",
+  "agent_name": "feature_engineering_expert",
+  "source_card": "blocks_agents/feature_engineering_expert.json",
+  "source_card_sha256": "e4475ac2d703b8f5ef102f85dab9dd4133b300e7f4946fa1cf0ab4cfbcb27ef8",
+  "source_card_version": "1.0.0",
+  "native_card_version": "1.1.0",
+  "version_policy": "Root card version describes local source semantics; native card version describes the registered package. Native version changes require blocks check and a controlled canary.",
+  "runtime_policy": "Native runtime limits are package deployment policy and must remain positive, bounded, and explicitly reviewed; the adapter must remain ./handler.py:handler.",
+  "source_handler": "./handlers/feature_engineering_expert.py",
+  "deployment_project": "feature_engineering_expert",
+  "deployment_card": "feature_engineering_expert/agent-card.json",
+  "deployment_card_sha256": "885bf4d412d6b4e01e1290faae922f354b1c5ae94acaab6f1d3c002c62d2586e",
+  "card_contract": {
+    "identity": {
+      "agentName": "feature_engineering_expert",
+      "displayName": "Crypto Feature Engineering Expert",
+      "description": "Computes transparent derived features for yield momentum, market-cap to TVL, risk, and category-relative yield analysis.",
+      "provider": {
+        "organization": "Crypto Yield Matrix"
+      }
+    },
+    "taskKinds": [
+      "request"
+    ],
+    "tags": [
+      {
+        "id": "feature_engineering",
+        "name": "Feature engineering"
+      }
+    ]
+  },
+  "native_adapter": {
+    "path": "feature_engineering_expert/handler.py",
+    "kind": "delegating_standard_handler",
+    "generated": true
+  },
+  "blocks_validation": {
+    "required": true,
+    "executed_by_generator": false,
+    "command": "blocks check",
+    "note": "Requires the official Blocks CLI and project credentials; never run as part of no-spend local generation."
+  }
+}

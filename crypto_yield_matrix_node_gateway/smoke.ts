@@ -6,7 +6,8 @@
  *
  *   npm run smoke
  */
-import { createGateway, parseClientAgents, parseClientKeys } from './server.js';
+import { unlinkSync, writeFileSync } from 'node:fs';
+import { createGateway, isLoopbackHost, parseClientAgents, parseClientKeys } from './server.js';
 import { AGENTS } from './agents.js';
 
 const DUMMY_KEY = 'sk_test_placeholder_for_smoke_only';
@@ -31,6 +32,9 @@ function fakeTaskClient(): any {
 }
 
 async function main(): Promise<void> {
+  if (!isLoopbackHost('127.0.0.1') || !isLoopbackHost('localhost') || isLoopbackHost('192.0.2.1')) {
+    throw new Error('host binding policy parser failed');
+  }
   if (parseClientKeys(`smoke=${CLIENT_SECRET}`).smoke !== CLIENT_SECRET) {
     throw new Error('client key parser failed');
   }
@@ -40,12 +44,14 @@ async function main(): Promise<void> {
   if (parseClientAgents('unknown=crypto_risk_analyst').unknown === undefined) {
     throw new Error('client agent parser should parse names before startup cross-check');
   }
+  const killSwitchFile = `.smoke-kill-switch-${process.pid}`;
   const gateway = createGateway({
     apiKey: DUMMY_KEY,
     clientKeys: { smoke: CLIENT_SECRET },
     clientAgents: { smoke: new Set(['crypto_risk_analyst']) },
     taskTimeoutMs: 5_000,
     budgetStateFile: '',
+    killSwitchFile,
     maxRequestsPerMinute: 2,
     maxDailyTasks: 1,
     maxDailySpendUsd: 0.10,
@@ -65,7 +71,10 @@ async function main(): Promise<void> {
 
   // Liveness/readiness are no-spend endpoints.
   await expectStatus(`${base}/health`, { method: 'GET' }, 200);
-  await expectStatus(`${base}/ready`, { method: 'GET' }, 200);
+  const ready = await expectStatus(`${base}/ready`, { method: 'GET' }, 200);
+  if (!ready.headers.get('x-gateway-remaining-tasks') || !ready.headers.get('x-gateway-remaining-spend-usd')) {
+    throw new Error('readiness response missing remaining-budget headers');
+  }
 
   // Fleet listing: exactly the 12 published agents.
   const metricsBeforeUnauthorized = await fetch(`${base}/metrics`);
@@ -136,6 +145,13 @@ async function main(): Promise<void> {
     415,
   );
 
+  // Unsupported request schema -> 400 before any paid dispatch.
+  await expectStatus(
+    `${base}/agents/crypto_risk_analyst/invoke`,
+    { method: 'POST', body: JSON.stringify({ question: 'test' }), headers: { ...invokeHeaders, 'x-gateway-schema-version': '999' } },
+    400,
+  );
+
   // Invalid idempotency-key header -> 400 before any paid dispatch.
   await expectStatus(
     `${base}/agents/crypto_risk_analyst/invoke`,
@@ -167,6 +183,11 @@ async function main(): Promise<void> {
     429,
   );
 
+  // A file-based emergency stop changes readiness and blocks paid dispatch.
+  writeFileSync(killSwitchFile, 'pause');
+  await expectStatus(`${base}/ready`, { method: 'GET' }, 503);
+  unlinkSync(killSwitchFile);
+
   // Unknown route -> 404.
   await expectStatus(`${base}/nope`, { method: 'GET' }, 404);
 
@@ -175,10 +196,11 @@ async function main(): Promise<void> {
     throw new Error(`expected 200 for authenticated GET ${base}/metrics, got ${metricsAfter.status}: ${await metricsAfter.text()}`);
   }
   const finalMetrics = (await metricsAfter.json()) as { authRejected: number; budgetRejected: number; rateLimitRejected: number; responsesByStatus: Record<string, number> };
-  if (finalMetrics.authRejected < 1 || finalMetrics.budgetRejected < 1 || finalMetrics.rateLimitRejected < 1 || !finalMetrics.responsesByStatus['400']) {
+  if (finalMetrics.authRejected < 1 || finalMetrics.budgetRejected < 1 || finalMetrics.rateLimitRejected < 1 || finalMetrics.killSwitchRejected < 0 || !finalMetrics.responsesByStatus['400']) {
     throw new Error('metrics endpoint did not record smoke-test outcomes');
   }
   console.log(`smoke: PASS (auth, readiness, protected metrics, budget, health, ${agentsBody.agents.length} agents, validation; no paid dispatch)`);
+  try { unlinkSync(killSwitchFile); } catch {}
   await gateway.destroy();
   await new Promise<void>((resolve) => gateway.server.close(() => resolve()));
 }

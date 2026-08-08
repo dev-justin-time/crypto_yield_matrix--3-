@@ -11,7 +11,7 @@ This directory is a **separate current-data overlay**. It never replaces the his
 - DeFiLlama `/v2/chains` chain TVL observations.
 - EVM `eth_blockNumber` and Solana `getEpochInfo` JSON-RPC health observations.
 
-Every observation includes provider, endpoint, and `observed_at`. The snapshot includes provider errors and the configured stale threshold. Empty or failed observations are not converted into zeroes.
+Every observation includes provider, provider coverage (`binance_only`, `binance_and_coinbase`, or `coinbase_fallback_only`), endpoint, and `observed_at`. The snapshot includes provider errors and the configured stale threshold. Empty or failed observations are not converted into zeroes. Coinbase is currently only a secondary/fallback sample for BTC, ETH, and SOL; most other assets are explicitly single-provider observations.
 
 ## Rate-limit policy
 
@@ -52,7 +52,7 @@ cat live_data/worker_status.json
 
 The Compose service uses `restart: unless-stopped`, a non-root user, an init process, an atomic output volume, and a healthcheck. A real production deployment should add host monitoring, alerting, persistent volume backups as appropriate, and a dedicated egress/network policy.
 
-The worker mirrors current snapshots into each data-consuming `blocks_deploy/*/live_data/` directory. This is convenience enrichment only. Paid Blocks handlers remain historical-source-first and never dispatch network calls from a task.
+When run locally, the worker can mirror current snapshots into each data-consuming `blocks_deploy/*/live_data/` directory. The supplied container compose file disables mirroring by default because provider runtimes must be given an explicitly shared volume first. This is convenience enrichment only. Paid Blocks handlers remain historical-source-first and never dispatch network calls from a task.
 
 ## Safety boundary
 

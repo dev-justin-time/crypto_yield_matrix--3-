@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "generated_by": "generate_deployments.py",
+  "generator_version": "1",
+  "agent_name": "matrix_research_insights_agent",
+  "source_card": "blocks_agents/matrix_research_insights_agent.json",
+  "source_card_sha256": "d6c8161817b9a86f80f3b0437c5b3c6fc3752b88030e23494f8c7931a104cf69",
+  "source_card_version": "1.0.0",
+  "native_card_version": "1.1.0",
+  "version_policy": "Root card version describes local source semantics; native card version describes the registered package. Native version changes require blocks check and a controlled canary.",
+  "runtime_policy": "Native runtime limits are package deployment policy and must remain positive, bounded, and explicitly reviewed; the adapter must remain ./handler.py:handler.",
+  "source_handler": "./handlers/matrix_research_insights_agent.py",
+  "deployment_project": "matrix_research_insights_agent",
+  "deployment_card": "matrix_research_insights_agent/agent-card.json",
+  "deployment_card_sha256": "74f2a88b2a128e44d1ef05bc2b6162fd5acdf97ed7f69dad6a70244b584e6857",
+  "card_contract": {
+    "identity": {
+      "agentName": "matrix_research_insights_agent",
+      "displayName": "Matrix Research Insights Agent",
+      "description": "Turns the existing crypto yield matrix, timeline, legend, and tooltip metrics into traceable research insights for users.",
+      "provider": {
+        "organization": "Crypto Yield Matrix"
+      }
+    },
+    "taskKinds": [
+      "request"
+    ],
+    "tags": [
+      {
+        "id": "dashboard",
+        "name": "Dashboard research insights"
+      }
+    ]
+  },
+  "native_adapter": {
+    "path": "matrix_research_insights_agent/handler.py",
+    "kind": "delegating_standard_handler",
+    "generated": true
+  },
+  "blocks_validation": {
+    "required": true,
+    "executed_by_generator": false,
+    "command": "blocks check",
+    "note": "Requires the official Blocks CLI and project credentials; never run as part of no-spend local generation."
+  }
+}

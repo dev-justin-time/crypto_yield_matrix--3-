@@ -1,8 +1,13 @@
-"""Native Blocks adapter for matrix_research_insights_agent."""
+"""Generated native Blocks adapter for matrix_research_insights_agent.
+
+Source card: blocks_agents/matrix_research_insights_agent.json
+Do not add business logic here; edit the source handler instead.
+"""
 
 from __future__ import annotations
 
 from typing import Optional
+
 from blocks_network import StartTaskMessage, TaskContext
 from blocks_agents.handlers.matrix_research_insights_agent import handler as local_handler
 

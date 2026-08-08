@@ -15,7 +15,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Callable
 from urllib.error import HTTPError, URLError
-from urllib.parse import quote
+from urllib.parse import quote, urlparse
 from urllib.request import Request, urlopen
 
 ROOT = Path(__file__).resolve().parent
@@ -29,6 +29,16 @@ USER_AGENT = "CryptoYieldMatrixLiveWorker/1.0 (+https://github.com/)"
 DEFAULT_CYCLE_SECONDS = 300
 DEFAULT_TIMEOUT_SECONDS = 15
 DEFAULT_STALE_AFTER_SECONDS = 900
+
+
+def validate_provider_url(value: str, name: str) -> str:
+    parsed = urlparse(value)
+    local_test_host = parsed.hostname in {"localhost", "127.0.0.1", "::1"}
+    if parsed.scheme != "https" and not (parsed.scheme == "http" and local_test_host):
+        raise ValueError(f"{name} must use HTTPS; HTTP is allowed only for localhost tests")
+    if parsed.username or parsed.password or not parsed.netloc:
+        raise ValueError(f"{name} must be an absolute URL without embedded credentials")
+    return value.rstrip("/")
 
 BINANCE_SYMBOLS = {"BTC": "BTCUSDT", "ETH": "ETHUSDT", "SOL": "SOLUSDT", "MATIC": "MATICUSDT", "ADA": "ADAUSDT", "XRP": "XRPUSDT", "AVAX": "AVAXUSDT", "DOT": "DOTUSDT", "ATOM": "ATOMUSDT", "LINK": "LINKUSDT", "AAVE": "AAVEUSDT", "UNI": "UNIUSDT", "ARB": "ARBUSDT", "OP": "OPUSDT", "NEAR": "NEARUSDT", "SEI": "SEIUSDT", "TIA": "TIAUSDT", "INJ": "INJUSDT", "FIL": "FILUSDT", "ALGO": "ALGOUSDT", "TRX": "TRXUSDT", "XLM": "XLMUSDT", "EOS": "EOSUSDT", "NEO": "NEOUSDT", "VET": "VETUSDT", "THETA": "THETAUSDT", "FTM": "FTMUSDT", "ONE": "ONEUSDT", "KAVA": "KAVAUSDT", "ROSE": "ROSEUSDT", "FLOW": "FLOWUSDT", "MINA": "MINAUSDT", "CELO": "CELOUSDT", "GLMR": "GLMRUSDT", "PENDLE": "PENDLEUSDT", "EIGEN": "EIGENUSDT", "ETHFI": "ETHFIUSDT", "JTO": "JTOUSDT", "LDO": "LDOUSDT", "RPL": "RPLUSDT", "MNDE": "MNDEUSDT", "HYPE": "HYPEUSDT", "ONDO": "ONDOUSDT", "ICP": "ICPUSDT", "GRT": "GRTUSDT", "CRO": "CROUSDT", "MKR": "MKRUSDT", "CRV": "CRVUSDT", "SNX": "SNXUSDT", "COMP": "COMPUSDT", "BAL": "BALUSDT", "YFI": "YFIUSDT", "WLD": "WLDUSDT", "LUNC": "LUNCUSDT"}
 COINBASE_PRODUCTS = {"BTC": "BTC-USD", "ETH": "ETH-USD", "SOL": "SOL-USD", "MATIC": "MATIC-USD", "ADA": "ADA-USD", "XRP": "XRP-USD"}
@@ -69,7 +79,7 @@ class ProviderState:
 class ProviderClient:
     def __init__(self, name: str, base_url: str, min_interval: float, timeout: float = DEFAULT_TIMEOUT_SECONDS, opener: Callable[..., Any] | None = None) -> None:
         self.state = ProviderState(name, min_interval)
-        self.base_url = base_url.rstrip("/")
+        self.base_url = validate_provider_url(base_url, f"{name} URL")
         self.timeout = timeout
         self.opener = opener or urlopen
 
@@ -90,6 +100,15 @@ class ProviderClient:
                 self.state.last_error = f"HTTP {error.code}"
                 if error.code not in (408, 425, 429, 500, 502, 503, 504):
                     break
+                retry_after = None
+                try:
+                    retry_after = float(error.headers.get("Retry-After", ""))
+                except (TypeError, ValueError):
+                    retry_after = None
+                if attempt + 1 < attempts:
+                    delay = min(30.0, max((2 ** attempt) + random.random(), retry_after or 0.0))
+                    time.sleep(delay)
+                    continue
             except (URLError, TimeoutError, OSError, ValueError) as error:
                 last_error = error
                 self.state.last_error = str(error)[:240]
@@ -121,7 +140,7 @@ class LiveDataCollector:
                 row = by_symbol.get(BINANCE_SYMBOLS.get(asset))
                 if not row:
                     continue
-                observations[asset] = {"price_usd": _number(row.get("lastPrice")), "change_24h_pct": _number(row.get("priceChangePercent")), "volume_24h_usd": _number(row.get("quoteVolume")), "provider": "binance", "endpoint": "/api/v3/ticker/24hr", "observed_at": observed}
+                observations[asset] = {"price_usd": _number(row.get("lastPrice")), "change_24h_pct": _number(row.get("priceChangePercent")), "volume_24h_usd": _number(row.get("quoteVolume")), "provider": "binance", "provider_coverage": "binance_only", "endpoint": "/api/v3/ticker/24hr", "observed_at": observed}
         except Exception as error:
             errors.append({"provider": "binance", "error": str(error)[:240]})
         # A small independent secondary sample makes provider drift visible and
@@ -132,10 +151,11 @@ class LiveDataCollector:
             try:
                 row = self.coinbase.get_json(f"/products/{quote(COINBASE_PRODUCTS[asset])}/stats")
                 if asset not in observations and row.get("last") is not None:
-                    observations[asset] = {"price_usd": _number(row.get("last")), "volume_24h_usd": _number(row.get("volume")), "provider": "coinbase", "endpoint": "/products/<product>/stats", "observed_at": iso_now()}
+                    observations[asset] = {"price_usd": _number(row.get("last")), "volume_24h_usd": _number(row.get("volume")), "provider": "coinbase", "provider_coverage": "coinbase_fallback_only", "endpoint": "/products/<product>/stats", "observed_at": iso_now()}
                 elif asset in observations:
                     observations[asset]["secondary_price_usd"] = _number(row.get("last"))
                     observations[asset]["secondary_provider"] = "coinbase"
+                    observations[asset]["provider_coverage"] = "binance_and_coinbase"
             except Exception as error:
                 errors.append({"provider": "coinbase", "asset": asset, "error": str(error)[:240]})
         return observations, errors
@@ -165,7 +185,9 @@ class LiveDataCollector:
                 request = Request(client.base_url, data=json.dumps(calls[chain]).encode(), headers={"User-Agent": USER_AGENT, "Content-Type": "application/json"}, method="POST")
                 with client.opener(request, timeout=client.timeout) as response:
                     payload = json.loads(response.read().decode())
-                value = payload.get("result") if isinstance(payload, dict) else None
+                if not isinstance(payload, dict) or payload.get("error") is not None:
+                    raise RuntimeError(f"{chain} JSON-RPC returned an error")
+                value = payload.get("result")
                 if chain == "ethereum" and isinstance(value, str):
                     value = int(value, 16)
                 height = value.get("absoluteSlot") if chain == "solana" and isinstance(value, dict) else value
@@ -184,7 +206,7 @@ class LiveDataCollector:
         chains, chain_errors = self._defi()
         blockchain, rpc_errors = self._blockchain()
         now = iso_now()
-        states = [self.binance.state, self.coinbase.state, self.defillama.state, *self.rpc.values()]
+        states = [self.binance.state, self.coinbase.state, self.defillama.state, *(client.state for client in self.rpc.values())]
         return {"schema_version": "live-overlay-1", "generated_at": now, "canonical_source": "yield_data.csv", "data_status": "live_overlay_only", "freshness": {"stale_after_seconds": DEFAULT_STALE_AFTER_SECONDS, "generated_at": now}, "market": {"assets": market, "asset_count": len(market)}, "defi": {"chains": chains, "chain_count": len(chains)}, "blockchain": {"observations": blockchain, "observation_count": len(blockchain)}, "provider_status": [{"provider": state.name, "last_success": state.last_success, "last_error": state.last_error, "failures": state.failures} for state in states], "errors": market_errors + chain_errors + rpc_errors}
 
 def write_snapshot(snapshot: dict[str, Any], output: Path = DEFAULT_OUTPUT) -> None:
@@ -196,6 +218,7 @@ def write_snapshot(snapshot: dict[str, Any], output: Path = DEFAULT_OUTPUT) -> N
 def is_fresh(snapshot: dict[str, Any], now: float | None = None) -> bool:
     try:
         generated = datetime.fromisoformat(snapshot["generated_at"].replace("Z", "+00:00")).timestamp()
-        return (time.time() if now is None else now) - generated <= float(snapshot.get("freshness", {}).get("stale_after_seconds", DEFAULT_STALE_AFTER_SECONDS))
+        age = (time.time() if now is None else now) - generated
+        return 0 <= age <= float(snapshot.get("freshness", {}).get("stale_after_seconds", DEFAULT_STALE_AFTER_SECONDS))
     except (KeyError, TypeError, ValueError):
         return False

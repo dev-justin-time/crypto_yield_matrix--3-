@@ -7,8 +7,16 @@ services:
       - .env
     environment:
       NODE_ENV: production
+      GATEWAY_HOST: 0.0.0.0
+      GATEWAY_ALLOW_PUBLIC_BIND: "true"
       GATEWAY_PORT: 3000
+      GATEWAY_RELEASE_ID: ${GATEWAY_RELEASE_ID:-compose-local}
       GATEWAY_BUDGET_STATE_FILE: /app/.gateway-state/budget.json
+      GATEWAY_KILL_SWITCH_FILE: /app/.gateway-state/PAUSE_PAID_TASKS
+      GATEWAY_MAX_ARTIFACT_BYTES: 5242880
+      GATEWAY_MAX_ARTIFACT_COUNT: 32
+    # The container binds on its private Docker network. Host access remains
+    # loopback-only; expose it publicly only through a verified authenticated edge.
     ports:
       - "127.0.0.1:3000:3000"
     volumes:

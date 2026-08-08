@@ -8,7 +8,7 @@ version = "1.0.0"
 description = "model_validation_guardian agent"
 requires-python = ">=3.12"
 dependencies = [
-    "blocks-network",
+    "blocks-network==1.0.11",
 ]
 
 [tool.setuptools]

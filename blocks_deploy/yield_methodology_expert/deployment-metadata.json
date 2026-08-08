@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "generated_by": "generate_deployments.py",
+  "generator_version": "1",
+  "agent_name": "yield_methodology_expert",
+  "source_card": "blocks_agents/yield_methodology_expert.json",
+  "source_card_sha256": "75a909054ccec049c477f5e8f5fa7b5ff6edda67645ba025ea074b094a5db922",
+  "source_card_version": "1.0.0",
+  "native_card_version": "1.1.0",
+  "version_policy": "Root card version describes local source semantics; native card version describes the registered package. Native version changes require blocks check and a controlled canary.",
+  "runtime_policy": "Native runtime limits are package deployment policy and must remain positive, bounded, and explicitly reviewed; the adapter must remain ./handler.py:handler.",
+  "source_handler": "./handlers/yield_methodology_expert.py",
+  "deployment_project": "yield_methodology_expert",
+  "deployment_card": "yield_methodology_expert/agent-card.json",
+  "deployment_card_sha256": "d5345ff36fb6b0447958dd130ca7c891c5ccba5e1de83dcc3a1fb9d83f4ac695",
+  "card_contract": {
+    "identity": {
+      "agentName": "yield_methodology_expert",
+      "displayName": "Yield Methodology Expert",
+      "description": "Explains and compares crypto yield mechanisms, annualization flags, aggregates, and methodology notes without treating unlike yields as interchangeable.",
+      "provider": {
+        "organization": "Crypto Yield Matrix"
+      }
+    },
+    "taskKinds": [
+      "request"
+    ],
+    "tags": [
+      {
+        "id": "yield",
+        "name": "Yield methodology"
+      }
+    ]
+  },
+  "native_adapter": {
+    "path": "yield_methodology_expert/handler.py",
+    "kind": "delegating_standard_handler",
+    "generated": true
+  },
+  "blocks_validation": {
+    "required": true,
+    "executed_by_generator": false,
+    "command": "blocks check",
+    "note": "Requires the official Blocks CLI and project credentials; never run as part of no-spend local generation."
+  }
+}

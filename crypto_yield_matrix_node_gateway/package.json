@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "@blocks-network/sdk": "latest",
+    "@blocks-network/sdk": "1.0.11",
     "dotenv": "^16.4.5"
   },
   "devDependencies": {
@@ -13,7 +13,8 @@
   "scripts": {
     "start": "tsx index.ts",
     "check": "tsc --noEmit",
-    "smoke": "tsx smoke.ts"
+    "smoke": "tsx smoke.ts",
+    "resilience": "tsx resilience.ts"
   },
   "type": "module",
   "version": "1.0.0"

@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "generated_by": "generate_deployments.py",
+  "generator_version": "1",
+  "agent_name": "crypto_yield_a2a_orchestrator",
+  "source_card": "blocks_deploy/crypto_yield_a2a_orchestrator/agent-card.json",
+  "source_card_sha256": "726f1fd1bf2c4d8be8c06e684070faab66ba2c5cb4f39db98639e9515f2e6ddc",
+  "source_card_version": "1.1.0",
+  "native_card_version": "1.1.0",
+  "version_policy": "Root card version describes local source semantics; native card version describes the registered package. Native version changes require blocks check and a controlled canary.",
+  "runtime_policy": "Native runtime limits are package deployment policy and must remain positive, bounded, and explicitly reviewed; the adapter must remain ./handler.py:handler.",
+  "source_handler": "./handler.py",
+  "deployment_project": "crypto_yield_a2a_orchestrator",
+  "deployment_card": "crypto_yield_a2a_orchestrator/agent-card.json",
+  "deployment_card_sha256": "726f1fd1bf2c4d8be8c06e684070faab66ba2c5cb4f39db98639e9515f2e6ddc",
+  "card_contract": {
+    "identity": {
+      "agentName": "crypto_yield_a2a_orchestrator",
+      "displayName": "Crypto Yield A2A Orchestrator",
+      "description": "Coordinates private crypto yield specialists in parallel and merges their evidence into one research artifact.",
+      "provider": {
+        "organization": "Crypto Yield Matrix"
+      }
+    },
+    "taskKinds": [
+      "request"
+    ],
+    "tags": [
+      {
+        "id": "orchestration",
+        "name": "Agent orchestration"
+      },
+      {
+        "id": "crypto_research",
+        "name": "Crypto research"
+      }
+    ]
+  },
+  "native_adapter": {
+    "path": "crypto_yield_a2a_orchestrator/handler.py",
+    "kind": "delegating_standard_handler",
+    "generated": false
+  },
+  "blocks_validation": {
+    "required": true,
+    "executed_by_generator": false,
+    "command": "blocks check",
+    "note": "Requires the official Blocks CLI and project credentials; never run as part of no-spend local generation."
+  }
+}
