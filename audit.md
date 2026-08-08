@@ -29,7 +29,7 @@ The project is now suitable for a **controlled private pilot** behind a supervis
 - Added canonical `source_file` validation at the gateway boundary.
 - Added question-length and JSON content-type validation.
 
-The budget is intentionally conservative: a task reservation remains counted even if a remote result is uncertain, failed, or canceled. This prevents ambiguous network outcomes from creating uncontrolled spend. The persisted ledger is single-instance protection, not a distributed quota service; do not horizontally scale gateways without replacing it with shared durable accounting.
+The budget is intentionally conservative: a task reservation remains counted even if a remote result is uncertain, failed, or canceled. This prevents ambiguous network outcomes from creating uncontrolled spend. The persisted ledger is single-instance protection, not a distributed quota service; the Compose deployment mounts durable storage at `GATEWAY_BUDGET_STATE_FILE`. Do not horizontally scale gateways without replacing it with shared durable accounting.
 
 ### Operations and observability
 

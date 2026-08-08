@@ -15,6 +15,7 @@ GATEWAY_MAX_DAILY_SPEND_USD=10
 GATEWAY_TASK_COST_USD=0.10
 GATEWAY_MAX_REQUESTS_PER_MINUTE=30
 GATEWAY_MAX_CONCURRENT_TASKS=8
+GATEWAY_BUDGET_STATE_FILE=.gateway-state/budget.json
 ```
 
 `GATEWAY_CLIENT_KEYS` contains caller credentials in `clientId=secret` form. Use a different secret from the Blocks API key. Secrets are compared in constant time and are never logged. `GATEWAY_CLIENT_AGENTS` can restrict each caller to named agents; omit it only for a trusted single-tenant gateway. This built-in ledger is intentionally single-instance and persisted at `GATEWAY_BUDGET_STATE_FILE`; the supplied Compose file mounts a durable volume. Run one gateway instance unless an external shared quota ledger is added. Providers can scale independently through Blocks runtime settings.
