@@ -21,8 +21,8 @@ The primary evidence files are:
 
 - `validate.md` — audit findings, provenance conflicts, research use cases, and modeling guardrails.
 - `DATA_DICTIONARY.md` — field definitions and modeling notes.
-- `yield_data.csv` and `yield_data1.csv` — conflicting source snapshots with the same schema.
-- `consolidated_yield_data.csv` — both source versions appended with `source_file` and `source_row` provenance.
+- `yield_data.csv` and `yield_data.csv` — conflicting source snapshots with the same schema.
+- `yield_data.csv` — both source versions appended with `source_file` and `source_row` provenance.
 - `table-*.csv` — source snapshots, metadata tables, and compact summaries with heterogeneous schemas.
 - `index.html`, `matrix.js`, `styles.css` — current user-facing matrix behavior and labels.
 

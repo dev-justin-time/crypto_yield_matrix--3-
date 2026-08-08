@@ -9,5 +9,10 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true
   },
-  "include": ["index.ts", "server.ts", "agents.ts", "smoke.ts"]
+  "include": [
+    "index.ts",
+    "server.ts",
+    "agents.ts",
+    "smoke.ts"
+  ]
 }

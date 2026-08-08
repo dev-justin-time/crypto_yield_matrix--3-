@@ -4,15 +4,90 @@
     "displayName": "Portfolio Scenario Expert",
     "description": "Runs transparent, non-advisory crypto yield/risk/liquidity scenarios under user-specified constraints.",
     "version": "1.0.0",
-    "provider": { "organization": "Crypto Yield Matrix" }
+    "provider": {
+      "organization": "Crypto Yield Matrix"
+    }
   },
-  "capabilities": { "taskKinds": ["request"] },
-  "tags": [{ "id": "scenarios", "name": "Portfolio scenarios" }],
-  "runtime": { "handler": "./handlers/portfolio_scenario_expert.py" },
-  "contextFiles": ["validate.md", "DATA_DICTIONARY.md", "consolidated_yield_data.csv"],
+  "capabilities": {
+    "taskKinds": [
+      "request"
+    ]
+  },
+  "tags": [
+    {
+      "id": "scenarios",
+      "name": "Portfolio scenarios"
+    }
+  ],
+  "runtime": {
+    "handler": "./handlers/portfolio_scenario_expert.py"
+  },
+  "contextFiles": [
+    "validate.md",
+    "DATA_DICTIONARY.md",
+    "yield_data.csv"
+  ],
   "io": {
-    "inputs": [{ "id": "request", "description": "Scenario constraints such as target yield, drawdown cap, liquidity floor, and category limits.", "contentType": "application/json", "required": true, "schema": { "type": "object", "properties": { "question": { "type": "string" }, "symbols": { "type": "array", "items": { "type": "string" } }, "target_yield": { "type": "number" }, "max_drawdown": { "type": "number" }, "min_volume_m_usd": { "type": "number" }, "category_caps": { "type": "object" } } } }],
-    "outputs": [{ "id": "scenario_report", "description": "Assumptions, trade-offs, constraints, sensitivity, and evidence-backed scenario output.", "contentType": "application/json", "guaranteed": true }]
+    "inputs": [
+      {
+        "id": "request",
+        "description": "Scenario constraints such as target yield, drawdown cap, liquidity floor, and category limits.",
+        "contentType": "application/json",
+        "required": true,
+        "schema": {
+          "type": "object",
+          "properties": {
+            "question": {
+              "type": "string"
+            },
+            "symbols": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "target_yield": {
+              "type": "number"
+            },
+            "max_drawdown": {
+              "type": "number"
+            },
+            "min_volume_m_usd": {
+              "type": "number"
+            },
+            "category_caps": {
+              "type": "object"
+            }
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "id": "scenario_report",
+        "description": "Assumptions, trade-offs, constraints, sensitivity, and evidence-backed scenario output.",
+        "contentType": "application/json",
+        "guaranteed": true
+      }
+    ]
   },
-  "skill": { "fields": ["agg_current", "max_drawdown_current_pct", "volatility_annualized_current", "category", "correlation_btc", "correlation_eth", "beta_vs_btc", "beta_vs_eth", "avg_24h_volume_m_usd_current"], "mustReport": ["assumptions", "constraint violations", "sensitivity", "educational/non-advisory disclaimer"] }
+  "skill": {
+    "fields": [
+      "agg_current",
+      "max_drawdown_current_pct",
+      "volatility_annualized_current",
+      "category",
+      "correlation_btc",
+      "correlation_eth",
+      "beta_vs_btc",
+      "beta_vs_eth",
+      "avg_24h_volume_m_usd_current"
+    ],
+    "mustReport": [
+      "assumptions",
+      "constraint violations",
+      "sensitivity",
+      "educational/non-advisory disclaimer"
+    ]
+  }
 }

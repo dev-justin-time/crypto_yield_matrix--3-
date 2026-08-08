@@ -89,7 +89,7 @@ print(result["artifacts"][0]["data"])
 Handlers accept a JSON object in the first `request` part. Common fields are:
 
 - `question` — the user’s question.
-- `source_file` — `yield_data.csv` or `yield_data1.csv`.
+- `source_file` — `yield_data.csv` or `yield_data.csv`.
 - `symbol` — an asset symbol such as `BTC`.
 - `category` — an asset category filter.
 - `files` — optional repository context files from the declared allowlist.
@@ -101,8 +101,8 @@ The handlers reject undeclared paths, absolute paths, traversal paths, and inval
 
 The project data has important limitations documented in [`validate.md`](validate.md):
 
-1. `yield_data.csv` and `yield_data1.csv` have the same schema but disagree for every asset row.
-2. `consolidated_yield_data.csv` preserves both versions; it is not automatically a canonical modeling table.
+1. `yield_data.csv` and `yield_data.csv` have the same schema but disagree for every asset row.
+2. `yield_data.csv` preserves both versions; it is not automatically a canonical modeling table.
 3. The data includes source-like, estimated, derived, and supplied target fields.
 4. The current panel has only eight quarterly yield observations per asset.
 5. **Corrected forecasting caveat:** The current dataset is not suitable for validated production forecasting until source identity is resolved, additional dated observations are added, leakage-controlled walk-forward testing is performed, and independently observed outcomes are available. The full audit wording is maintained in [`validate.md`](validate.md).
@@ -355,7 +355,7 @@ The official Quickstart says a successful trigger should complete with a task re
 Test at least these cases before inviting anyone:
 
 1. A valid BTC request using `yield_data.csv`.
-2. A valid request using `yield_data1.csv` that clearly labels the alternate source.
+2. A valid request using `yield_data.csv` that clearly labels the alternate source.
 3. A request with an invalid `source_file`.
 4. A request containing `../` or an absolute path.
 5. A request that asks for a forecast; verify the readiness `FAIL` gate remains visible.

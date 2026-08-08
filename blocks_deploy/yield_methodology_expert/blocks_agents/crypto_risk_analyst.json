@@ -4,15 +4,81 @@
     "displayName": "Crypto Risk Analyst",
     "description": "Evaluates yield alongside volatility, drawdown, beta, correlations, and supplied risk-adjusted metrics for research decisions.",
     "version": "1.0.0",
-    "provider": { "organization": "Crypto Yield Matrix" }
+    "provider": {
+      "organization": "Crypto Yield Matrix"
+    }
   },
-  "capabilities": { "taskKinds": ["request"] },
-  "tags": [{ "id": "risk", "name": "Risk and drawdown analysis" }],
-  "runtime": { "handler": "./handlers/crypto_risk_analyst.py" },
-  "contextFiles": ["validate.md", "DATA_DICTIONARY.md", "yield_data.csv", "yield_data1.csv", "consolidated_yield_data.csv"],
+  "capabilities": {
+    "taskKinds": [
+      "request"
+    ]
+  },
+  "tags": [
+    {
+      "id": "risk",
+      "name": "Risk and drawdown analysis"
+    }
+  ],
+  "runtime": {
+    "handler": "./handlers/crypto_risk_analyst.py"
+  },
+  "contextFiles": [
+    "validate.md",
+    "DATA_DICTIONARY.md",
+    "yield_data.csv"
+  ],
   "io": {
-    "inputs": [{ "id": "request", "description": "Risk question, asset filter, and optional thresholds.", "contentType": "application/json", "required": true, "schema": { "type": "object", "properties": { "question": { "type": "string" }, "symbol": { "type": "string" }, "max_drawdown": { "type": "number" }, "max_volatility": { "type": "number" } } } }],
-    "outputs": [{ "id": "risk_report", "description": "Risk/yield comparison with evidence, severity, and limitations.", "contentType": "application/json", "guaranteed": true }]
+    "inputs": [
+      {
+        "id": "request",
+        "description": "Risk question, asset filter, and optional thresholds.",
+        "contentType": "application/json",
+        "required": true,
+        "schema": {
+          "type": "object",
+          "properties": {
+            "question": {
+              "type": "string"
+            },
+            "symbol": {
+              "type": "string"
+            },
+            "max_drawdown": {
+              "type": "number"
+            },
+            "max_volatility": {
+              "type": "number"
+            }
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "id": "risk_report",
+        "description": "Risk/yield comparison with evidence, severity, and limitations.",
+        "contentType": "application/json",
+        "guaranteed": true
+      }
+    ]
   },
-  "skill": { "fields": ["agg_current", "volatility_annualized_current", "max_drawdown_current_pct", "sharpe_ratio_current", "beta_vs_btc", "beta_vs_eth", "correlation_btc", "correlation_eth", "risk_adjusted_yield"], "mustReport": ["nominal yield", "downside measure", "data status", "not financial advice"] }
+  "skill": {
+    "fields": [
+      "agg_current",
+      "volatility_annualized_current",
+      "max_drawdown_current_pct",
+      "sharpe_ratio_current",
+      "beta_vs_btc",
+      "beta_vs_eth",
+      "correlation_btc",
+      "correlation_eth",
+      "risk_adjusted_yield"
+    ],
+    "mustReport": [
+      "nominal yield",
+      "downside measure",
+      "data status",
+      "not financial advice"
+    ]
+  }
 }

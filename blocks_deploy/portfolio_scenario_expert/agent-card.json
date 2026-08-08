@@ -21,10 +21,11 @@
   ],
   "runtime": {
     "handler": "./handler.py",
-    "handlerExport": "handler",      "concurrency": 4,
-      "expectedInstances": 1,
-      "maxPendingBacklog": 20,
-      "maxRunningTimeSec": 45
+    "handlerExport": "handler",
+    "concurrency": 4,
+    "expectedInstances": 1,
+    "maxPendingBacklog": 20,
+    "maxRunningTimeSec": 45
   },
   "io": {
     "inputs": [
@@ -43,7 +44,7 @@
               "type": "string",
               "enum": [
                 "yield_data.csv",
-                "yield_data1.csv"
+                "yield_data.csv"
               ]
             },
             "symbol": {

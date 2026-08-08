@@ -11,13 +11,13 @@ CONTEXT_ALLOWLIST = {
     "validate.md",
     "DATA_DICTIONARY.md",
     "yield_data.csv",
-    "yield_data1.csv",
-    "consolidated_yield_data.csv",
+    "yield_data.csv",
+    "yield_data.csv",
     "index.html",
     "matrix.js",
     "styles.css",
 }
-YIELD_SOURCES = {"yield_data.csv", "yield_data1.csv"}
+YIELD_SOURCES = {"yield_data.csv"}
 
 
 def task_payload(task: Any) -> dict[str, Any]:

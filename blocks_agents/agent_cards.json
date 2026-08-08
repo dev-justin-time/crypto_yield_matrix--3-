@@ -4,18 +4,21 @@
   "compatibility": {
     "platform": "Blocks.ai",
     "manifestType": "agent-card",
-    "taskKinds": ["request"],
+    "taskKinds": [
+      "request"
+    ],
     "runtimeMode": "local scaffold",
     "published": false,
     "credentialsRequired": false,
-    "officialDocs": ["https://blocks.ai/docs", "https://blocks.ai/docs/key-concepts"]
+    "officialDocs": [
+      "https://blocks.ai/docs",
+      "https://blocks.ai/docs/key-concepts"
+    ]
   },
   "sharedContextFiles": [
     "validate.md",
     "DATA_DICTIONARY.md",
     "yield_data.csv",
-    "yield_data1.csv",
-    "consolidated_yield_data.csv",
     "index.html",
     "matrix.js",
     "styles.css"
@@ -25,7 +28,15 @@
     "inputPartId": "request",
     "request": "JSON object encoded in requestParts[0].text",
     "output": "{ artifacts: [{ data: JSON string, mimeType: application/json }] }",
-    "requiredEnvelopeFields": ["agent", "status", "summary", "findings", "assumptions", "limitations", "provenance"],
+    "requiredEnvelopeFields": [
+      "agent",
+      "status",
+      "summary",
+      "findings",
+      "assumptions",
+      "limitations",
+      "provenance"
+    ],
     "filesystemPolicy": "repository read-only; handlers do not mutate source datasets"
   },
   "agents": [

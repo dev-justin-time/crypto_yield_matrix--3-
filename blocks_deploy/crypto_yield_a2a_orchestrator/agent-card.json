@@ -4,12 +4,24 @@
     "displayName": "Crypto Yield A2A Orchestrator",
     "description": "Coordinates private crypto yield specialists in parallel and merges their evidence into one research artifact.",
     "version": "1.1.0",
-    "provider": { "organization": "Crypto Yield Matrix" }
+    "provider": {
+      "organization": "Crypto Yield Matrix"
+    }
   },
-  "capabilities": { "taskKinds": ["request"] },
+  "capabilities": {
+    "taskKinds": [
+      "request"
+    ]
+  },
   "tags": [
-    { "id": "orchestration", "name": "Agent orchestration" },
-    { "id": "crypto_research", "name": "Crypto research" }
+    {
+      "id": "orchestration",
+      "name": "Agent orchestration"
+    },
+    {
+      "id": "crypto_research",
+      "name": "Crypto research"
+    }
   ],
   "runtime": {
     "handler": "./handler.py",
@@ -20,33 +32,56 @@
     "maxRunningTimeSec": 90
   },
   "io": {
-    "inputs": [{
-      "id": "request",
-      "description": "A JSON research request routed to multiple crypto specialists.",
-      "contentType": "application/json",
-      "required": true,
-      "schema": {
-        "type": "object",
-        "properties": {
-          "question": { "type": "string" },
-          "source_file": { "type": "string", "enum": ["yield_data.csv", "yield_data1.csv"] },
-          "symbol": { "type": "string" },
-          "category": { "type": "string" },
-          "files": { "type": "array", "items": { "type": "string" } }
+    "inputs": [
+      {
+        "id": "request",
+        "description": "A JSON research request routed to multiple crypto specialists.",
+        "contentType": "application/json",
+        "required": true,
+        "schema": {
+          "type": "object",
+          "properties": {
+            "question": {
+              "type": "string"
+            },
+            "source_file": {
+              "type": "string",
+              "enum": [
+                "yield_data.csv",
+                "yield_data.csv"
+              ]
+            },
+            "symbol": {
+              "type": "string"
+            },
+            "category": {
+              "type": "string"
+            },
+            "files": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "required": [
+            "question"
+          ]
         },
-        "required": ["question"]
-      },
-      "example": {
-        "question": "Give me a combined BTC yield, risk, liquidity, tokenomics, feature, and provenance analysis.",
-        "source_file": "yield_data.csv",
-        "symbol": "BTC"
+        "example": {
+          "question": "Give me a combined BTC yield, risk, liquidity, tokenomics, feature, and provenance analysis.",
+          "source_file": "yield_data.csv",
+          "symbol": "BTC"
+        }
       }
-    }],
-    "outputs": [{
-      "id": "orchestration_report",
-      "description": "Merged specialist JSON with partial-failure status and provenance.",
-      "contentType": "application/json",
-      "guaranteed": true
-    }]
+    ],
+    "outputs": [
+      {
+        "id": "orchestration_report",
+        "description": "Merged specialist JSON with partial-failure status and provenance.",
+        "contentType": "application/json",
+        "guaranteed": true
+      }
+    ]
   }
 }
