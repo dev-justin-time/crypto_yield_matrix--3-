@@ -11,7 +11,7 @@ The eight sections below document the 59 analytical columns currently present in
 
 ## Generated asset enrichment
 
-`build_asset_catalog.py` joins the first canonical `yield_data.csv` evidence row for each of the 59 symbols with the nine supplied one-row market snapshot tables under `csv/`. It produces:
+`organize_csv_sources.py` first moves the heterogeneous `table-*.csv` exports into named, hashed source files. Nine one-row market snapshots become `csv/source_snapshots/<SYMBOL>.csv`; six metadata/summary exports become named files under `csv/reference/`. `build_asset_catalog.py` then joins the first canonical `yield_data.csv` evidence row for each of the 59 symbols with those named snapshots. It produces:
 
 - `asset_catalog.csv` — one normalized row for each canonical symbol;
 - `csv/assets/<SYMBOL>.csv` — one focused yield/enrichment file for each of the 59 assets;
@@ -21,7 +21,7 @@ The eight sections below document the 59 analytical columns currently present in
 - `snapshot_status=source_snapshot` for the nine source-backed assets and `snapshot_status=canonical_only` for the remaining assets;
 - quote status is `source_snapshot` for nine assets and `unavailable` for 50 assets; unavailable quote fields remain blank.
 
-Blank snapshot fields mean that no supplied source table covered that asset. They are not zeros, estimates, or live values. The generated catalog is safe for research exploration and user-facing coverage indicators, but it must not be treated as an independent time series or validated forecast.
+Blank snapshot fields mean that no supplied source table covered that asset. They are not zeros, estimates, or live values. The generated catalog is safe for research exploration and user-facing coverage indicators, but it must not be treated as an independent time series or validated forecast. `csv/source_manifest.json` preserves each former table filename, destination, kind, and SHA-256 digest for auditability. Because the anonymous originals were moved before this manifest was introduced, records are labeled `destination_verified_recovered`; that label is not independent proof of the historical original file hash. Reattach the original exports before claiming source-to-destination equivalence in a release record.
 
 ### Provenance columns (2 columns)
 | Column | Type | Description |

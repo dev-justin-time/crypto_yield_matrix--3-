@@ -132,9 +132,12 @@ def run_once(collector: LiveDataCollector, mirror: bool = True) -> dict[str, obj
     else:
         mirrored = 0
         outcome = "retained_previous_snapshot"
+    current_fresh = current_observation_count > 0 and not snapshot.get("errors")
     status = {
         "worker": "crypto_yield_matrix_live_data",
-        "status": "ok" if current_observation_count > 0 and not snapshot.get("errors") else "degraded",
+        "status": "ok" if current_fresh else "degraded",
+        "liveness": "running",
+        "data_readiness": "fresh_observations" if current_fresh else "degraded" if observation_count > 0 else "no_fresh_observation",
         "last_cycle_at": snapshot["generated_at"],
         "last_outcome": outcome if current_observation_count > 0 else "retained_previous_snapshot",
         "observations": observation_count,
@@ -156,16 +159,16 @@ def main() -> None:
     collector = LiveDataCollector(load_symbols(), timeout=timeout)
     signal.signal(signal.SIGTERM, _stop)
     signal.signal(signal.SIGINT, _stop)
-    _write_status({"worker": "crypto_yield_matrix_live_data", "status": "starting", "started_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"), "cycle_seconds": cycle_seconds})
+    _write_status({"worker": "crypto_yield_matrix_live_data", "status": "starting", "liveness": "starting", "data_readiness": "unknown", "started_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"), "cycle_seconds": cycle_seconds})
     while not _STOP:
         try:
             run_once(collector, mirror=mirror)
         except Exception as error:  # Keep the supervisor alive on unexpected provider/parser errors.
-            _write_status({"worker": "crypto_yield_matrix_live_data", "status": "degraded", "last_outcome": "cycle_failed", "error": str(error)[:500], "canonical_source_unchanged": "yield_data.csv"})
+            _write_status({"worker": "crypto_yield_matrix_live_data", "status": "degraded", "liveness": "running", "data_readiness": "no_fresh_observation", "last_outcome": "cycle_failed", "error": str(error)[:500], "canonical_source_unchanged": "yield_data.csv"})
         deadline = time.monotonic() + cycle_seconds
         while not _STOP and time.monotonic() < deadline:
             time.sleep(min(5.0, max(0.1, deadline - time.monotonic())))
-    _write_status({"worker": "crypto_yield_matrix_live_data", "status": "stopped", "stopped_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"), "canonical_source_unchanged": "yield_data.csv"})
+    _write_status({"worker": "crypto_yield_matrix_live_data", "status": "stopped", "liveness": "stopped", "data_readiness": "unavailable", "stopped_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"), "canonical_source_unchanged": "yield_data.csv"})
 
 
 if __name__ == "__main__":

@@ -1,0 +1,19 @@
+{
+  "worker": "crypto_yield_matrix_live_data",
+  "status": "ok",
+  "liveness": "running",
+  "data_readiness": "fresh_observations",
+  "last_cycle_at": "2026-08-08T00:00:00Z",
+  "last_outcome": "updated",
+  "observations": 1,
+  "current_observations": 1,
+  "errors": 0,
+  "deployment_mirrors": 11,
+  "cycle_duration_ms": 125,
+  "canonical_source_unchanged": "yield_data.csv",
+  "alert_recommendations": [
+    "page if liveness is not running or last_cycle_at exceeds the operational threshold",
+    "warn/page if data_readiness is degraded or no_fresh_observation",
+    "do not treat retained observations as fresh"
+  ]
+}

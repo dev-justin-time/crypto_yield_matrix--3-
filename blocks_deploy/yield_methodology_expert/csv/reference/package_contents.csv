@@ -1,0 +1,6 @@
+﻿File,Size,Contents
+`index.html`,"2,967 B",Main infographic renderer
+`styles.css`,"6,693 B","Deep navy header, color blocks, hover effects, responsive rules"
+`matrix.js`,"9,731 B",CSV parser + dynamic matrix builder
+`yield_data.csv`,"24,354 B",**59 assets × 59 columns** with real market data
+`DATA_DICTIONARY.md`,"5,318 B",Full column reference + model training guide

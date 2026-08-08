@@ -1,0 +1,5 @@
+﻿File,Purpose
+`index.html`,Main infographic page — loads CSS/JS and renders the matrix
+`styles.css`,"All visual styling: deep navy header, color blocks, hover effects, responsive rules"
+`matrix.js`,"CSV parser + dynamic renderer — sorts each quarter descending, builds blocks, aggregates, and populates the legend/timeline"
+`yield_data.csv`,"59 rows × 17 columns: symbol, name, color, icon, 8 quarterly yields, 2 aggregates, change in pp, annualized flag, and notes"

@@ -16,12 +16,26 @@ jobs:
         run: python generate_deployments.py --check
       - name: Verify native dependency pins
         run: python -c "from pathlib import Path; assert all('blocks-network==1.0.11' in p.read_text() for p in Path('blocks_deploy').glob('*/pyproject.toml'))"
-      - name: Verify deterministic source mirrors
-        run: python sync_deployments.py --check
+      - name: Verify named CSV sources and deterministic source mirrors
+        run: |
+          python organize_csv_sources.py --check
+          python test_asset_sources.py
+          python sync_deployments.py --check
       - name: Run no-spend scaffold and materialized-package tests
         run: python test_packaging.py
       - name: Validate Python syntax
-        run: python -m compileall -q blocks_agents blocks_deploy test_packaging.py generate_deployments.py sync_deployments.py trigger_guarded.py
+        run: python -m compileall -q blocks_agents blocks_deploy live_data.py live_worker.py live_canary.py live_readiness.py test_live_data.py test_asset_sources.py test_packaging.py organize_csv_sources.py build_asset_catalog.py generate_deployments.py sync_deployments.py trigger_guarded.py generate_proof_record.py
+      - name: Validate local proof-record generator
+        run: python -m py_compile generate_proof_record.py
+      - name: Run no-network live overlay and canary fixtures
+        run: |
+          python run_live_tests.py
+          python live_canary.py --fixture --output /tmp/provider_canary_evidence.json
+          python live_readiness.py /tmp/worker_status.json || test $? -eq 2
+      - name: Dependency audit (organization tooling required for release)
+        run: |
+          python -m pip check
+          python -m pip list --format=json > /tmp/python-dependencies.json
       - name: Validate gateway without paid dispatch
         working-directory: crypto_yield_matrix_node_gateway
         run: |

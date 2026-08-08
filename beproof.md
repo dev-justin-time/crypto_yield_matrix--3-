@@ -2,7 +2,7 @@
 
 **Project:** Crypto Yield Matrix / Blocks.ai agent fleet  
 **Report:** `beproof.md`  
-**Audit date:** 2026-08-07  
+**Audit date:** 2026-08-08
 **Audit mode:** Read-only repository inspection plus no-spend local validation  
 **Scope:** Root local handlers, native deployment adapters, generated data artifacts, live-data overlay, Node gateway, and runtime dependencies
 
@@ -14,6 +14,7 @@ The repository has strong equivalence evidence for the specialized local handler
 
 What is proven locally:
 
+- Root `blocks_agents/handlers/common.py` is synchronized byte-for-byte with the common-handler copy in all 11 data-consuming deployments; SHA-256 equality and live snapshot edge-case behavior were re-verified on 2026-08-08.
 - The 11 data-consuming deployment copies contain byte-identical specialized handler implementations for the 11 indexed agents.
 - The canonical CSV, generated asset catalog, quote exports, and deployment CSV mirrors pass the existing integrity audit.
 - The local handler smoke test, A2A mocked test, live-overlay tests, Python parsing, JavaScript syntax check, and Node gateway no-spend checks pass.
@@ -21,10 +22,9 @@ What is proven locally:
 
 What is not proven:
 
-- Root `blocks_agents/handlers/common.py` is **not byte-identical** to the common-handler copy in the 11 deployment projects. The deployed copy is stricter for degraded/stale live-data handling and more defensive for malformed snapshot sections. This is a real behavioral divergence at a shared dependency boundary.
 - Live Blocks registration, provider connectivity, private invitations, billing configuration, A2A authorization, and paid trigger behavior were not executed.
-- The 24/7 live worker was not run against live providers in this audit. No current provider response, rate-limit header, or RPC behavior is certified here.
-- The live overlay is not automatically delivered to deployed paid runtimes in the supplied container configuration; container mirroring is disabled by default unless an explicit shared-volume/distribution design is provided.
+- The 24/7 live worker was not run against live providers in this audit. No current provider response, rate-limit header, or RPC behavior is certified here; only the deterministic fixture canary was executed.
+- The live overlay is not automatically delivered to hosted paid runtimes in the supplied container configuration; container mirroring is disabled by default. An explicit shared-volume/distribution contract is now documented, but hosted delivery is not verified.
 - Formal semantic equivalence across all inputs, exceptions, timing, filesystem states, network failures, and SDK versions has not been established.
 
 **Release interpretation:** The local repository is suitable for continued development and controlled private testing. This report does not establish public/unattended paid-production equivalence or a production GO decision.
@@ -63,7 +63,7 @@ Read-only SHA-256 inventory compared each root file under `blocks_agents/handler
 | Specialized handlers byte-identical in every deployment | 11 of 11 |
 | `__init__.py` byte-identical | 11 of 11 |
 | `__main__.py` byte-identical | 11 of 11 |
-| `common.py` byte-identical | 0 of 11 |
+| `common.py` byte-identical | 11 of 11 |
 
 The specialized handlers that matched across all 11 deployments were:
 
@@ -79,26 +79,17 @@ The specialized handlers that matched across all 11 deployments were:
 - `tokenomics_sustainability_expert.py`
 - `yield_methodology_expert.py`
 
-The specialized source equality is strong evidence because these handlers import shared functions and construct the same common artifact envelope. It is not sufficient for whole-agent equivalence while their shared `common.py` differs.
+The specialized source equality, synchronized shared handler, generated adapter metadata, and exact local artifact-envelope comparisons provide strong evidence for the declared local surface. External SDK and hosted-runtime behavior remain outside this proof.
 
 ### 3.2 Root common handler vs. deployment common handler
 
-**Result: NOT EQUIVALENT; divergence is documented and safety-relevant.**
+**Result: EQUIVALENT for the synchronized shared-handler surface.**
 
-The current root `blocks_agents/handlers/common.py` is newer than the synchronized deployment copies. An exact unified diff against `blocks_deploy/crypto_risk_analyst/blocks_agents/handlers/common.py` found 42 changed diff lines; the same deployment hash group was present across all 11 data-consuming projects.
+`sync_deployments.py --check` reports zero missing or mismatched mirrors. The root `blocks_agents/handlers/common.py` and all 11 deployment copies share the same SHA-256 digest, and the root/deployment live-snapshot edge-case test covers missing, malformed, stale, retained, and fresh snapshots.
 
-The root version has the stricter live-data behavior:
+The synchronized surface preserves the safety contract that usable live data requires `data_status == "live_overlay_only"`, fresh timestamps, no retained observation, and defensive nested-section handling. This proves the declared local surface only; it does not prove hosted runtime behavior or live provider accuracy.
 
-- `usable` live data requires `data_status == "live_overlay_only"`;
-- retained observations with `observation_status == "retained_from_previous_cycle"` are not usable;
-- the market payload is returned only when the stricter `usable` predicate passes;
-- malformed `defi`, `blockchain`, and `freshness` sections receive defensive type checks.
-
-The deployment copies use the older behavior: freshness and timestamp checks can mark an observation usable without the root version's explicit degraded-status and retained-observation exclusions, and their nested-section handling is less defensive. Therefore, if a deployment runtime reads a live snapshot, it may expose a recently retained, degraded, or malformed value differently from the root local handler.
-
-**Required remediation before claiming fleet equivalence:** synchronize the current root `common.py` into all 11 data-consuming deployments, then rerun the hash comparison, handler smoke suite, native project checks, and deployment artifact tests.
-
-This report intentionally records the failure instead of treating the specialized-handler matches as proof of the full handler fleet.
+**Remaining boundary before claiming full fleet equivalence:** run native project checks and verify the external Blocks runtime, permissions, billing, and trigger paths. The local common-handler synchronization and artifact comparisons are complete; this report does not treat them as proof of live platform equivalence.
 
 ### 3.3 Native Blocks wrappers vs. local handlers
 
@@ -156,7 +147,7 @@ The local proof covers injected provider payload parsing, URL safety validation,
 - live snapshot delivery into every hosted agent runtime;
 - process supervision, alert delivery, or recovery after host/container failure.
 
-The current default container configuration sets `LIVE_WORKER_MIRROR_DEPLOYMENTS=0`. That is safer than claiming unavailable propagation, but it means a separate shared-volume or distribution mechanism is required before deployed paid agents can consume the overlay.
+The current default container configuration sets `LIVE_WORKER_MIRROR_DEPLOYMENTS=0`. `live_data/distribution_contract.json` documents local mirroring, read-only shared-volume mounts, and hosted-runtime distribution alternatives; hosted delivery remains unverified.
 
 ### 3.6 Node gateway vs. direct Blocks client behavior
 
@@ -215,13 +206,13 @@ The local root handler scaffold uses Python standard-library modules and does no
 
 | Type | Package | Declared range | Lockfile version |
 |---|---|---:|---:|
-| runtime | `@blocks-network/sdk` | `latest` | 1.0.11 |
+| runtime | `@blocks-network/sdk` | 1.0.11 | 1.0.11 |
 | runtime | `dotenv` | `^16.4.5` | 16.6.1 |
 | development | `@types/node` | `^22.0.0` | 22.20.1 |
 | development | `tsx` | `^4.19.2` | 4.23.10 |
 | development | `typescript` | `^5.4.5` | 5.9.3 |
 
-**Dependency finding:** `@blocks-network/sdk` is declared as `latest` while the lockfile resolves 1.0.11. Reproducible production builds should pin the manifest to the tested exact version and record a controlled upgrade process.
+**Dependency finding:** The Blocks SDK manifest and lockfile are pinned to the tested exact version 1.0.11. Future upgrades still require a controlled release record, native checks, failure tests, and an owner-approved canary.
 
 ### 5.2 Implicit runtime dependencies
 
@@ -265,36 +256,39 @@ The external providers are not interchangeable:
 
 | Risk | Severity | Evidence / consequence |
 |---|---|---|
-| SDK manifest uses `latest` | High | Future install may differ from tested lockfile/runtime behavior |
+| SDK manifest/lockfile drift | High | Prevented locally by exact `@blocks-network/sdk==1.0.11` pins; future upgrades still require controlled release evidence |
 | Native `blocks-network` version not pinned in the report evidence | High | Native handler behavior can vary across generated projects/environments |
 | Public RPC/provider availability | High | Shared endpoints have no repository-controlled SLA; throttling/outage affects freshness |
 | Live platform permissions/billing | High | Not locally reproducible; failure can occur after local tests pass |
-| Missing shared live snapshot delivery in container mode | High | Paid deployments do not automatically consume worker output |
+| Hosted live snapshot delivery | High | The shared-volume/distribution contract is documented, but hosted paid runtimes do not yet have verified delivery |
 | Process-local gateway budgets | Medium | Multiple gateway instances can exceed aggregate spend intent |
 | Local filesystem/process supervisor | Medium | PowerShell manager is not a full production supervisor |
-| Generated mirror drift | Medium | Root `common.py` is currently ahead of deployment copies |
+| Generated mirror drift | Medium | Prevented locally by deterministic mirror checks; native checks are still external |
 | Browser/static data serving | Medium | Dashboard requires correct HTTP serving and artifact availability |
 
 ## 6. Proof obligations still open
 
 ### Blocking obligations for full fleet equivalence
 
-- [ ] Synchronize root `blocks_agents/handlers/common.py` to all 11 data-consuming deployments.
-- [ ] Recompute SHA-256 equality for every shared handler and documentation artifact.
-- [ ] Run each native deployment's `blocks check` with the release dependency set.
-- [ ] Verify native wrapper artifact envelopes against local artifact envelopes.
-- [ ] Test malformed, stale, retained, missing, and fresh live snapshots through both root and deployment handlers.
-- [ ] Pin and record exact Python `blocks-network` and Node `@blocks-network/sdk` versions.
+- [x] Synchronize root `blocks_agents/handlers/common.py` to all 11 data-consuming deployments.
+- [x] Recompute SHA-256 equality for every shared handler and documentation artifact.
+- [ ] Run each native deployment's `blocks check` with the release dependency set and attach its output to the final proof record.
+- [x] Verify native wrapper artifact envelopes against local artifact envelopes.
+- [x] Test malformed, stale, retained, missing, and fresh live snapshots through both root and deployment handlers.
+- [x] Pin and record exact Python `blocks-network` and Node `@blocks-network/sdk` versions.
 - [x] Add `sync_deployments.py --check` and CI verification for deterministic source-to-deployment hashes.
 - [x] Generate standard native adapters and metadata from card contracts; keep the A2A adapter custom and explicit.
 - [x] Add a guarded no-spend/private trigger utility and scaffold/materialized-package tests.
 
 ### Blocking obligations for production dependency confidence
 
-- [ ] Run a controlled live provider canary with timestamps, schemas, HTTP status, rate-limit headers, and error handling captured.
+- [x] Add a fixture-only provider canary that captures timestamps, schemas, HTTP status, selected rate-limit headers, latency, and sanitized errors.
+- [ ] Run a controlled live provider canary with timestamps, schemas, HTTP status, rate-limit headers, terms review, and error handling captured; attach the response summary to the final proof record.
 - [ ] Reconfirm provider terms, attribution, and polling limits before production.
-- [ ] Provide an explicit shared volume/distribution path if paid deployed agents must consume live data.
-- [ ] Separate worker liveness from data readiness and alert on degraded/no-fresh-observation states.
+- [x] Provide and mirror an explicit shared-volume/distribution contract for local/container deployment.
+- [ ] Verify the shared distribution path for every hosted paid runtime, or disable live overlay use there.
+- [x] Separate worker liveness from data readiness and add a no-network readiness evaluator.
+- [ ] Connect liveness/readiness alerts to production monitoring and test degraded/no-fresh-observation alerting.
 - [ ] Verify Blocks registration, private invitations, A2A grants, billing mode, and paid budget externally.
 - [ ] Exercise controlled private triggers for success, failure, timeout, cancellation, malformed input, and artifact download.
 - [ ] Perform dependency vulnerability/licence review using the approved organization tooling.
@@ -314,8 +308,12 @@ PYTHONDONTWRITEBYTECODE=1 python -m blocks_agents.handlers
 PYTHONDONTWRITEBYTECODE=1 python blocks_deploy/crypto_yield_a2a_orchestrator/test_handler.py
 
 # 3. Parse all repository Python and dashboard syntax.
-python -m py_compile live_data.py live_worker.py blocks_agents/handlers/common.py
+python -m py_compile live_data.py live_worker.py live_canary.py live_readiness.py blocks_agents/handlers/common.py
 node --check matrix.js
+
+# 3b. Run deterministic canary and readiness fixtures (never contacts providers).
+python live_canary.py --fixture --output /tmp/provider_canary_evidence.json
+python live_readiness.py /tmp/worker_status.json || true
 
 # 4. Check gateway without paid dispatch.
 cd crypto_yield_matrix_node_gateway
@@ -338,27 +336,38 @@ PY
 git diff --check
 ```
 
-The final proof record should attach:
+The final proof record should be generated locally with:
 
-- commit SHA;
-- Python and Node versions;
-- exact dependency lockfile hashes;
-- output of every command;
-- native `blocks check` results;
-- private registry/card identifiers;
-- provider canary timestamps and response summaries;
-- live A2A permission evidence;
-- approved canary budget and rollback owner.
+```bash
+python generate_proof_record.py --output proof_record.local.json
+```
+
+`generate_proof_record.py` records the current commit SHA, dirty-tree status, Python/Node/npm versions, exact manifest/lockfile and mirror-manifest SHA-256 hashes, native card hashes, native-lockfile availability, and complete stdout/stderr/exit codes for the no-spend local command suite, including fixture canary and readiness checks. `proof_record.local.json` is ignored by Git because it contains machine-specific command output and is not a release approval. Its command list is the generator's reproducible local suite; it does not claim to capture arbitrary prior shell history.
+
+The generated record intentionally leaves these fields as explicit external evidence requirements rather than inventing them:
+
+- native `blocks check` output for every deployment;
+- private registry/card identifiers and live versions;
+- live provider canary timestamps, response summaries, terms/attribution review, and current rate-limit confirmation;
+- live A2A permission evidence, including invitations/grants and terminal/artifact results;
+- approved paid-canary budget, task IDs, billing reconciliation, rollback owner, and rollback result;
+- approved vulnerability and licence scanner reports.
+
+The repository has no native per-project Python lockfiles; the record therefore hashes each native `pyproject.toml` and records `NO_NATIVE_LOCKFILES_DECLARED`, while the Node `package-lock.json` is hashed exactly.
+
+An operator must attach those artifacts to the release record and validate the completed structured record with `python release_gate.py --record release_record.json`. A local proof record cannot change the NO-GO decision or substitute for live platform evidence.
 
 ## 8. Recommended remediation order
 
-1. Keep the generated adapter and SHA-256 mirror checks required in CI.
-2. Pin SDK dependencies and add a lockfile/version policy for all native projects.
-3. Add CI checks for mirror equivalence and malformed/stale live snapshot behavior.
-4. Define shared live-snapshot delivery before exposing live data to paid agents.
-5. Verify external provider and Blocks behavior in a private, budgeted canary.
-6. Add centralized observability, readiness alerts, and aggregate budget controls.
-7. Only then reassess the public/unattended paid-production release decision.
+1. Keep generated adapters and SHA-256 mirror checks required in CI.
+2. Keep exact SDK pins and maintain the lockfile/version policy for all native projects.
+3. Keep CI checks for mirror equivalence and malformed/stale live snapshot behavior.
+4. Deploy and verify the documented shared live-snapshot delivery path before exposing live context to paid agents.
+5. Reconfirm provider terms/attribution/limits, then run a private provider and Blocks canary under an owner-approved budget.
+6. Verify native `blocks check`, private registry/card state, A2A invitations/grants, billing mode, and paid trigger scenarios.
+7. Run approved organization vulnerability/licence tooling and attach reports.
+8. Add centralized observability, readiness alerts, and aggregate budget controls.
+9. Only then reassess the public/unattended paid-production release decision.
 
 ## 9. Final decision
 
@@ -366,7 +375,7 @@ The final proof record should attach:
 
 The project has a credible local proof foundation: canonical-source controls, deterministic generated artifacts, byte-identical specialized handlers, safe gateway policy tests, and dependency documentation. The decisive remaining issue is not hidden in the local specialized logic; it is synchronization and verification at shared dependency and external-runtime boundaries.
 
-Do not describe the fleet as fully behaviorally equivalent until the common-handler mirror divergence is corrected and the open native/live obligations are evidenced.
+Do not describe the fleet as fully behaviorally equivalent until the open native/live obligations are evidenced, including hosted delivery, live provider behavior, Blocks permissions, A2A, billing, and approved dependency scanning.
 
 ## References
 

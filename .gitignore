@@ -6,14 +6,21 @@ blocks_deploy/**/.venv/
 *.key
 .blocks-agent-state.json
 blocks-agent-logs/
+proof_record.local.json
+proof-record-canary.json
+proof-record-worker-status.json
 .gateway-budget.json
 crypto_yield_matrix_node_gateway/.gateway-budget.json
 crypto_yield_matrix_node_gateway/.gateway-state/
 *.egg-info/
+# Ownership marker files are intentionally tracked with generated exports.
 **/node_modules/
 **/__pycache__/
 *.py[cod]
 live_data/live_snapshot.json
 live_data/worker_status.json
+live_data/provider_canary_evidence.json
 blocks_deploy/**/live_data/live_snapshot.json
+blocks_deploy/**/live_data/provider_canary_evidence.json
 blocks_deploy/**/live_data/worker_status.json
+blocks_deploy/**/live_data/provider_canary_evidence.json

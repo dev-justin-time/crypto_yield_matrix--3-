@@ -14,7 +14,9 @@ The file intentionally retains all 118 supplied rows and its embedded `source_fi
 - Generated asset catalog: **59** rows and **59** per-asset files.
 - Asset snapshot coverage: **9** source-backed, **50** canonical-only.
 - Normalized quote exports: **59** per-asset files; statuses: {'unavailable': 50, 'source_snapshot': 9}.
-- Alternate dataset files checked: **0** (only embedded provenance labels remain in the canonical file).
+- Named raw source snapshots: **9** files under `csv/source_snapshots/`.
+- Named reference exports: **6** files under `csv/reference/`.
+- Anonymous `table-*.csv` files remaining: **0**; the source manifest preserves original paths and SHA-256 hashes. A recovered record is explicitly labeled `destination_verified_recovered` and is not treated as independent proof of the pre-move anonymous file.
 
 ## Embedded provenance labels
 
@@ -33,6 +35,6 @@ The file intentionally retains all 118 supplied rows and its embedded `source_fi
 
 ## Agent rule
 
-All handlers accept only `source_file: "yield_data.csv"` (or omit it to use that default). The generated `asset_catalog.csv` and `csv/assets/*.csv` files are evidence-first enrichments: source-backed fields are labeled, unavailable fields remain blank, and they must not replace the canonical source or be treated as live data. Because the canonical file contains repeated symbols, model-training workflows must preserve the provenance fields and must not treat repeated provenance rows as independent time observations without a documented row-selection policy.
+All handlers accept only `source_file: "yield_data.csv"` (or omit it to use that default). The generated `asset_catalog.csv` and `csv/assets/*.csv` files are evidence-first enrichments: source-backed fields are labeled, unavailable fields remain blank, and they must not replace the canonical source or be treated as live data. Named supplied market snapshots under `csv/source_snapshots/<SYMBOL>.csv` are read-only context; handlers expose them through asset research fields without network access. Because the canonical file contains repeated symbols, model-training workflows must preserve the provenance fields and must not treat repeated provenance rows as independent time observations without a documented row-selection policy.
 
 No validation issues found.

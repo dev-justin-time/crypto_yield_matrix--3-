@@ -1,0 +1,28 @@
+{
+  "release_version": "",
+  "commit_or_image_digest": "",
+  "audit_date": "",
+  "blocks_organization": "",
+  "provider_registry_ids_and_versions": [
+    {"agent_name": "", "registry_id": "", "version": "", "billing_mode": "paid"}
+  ],
+  "billing_mode_and_price": "paid; $0.10/task",
+  "gateway_image_digest_and_sdk_version": "",
+  "gateway_host_and_edge": "",
+  "secret_manager_reference_and_last_rotation": "",
+  "a2a_grants_verified_for": [
+    {"specialist": "", "granted_to": "", "verified_at": ""}
+  ],
+  "provider_health_observation_window": "",
+  "private_trigger_results": [
+    {"case": "", "agent": "", "terminal_state": "", "observed_at": ""}
+  ],
+  "paid_canary_task_ids": [],
+  "paid_canary_max_approved_spend": 0,
+  "actual_task_count_and_spend": {"task_count": 0, "spend_usd": 0},
+  "rollback_result": "",
+  "monitoring_dashboard_and_alert_owner": "",
+  "incident_owner": "",
+  "go_approver": "",
+  "next_review_or_expiry_date": ""
+}

@@ -11,6 +11,7 @@ import json
 import os
 import subprocess
 import sys
+import tempfile
 import types
 import unittest
 from pathlib import Path
@@ -66,6 +67,23 @@ assert payload["data_quality"]["missing_numeric_values"] == "null"
 '''
         result = run_python("-c", script, cwd=DEPLOYMENT)
         self.assertEqual(result.returncode, 0, result.stderr or result.stdout)
+
+    def test_local_fleet_gate_is_no_spend(self) -> None:
+        result = run_python("fleet_gate.py")
+        self.assertEqual(result.returncode, 0, result.stderr or result.stdout)
+        self.assertIn("LOCAL PREFLIGHT READY", result.stdout)
+        self.assertIn("blocks check in every native project", result.stdout)
+
+    def test_release_gate_rejects_blank_record_without_network(self) -> None:
+        result = run_python("release_gate.py", "--template")
+        self.assertEqual(result.returncode, 0, result.stderr or result.stdout)
+        self.assertIn('"paid_canary_task_ids"', result.stdout)
+        with tempfile.TemporaryDirectory() as directory:
+            record = Path(directory) / "release.json"
+            record.write_text(result.stdout, encoding="utf-8")
+            incomplete = run_python("release_gate.py", "--record", str(record))
+            self.assertEqual(incomplete.returncode, 1)
+            self.assertIn("release gate: INCOMPLETE", incomplete.stdout)
 
     def test_deployment_metadata_is_card_derived(self) -> None:
         metadata = json.loads((DEPLOYMENT / "deployment-metadata.json").read_text(encoding="utf-8"))

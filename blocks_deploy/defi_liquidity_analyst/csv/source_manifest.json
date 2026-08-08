@@ -1,0 +1,158 @@
+{
+  "schema_version": 1,
+  "policy": "Named source snapshots and reference exports; canonical yield_data.csv remains unchanged.",
+  "source_snapshot_directory": "csv/source_snapshots",
+  "reference_directory": "csv/reference",
+  "records": [
+    {
+      "original_path": "csv/table-1786042509301.csv",
+      "path": "csv/reference/file_purposes.csv",
+      "kind": "reference",
+      "symbol": "",
+      "sha256": "89e68300f0824f62b830103d36f676be11e1bb8d9627730301cc458b0cc7ea9b",
+      "bytes": "473",
+      "original_sha256": "89e68300f0824f62b830103d36f676be11e1bb8d9627730301cc458b0cc7ea9b",
+      "hash_provenance": "destination_verified_recovered"
+    },
+    {
+      "original_path": "csv/table-1786042973389.csv",
+      "path": "csv/reference/feature_groups.csv",
+      "kind": "reference",
+      "symbol": "",
+      "sha256": "8c53403cf6c7e297458050e50420246a68981ce8867fa0345cf9d1895cb36ebd",
+      "bytes": "965",
+      "original_sha256": "8c53403cf6c7e297458050e50420246a68981ce8867fa0345cf9d1895cb36ebd",
+      "hash_provenance": "destination_verified_recovered"
+    },
+    {
+      "original_path": "csv/table-1786043374524.csv",
+      "path": "csv/source_snapshots/BTC.csv",
+      "kind": "asset_snapshot",
+      "symbol": "BTC",
+      "sha256": "c18c506ca600d93c25614f00d0bf7d0afc9c8d9c1e78fe954f75831fa940ba33",
+      "bytes": "2852",
+      "original_sha256": "c18c506ca600d93c25614f00d0bf7d0afc9c8d9c1e78fe954f75831fa940ba33",
+      "hash_provenance": "destination_verified_recovered"
+    },
+    {
+      "original_path": "csv/table-1786043383034.csv",
+      "path": "csv/source_snapshots/ETH.csv",
+      "kind": "asset_snapshot",
+      "symbol": "ETH",
+      "sha256": "7db5e1b92445ab00d6a0fa94c36caf84ea045597003943f2ec72e941c2c45baf",
+      "bytes": "2805",
+      "original_sha256": "7db5e1b92445ab00d6a0fa94c36caf84ea045597003943f2ec72e941c2c45baf",
+      "hash_provenance": "destination_verified_recovered"
+    },
+    {
+      "original_path": "csv/table-1786043389453.csv",
+      "path": "csv/source_snapshots/SOL.csv",
+      "kind": "asset_snapshot",
+      "symbol": "SOL",
+      "sha256": "718d4514c7f0341cebb84f6f9ccc78ebc7fc9b17c8240c7f04108eb1013345eb",
+      "bytes": "2744",
+      "original_sha256": "718d4514c7f0341cebb84f6f9ccc78ebc7fc9b17c8240c7f04108eb1013345eb",
+      "hash_provenance": "destination_verified_recovered"
+    },
+    {
+      "original_path": "csv/table-1786043396050.csv",
+      "path": "csv/source_snapshots/ADA.csv",
+      "kind": "asset_snapshot",
+      "symbol": "ADA",
+      "sha256": "297532552bf341f6aed2895f34bac170a940c1d2efc3ad2d95d12df94a6e0675",
+      "bytes": "2777",
+      "original_sha256": "297532552bf341f6aed2895f34bac170a940c1d2efc3ad2d95d12df94a6e0675",
+      "hash_provenance": "destination_verified_recovered"
+    },
+    {
+      "original_path": "csv/table-1786043404706.csv",
+      "path": "csv/source_snapshots/XRP.csv",
+      "kind": "asset_snapshot",
+      "symbol": "XRP",
+      "sha256": "8595ad05f020f7a05b48da9788f144ffa221a40aba70ad4893913d5924f8f99f",
+      "bytes": "2739",
+      "original_sha256": "8595ad05f020f7a05b48da9788f144ffa221a40aba70ad4893913d5924f8f99f",
+      "hash_provenance": "destination_verified_recovered"
+    },
+    {
+      "original_path": "csv/table-1786043409882.csv",
+      "path": "csv/source_snapshots/AVAX.csv",
+      "kind": "asset_snapshot",
+      "symbol": "AVAX",
+      "sha256": "3e6b3fd19cbddf473a914c612044e390fa9a22a49e314057e1bf0c4074a08e78",
+      "bytes": "2772",
+      "original_sha256": "3e6b3fd19cbddf473a914c612044e390fa9a22a49e314057e1bf0c4074a08e78",
+      "hash_provenance": "destination_verified_recovered"
+    },
+    {
+      "original_path": "csv/table-1786043414639.csv",
+      "path": "csv/source_snapshots/DOT.csv",
+      "kind": "asset_snapshot",
+      "symbol": "DOT",
+      "sha256": "bcee03a262e295f5ce88a3d1143d3661a41098d92c776e21fa36e89bb458518c",
+      "bytes": "2740",
+      "original_sha256": "bcee03a262e295f5ce88a3d1143d3661a41098d92c776e21fa36e89bb458518c",
+      "hash_provenance": "destination_verified_recovered"
+    },
+    {
+      "original_path": "csv/table-1786043423210.csv",
+      "path": "csv/source_snapshots/ATOM.csv",
+      "kind": "asset_snapshot",
+      "symbol": "ATOM",
+      "sha256": "36142b8116057f953f7f24606739e51672b6273830ee8a3b12a67bfeda6ed53e",
+      "bytes": "2696",
+      "original_sha256": "36142b8116057f953f7f24606739e51672b6273830ee8a3b12a67bfeda6ed53e",
+      "hash_provenance": "destination_verified_recovered"
+    },
+    {
+      "original_path": "csv/table-1786043428259.csv",
+      "path": "csv/source_snapshots/LINK.csv",
+      "kind": "asset_snapshot",
+      "symbol": "LINK",
+      "sha256": "31938ea4d6f3aae09da2cba9dc7428e4f050e0862c95be116ddc10edd55aaf3f",
+      "bytes": "2791",
+      "original_sha256": "31938ea4d6f3aae09da2cba9dc7428e4f050e0862c95be116ddc10edd55aaf3f",
+      "hash_provenance": "destination_verified_recovered"
+    },
+    {
+      "original_path": "csv/table-1786044177764.csv",
+      "path": "csv/reference/source_coverage.csv",
+      "kind": "reference",
+      "symbol": "",
+      "sha256": "24027ac922bfd49ae90d5b35f9920bccdfc21c324c010ab26f74c94cefe7f11a",
+      "bytes": "727",
+      "original_sha256": "24027ac922bfd49ae90d5b35f9920bccdfc21c324c010ab26f74c94cefe7f11a",
+      "hash_provenance": "destination_verified_recovered"
+    },
+    {
+      "original_path": "csv/table-1786044184987.csv",
+      "path": "csv/reference/data_quality_notes.csv",
+      "kind": "reference",
+      "symbol": "",
+      "sha256": "5aa86737c483c7399dbb974931d90d4601c025db7b4c8384fb1ea059eeb76a58",
+      "bytes": "694",
+      "original_sha256": "5aa86737c483c7399dbb974931d90d4601c025db7b4c8384fb1ea059eeb76a58",
+      "hash_provenance": "destination_verified_recovered"
+    },
+    {
+      "original_path": "csv/table-1786044192628.csv",
+      "path": "csv/reference/asset_summary.csv",
+      "kind": "reference",
+      "symbol": "",
+      "sha256": "528c9084854c48fe3ad0941cba084e2e5ba94568111a090cd61b919a3d04ca5b",
+      "bytes": "285",
+      "original_sha256": "528c9084854c48fe3ad0941cba084e2e5ba94568111a090cd61b919a3d04ca5b",
+      "hash_provenance": "destination_verified_recovered"
+    },
+    {
+      "original_path": "csv/table-1786044273973.csv",
+      "path": "csv/reference/package_contents.csv",
+      "kind": "reference",
+      "symbol": "",
+      "sha256": "7f8c4697c5ce0b080afa3e3d4003a94ce2cc41f70292701f9819f0b78450a440",
+      "bytes": "371",
+      "original_sha256": "7f8c4697c5ce0b080afa3e3d4003a94ce2cc41f70292701f9819f0b78450a440",
+      "hash_provenance": "destination_verified_recovered"
+    }
+  ]
+}

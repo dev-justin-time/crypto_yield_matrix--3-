@@ -10,7 +10,7 @@ import json
 import os
 import random
 import time
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Callable
@@ -54,6 +54,22 @@ def load_symbols(path: Path = CANONICAL) -> list[str]:
         raise ValueError(f"no asset symbols found in {path}")
     return symbols
 
+SAFE_RATE_HEADERS = {
+    "retry-after", "x-rate-limit-limit", "x-rate-limit-remaining", "x-rate-limit-reset",
+    "x-mbx-used-weight", "x-mbx-used-weight-1m", "x-mbx-used-weight-1s", "x-mbx-used-weight-1h", "x-mbx-used-weight-1d",
+    "ratelimit-limit", "ratelimit-remaining", "ratelimit-reset", "cf-ray",
+}
+
+
+def _safe_rate_headers(headers: Any) -> dict[str, str]:
+    result: dict[str, str] = {}
+    for key, value in headers.items() if headers is not None else ():
+        normalized = str(key).lower()
+        if normalized in SAFE_RATE_HEADERS or "rate" in normalized or "retry" in normalized:
+            result[normalized] = str(value)[:200]
+    return result
+
+
 def _number(value: Any) -> float | None:
     try:
         parsed = float(value)
@@ -69,6 +85,8 @@ class ProviderState:
     failures: int = 0
     last_error: str | None = None
     last_success: str | None = None
+    last_http_status: int | None = None
+    last_headers: dict[str, str] = field(default_factory=dict)
 
     def wait(self, sleep: Callable[[float], None] = time.sleep) -> None:
         delay = self.min_interval - (time.monotonic() - self.last_request)
@@ -90,6 +108,8 @@ class ProviderClient:
             request = Request(self.base_url + path, headers={"User-Agent": USER_AGENT, "Accept": "application/json", **(headers or {})})
             try:
                 with self.opener(request, timeout=self.timeout) as response:
+                    self.state.last_http_status = int(getattr(response, "status", response.getcode()))
+                    self.state.last_headers = _safe_rate_headers(getattr(response, "headers", None))
                     value = json.loads(response.read().decode("utf-8"))
                 self.state.failures = 0
                 self.state.last_error = None
@@ -97,6 +117,8 @@ class ProviderClient:
                 return value
             except HTTPError as error:
                 last_error = error
+                self.state.last_http_status = int(error.code)
+                self.state.last_headers = _safe_rate_headers(error.headers)
                 self.state.last_error = f"HTTP {error.code}"
                 if error.code not in (408, 425, 429, 500, 502, 503, 504):
                     break
@@ -184,6 +206,8 @@ class LiveDataCollector:
                 client.state.wait()
                 request = Request(client.base_url, data=json.dumps(calls[chain]).encode(), headers={"User-Agent": USER_AGENT, "Content-Type": "application/json"}, method="POST")
                 with client.opener(request, timeout=client.timeout) as response:
+                    client.state.last_http_status = int(getattr(response, "status", response.getcode()))
+                    client.state.last_headers = _safe_rate_headers(getattr(response, "headers", None))
                     payload = json.loads(response.read().decode())
                 if not isinstance(payload, dict) or payload.get("error") is not None:
                     raise RuntimeError(f"{chain} JSON-RPC returned an error")
@@ -195,6 +219,18 @@ class LiveDataCollector:
                     result.append({"chain": chain, "block_height": height, "provider": client.state.name, "endpoint": client.base_url, "observed_at": iso_now()})
                 client.state.last_error = None
                 client.state.last_success = iso_now()
+            except HTTPError as error:
+                client.state.last_http_status = int(error.code)
+                client.state.last_headers = _safe_rate_headers(error.headers)
+                client.state.failures += 1
+                client.state.last_error = f"HTTP {error.code}"
+                errors.append({"provider": client.state.name, "error": f"HTTP {error.code}"})
+            except HTTPError as error:
+                client.state.last_http_status = int(error.code)
+                client.state.last_headers = _safe_rate_headers(error.headers)
+                client.state.failures += 1
+                client.state.last_error = f"HTTP {error.code}"
+                errors.append({"provider": client.state.name, "error": f"HTTP {error.code}"})
             except Exception as error:
                 client.state.failures += 1
                 client.state.last_error = str(error)[:240]
@@ -207,7 +243,7 @@ class LiveDataCollector:
         blockchain, rpc_errors = self._blockchain()
         now = iso_now()
         states = [self.binance.state, self.coinbase.state, self.defillama.state, *(client.state for client in self.rpc.values())]
-        return {"schema_version": "live-overlay-1", "generated_at": now, "canonical_source": "yield_data.csv", "data_status": "live_overlay_only", "freshness": {"stale_after_seconds": DEFAULT_STALE_AFTER_SECONDS, "generated_at": now}, "market": {"assets": market, "asset_count": len(market)}, "defi": {"chains": chains, "chain_count": len(chains)}, "blockchain": {"observations": blockchain, "observation_count": len(blockchain)}, "provider_status": [{"provider": state.name, "last_success": state.last_success, "last_error": state.last_error, "failures": state.failures} for state in states], "errors": market_errors + chain_errors + rpc_errors}
+        return {"schema_version": "live-overlay-1", "generated_at": now, "canonical_source": "yield_data.csv", "data_status": "live_overlay_only", "freshness": {"stale_after_seconds": DEFAULT_STALE_AFTER_SECONDS, "generated_at": now}, "market": {"assets": market, "asset_count": len(market)}, "defi": {"chains": chains, "chain_count": len(chains)}, "blockchain": {"observations": blockchain, "observation_count": len(blockchain)}, "provider_status": [{"provider": state.name, "last_success": state.last_success, "last_error": state.last_error, "last_http_status": state.last_http_status, "rate_limit_headers": state.last_headers, "failures": state.failures} for state in states], "errors": market_errors + chain_errors + rpc_errors}
 
 def write_snapshot(snapshot: dict[str, Any], output: Path = DEFAULT_OUTPUT) -> None:
     output.parent.mkdir(parents=True, exist_ok=True)

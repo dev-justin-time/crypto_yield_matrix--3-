@@ -3,6 +3,7 @@ from datetime import datetime, timezone, timedelta
 from pathlib import Path
 from urllib.parse import urlparse
 
+from live_canary import fixture_opener, run_provider_canary
 from live_data import LiveDataCollector, is_fresh, load_symbols, validate_provider_url
 from live_worker import merge_with_previous
 
@@ -24,12 +25,16 @@ def test_collector_parses_injected_provider_payloads():
     }
 
     class Response:
+        status = 200
+        headers = {"X-RateLimit-Remaining": "99"}
         def __init__(self, payload):
             self.payload = payload
         def __enter__(self):
             return self
         def __exit__(self, *args):
             return False
+        def getcode(self):
+            return self.status
         def read(self):
             return json.dumps(self.payload).encode()
 
@@ -50,7 +55,18 @@ def test_collector_parses_injected_provider_payloads():
     assert snapshot["market"]["assets"]["BTC"]["secondary_price_usd"] == 101
     assert snapshot["defi"]["chains"][0]["tvl_usd"] == 123
     assert snapshot["blockchain"]["observations"]
+    assert snapshot["provider_status"][0]["last_http_status"] == 200
+    assert snapshot["provider_status"][0]["rate_limit_headers"]["x-ratelimit-remaining"] == "99"
     assert snapshot["errors"] == []
+
+
+def test_provider_canary_fixture_captures_evidence():
+    from live_canary import default_specs
+    evidence = run_provider_canary(default_specs(), opener=fixture_opener)
+    assert evidence["summary"] == {"providers": 5, "http_successes": 5, "schema_valid": 5, "errors": 0}
+    assert all(item["request_started_at"] and item["request_finished_at"] for item in evidence["results"])
+    assert all(item["latency_ms"] is not None for item in evidence["results"])
+    assert all(item["response_headers"] for item in evidence["results"])
 
 
 def test_provider_urls_reject_insecure_or_credentialed_values():

@@ -64,6 +64,10 @@ export interface GatewayOptions {
   clientKeys: Readonly<Record<string, string>>;
   /** Optional client id -> allowed agent names. Missing ids may use '*'. */
   clientAgents?: Readonly<Record<string, ReadonlySet<string>>>;
+  /** Optional client id -> organization; requests must present matching tenant header. */
+  clientOrganizations?: Readonly<Record<string, string>>;
+  /** Optional organization -> daily task/spend caps, encoded by index.ts. */
+  organizationLimits?: Readonly<Record<string, { tasks: number; spendUsd: number }>>;
   taskTimeoutMs?: number;
   maxBodyBytes?: number;
   maxProgressEvents?: number;
@@ -107,14 +111,22 @@ interface ClientWindow {
   requests: number;
 }
 
-interface BudgetState {
+interface OrganizationBudgetState {
   day: string;
   tasks: number;
   spendUsd: number;
 }
 
+interface BudgetState {
+  day: string;
+  tasks: number;
+  spendUsd: number;
+  organizations?: Record<string, OrganizationBudgetState>;
+}
+
 interface AuthenticatedClient {
   id: string;
+  organization?: string;
 }
 
 interface GatewayMetrics {
@@ -196,6 +208,20 @@ function authenticate(req: IncomingMessage, clientKeys: Readonly<Record<string, 
     }
   }
   throw new HttpError(401, 'invalid gateway credentials');
+}
+
+function requireOrganization(
+  req: IncomingMessage,
+  client: AuthenticatedClient,
+  clientOrganizations: Readonly<Record<string, string>>,
+): AuthenticatedClient {
+  if (Object.keys(clientOrganizations).length === 0) return client;
+  const expected = clientOrganizations[client.id];
+  const supplied = req.headers['x-gateway-organization'];
+  if (!expected || typeof supplied !== 'string' || supplied !== expected) {
+    throw new HttpError(403, 'gateway organization authorization required');
+  }
+  return { ...client, organization: expected };
 }
 
 function positiveInteger(value: number, name: string): number {
@@ -495,6 +521,44 @@ export function parseClientKeys(raw: string): Record<string, string> {
   return keys;
 }
 
+export function parseOrganizationLimits(raw: string | undefined): Record<string, { tasks: number; spendUsd: number }> {
+  if (!raw || !raw.trim()) return {};
+  const result: Record<string, { tasks: number; spendUsd: number }> = {};
+  for (const entry of raw.split(',')) {
+    const separator = entry.indexOf('=');
+    const limitSeparator = entry.indexOf(':', separator + 1);
+    if (separator <= 0 || limitSeparator <= separator + 1) {
+      throw new Error('GATEWAY_ORG_LIMITS entries must use organization=tasks:spendUsd format');
+    }
+    const organization = entry.slice(0, separator).trim();
+    const tasks = Number(entry.slice(separator + 1, limitSeparator).trim());
+    const spendUsd = Number(entry.slice(limitSeparator + 1).trim());
+    if (!/^[A-Za-z0-9_.:-]{1,96}$/.test(organization) || !Number.isInteger(tasks) || tasks < 1 || !Number.isFinite(spendUsd) || spendUsd <= 0) {
+      throw new Error(`invalid organization limit for '${organization}'`);
+    }
+    if (result[organization]) throw new Error(`duplicate organization limit for '${organization}'`);
+    result[organization] = { tasks, spendUsd };
+  }
+  return result;
+}
+
+export function parseClientOrganizations(raw: string | undefined): Record<string, string> {
+  if (!raw || !raw.trim()) return {};
+  const result: Record<string, string> = {};
+  for (const entry of raw.split(',')) {
+    const separator = entry.indexOf('=');
+    if (separator <= 0) throw new Error('GATEWAY_CLIENT_ORGS entries must use clientId=organization format');
+    const id = entry.slice(0, separator).trim();
+    const organization = entry.slice(separator + 1).trim();
+    if (!/^[A-Za-z0-9_.-]{1,64}$/.test(id) || !/^[A-Za-z0-9_.:-]{1,96}$/.test(organization)) {
+      throw new Error(`invalid gateway organization mapping for client '${id}'`);
+    }
+    if (result[id]) throw new Error(`duplicate gateway organization mapping for client '${id}'`);
+    result[id] = organization;
+  }
+  return result;
+}
+
 export function parseClientAgents(raw: string | undefined): Record<string, ReadonlySet<string>> {
   if (!raw || !raw.trim()) return {};
   const result: Record<string, ReadonlySet<string>> = {};
@@ -541,6 +605,16 @@ export function createGateway(options: GatewayOptions): Gateway {
   if (unknownAllowlistClients.length > 0) {
     throw new Error(`client agent allowlist references unknown client ids: ${unknownAllowlistClients.join(', ')}`);
   }
+  const unknownOrganizationClients = Object.keys(options.clientOrganizations ?? {}).filter((id) => !options.clientKeys[id]);
+  if (unknownOrganizationClients.length > 0) {
+    throw new Error(`client organization mapping references unknown client ids: ${unknownOrganizationClients.join(', ')}`);
+  }
+  const clientOrganizations = options.clientOrganizations ?? {};
+  const organizationLimits = options.organizationLimits ?? {};
+  const unknownLimitOrganizations = Object.keys(organizationLimits).filter((organization) => !Object.values(clientOrganizations).includes(organization));
+  if (unknownLimitOrganizations.length > 0) {
+    throw new Error(`organization limits have no mapped client: ${unknownLimitOrganizations.join(', ')}`);
+  }
   nonnegativeNumber(maxDailySpendUsd, 'maxDailySpendUsd');
   nonnegativeNumber(taskCostUsd, 'taskCostUsd');
   if (taskCostUsd <= 0) throw new Error('taskCostUsd must be greater than zero');
@@ -574,10 +648,25 @@ export function createGateway(options: GatewayOptions): Gateway {
       const parsed = JSON.parse(readFileSync(options.budgetStateFile, 'utf8')) as Partial<BudgetState>;
       const tasks = parsed.tasks;
       const spendUsd = parsed.spendUsd;
-      if (typeof parsed.day === 'string' && typeof tasks === 'number' && Number.isInteger(tasks) && tasks >= 0 && typeof spendUsd === 'number' && Number.isFinite(spendUsd) && spendUsd >= 0) {
-        budget = { day: parsed.day, tasks, spendUsd };
+      const rawOrganizations = parsed.organizations;
+      const organizations: Record<string, OrganizationBudgetState> = {};
+      let validOrganizations = rawOrganizations === undefined;
+      if (rawOrganizations && typeof rawOrganizations === 'object' && !Array.isArray(rawOrganizations)) {
+        validOrganizations = true;
+        for (const [organization, value] of Object.entries(rawOrganizations)) {
+          if (!value || typeof value !== 'object' || Array.isArray(value)) { validOrganizations = false; break; }
+          const item = value as Partial<OrganizationBudgetState>;
+          if (typeof item.day !== 'string' || item.day !== parsed.day || !Number.isInteger(item.tasks) || Number(item.tasks) < 0 || typeof item.spendUsd !== 'number' || !Number.isFinite(item.spendUsd) || item.spendUsd < 0) { validOrganizations = false; break; }
+          organizations[organization] = { day: item.day, tasks: item.tasks as number, spendUsd: item.spendUsd };
+        }
       }
-    } catch {
+      const validBase = typeof parsed.day === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(parsed.day) && typeof tasks === 'number' && Number.isInteger(tasks) && tasks >= 0 && typeof spendUsd === 'number' && Number.isFinite(spendUsd) && spendUsd >= 0;
+      if (!validBase || !validOrganizations) {
+        throw new Error(`invalid gateway budget state '${options.budgetStateFile}'`);
+      }
+      budget = { day: parsed.day as string, tasks: tasks as number, spendUsd, organizations };
+    } catch (error) {
+      if (error instanceof Error && error.message.startsWith('invalid gateway budget state')) throw error;
       throw new Error(`unable to read gateway budget state '${options.budgetStateFile}'`);
     }
   }
@@ -592,7 +681,7 @@ export function createGateway(options: GatewayOptions): Gateway {
   const resetBudgetIfNeeded = (): void => {
     const day = utcDay();
     if (budget.day !== day) {
-      budget = { day, tasks: 0, spendUsd: 0 };
+      budget = { day, tasks: 0, spendUsd: 0, organizations: {} };
       persistBudget();
     }
   };
@@ -606,23 +695,37 @@ export function createGateway(options: GatewayOptions): Gateway {
   positiveInteger(maxLlmConcurrent, 'maxLlmConcurrent');
   positiveInteger(maxLlmRequestsPerMinute, 'maxLlmRequestsPerMinute');
 
-  const budgetSnapshot = (): Record<string, number | string> => {
-    resetBudgetIfNeeded();
-    return {
+  const budgetSnapshot = (organization?: string): Record<string, number | string | Record<string, number>> => {
+    resetBudgetIfNeeded();          const snapshot: Record<string, number | string | Record<string, number>> = {
       day: budget.day,
       remainingTasks: Math.max(0, maxDailyTasks - budget.tasks),
       remainingSpendUsd: Number(Math.max(0, maxDailySpendUsd - budget.spendUsd).toFixed(2)),
     };
+    const organizationName = organization;
+    const limit = organizationName ? organizationLimits[organizationName] : undefined;
+    const current = organizationName ? budget.organizations?.[organizationName] : undefined;
+    if (limit && organizationName) {
+      snapshot.organization = organizationName;
+      snapshot.organizationRemaining = {
+        tasks: Math.max(0, limit.tasks - (current?.tasks ?? 0)),
+        spendUsd: Number(Math.max(0, limit.spendUsd - (current?.spendUsd ?? 0)).toFixed(2)),
+      };
+    }
+    return snapshot;
   };
 
-  const setBudgetHeaders = (res: ServerResponse): void => {
-    const snapshot = budgetSnapshot();
+  const setBudgetHeaders = (res: ServerResponse, organization?: string): void => {
+    const snapshot = budgetSnapshot(organization);
     res.setHeader('x-gateway-budget-day', String(snapshot.day));
     res.setHeader('x-gateway-remaining-tasks', String(snapshot.remainingTasks));
     res.setHeader('x-gateway-remaining-spend-usd', String(snapshot.remainingSpendUsd));
+    if (snapshot.organizationRemaining && typeof snapshot.organizationRemaining === 'object') {
+      res.setHeader('x-gateway-org-remaining-tasks', String(snapshot.organizationRemaining.tasks));
+      res.setHeader('x-gateway-org-remaining-spend-usd', String(snapshot.organizationRemaining.spendUsd));
+    }
   };
 
-  const reserveBudget = (clientId: string): void => {
+  const reserveBudget = (clientId: string, organization?: string): void => {
     resetBudgetIfNeeded();
     const now = Date.now();
     const window = clientWindows.get(clientId);
@@ -638,10 +741,23 @@ export function createGateway(options: GatewayOptions): Gateway {
     if (budget.tasks >= maxDailyTasks || budget.spendUsd + taskCostUsd > maxDailySpendUsd) {
       throw new HttpError(429, 'gateway daily paid-task budget exhausted', secondsUntilNextUtcDay());
     }
+    if (organization && organizationLimits[organization]) {
+      const limit = organizationLimits[organization];
+      const current = budget.organizations?.[organization] ?? { day: utcDay(), tasks: 0, spendUsd: 0 };
+      if (current.tasks >= limit.tasks || current.spendUsd + taskCostUsd > limit.spendUsd) {
+        throw new HttpError(429, `organization '${organization}' paid-task budget exhausted`, secondsUntilNextUtcDay());
+      }
+      budget.organizations = { ...(budget.organizations ?? {}), [organization]: current };
+    }
     // Reserve before yielding to the SDK. Failed or canceled attempts remain
     // counted conservatively because the remote billing outcome is uncertain.
     budget.tasks += 1;
     budget.spendUsd = Number((budget.spendUsd + taskCostUsd).toFixed(2));
+    if (organization && organizationLimits[organization]) {
+      const current = budget.organizations![organization];
+      current.tasks += 1;
+      current.spendUsd = Number((current.spendUsd + taskCostUsd).toFixed(2));
+    }
     persistBudget();
   };
 
@@ -749,7 +865,7 @@ export function createGateway(options: GatewayOptions): Gateway {
         }
 
         if (req.method === 'POST' && pathname === '/llm/chat') {
-          const client = authenticate(req, options.clientKeys);
+          const client = requireOrganization(req, authenticate(req, options.clientKeys), clientOrganizations);
           const now = Date.now();
           const window = llmWindows.get(client.id);
           if (!window || now - window.startedAt >= 60_000) {
@@ -794,8 +910,51 @@ export function createGateway(options: GatewayOptions): Gateway {
           }
         }
 
+        if (req.method === 'GET' && pathname === '/metrics/prometheus') {
+          const metricsClient = requireOrganization(req, authenticate(req, options.clientKeys), clientOrganizations);
+          clientId = metricsClient.id;
+          const lines = [
+            '# HELP gateway_requests_total Total HTTP requests received.',
+            '# TYPE gateway_requests_total counter',
+            `gateway_requests_total ${metrics.requestsTotal}`,
+            '# HELP gateway_invoke_accepted_total Paid tasks accepted for dispatch.',
+            '# TYPE gateway_invoke_accepted_total counter',
+            `gateway_invoke_accepted_total ${metrics.invokeAccepted}`,
+            '# HELP gateway_invoke_failed_total Paid tasks that failed or returned incomplete evidence.',
+            '# TYPE gateway_invoke_failed_total counter',
+            `gateway_invoke_failed_total ${metrics.invokeFailed}`,
+            '# HELP gateway_auth_rejected_total Authentication failures.',
+            '# TYPE gateway_auth_rejected_total counter',
+            `gateway_auth_rejected_total ${metrics.authRejected}`,
+            '# HELP gateway_budget_rejected_total Paid tasks rejected by budget.',
+            '# TYPE gateway_budget_rejected_total counter',
+            `gateway_budget_rejected_total ${metrics.budgetRejected}`,
+            '# HELP gateway_capacity_rejected_total Paid tasks rejected by capacity.',
+            '# TYPE gateway_capacity_rejected_total counter',
+            `gateway_capacity_rejected_total ${metrics.capacityRejected}`,
+            '# HELP gateway_task_timeouts_total Paid tasks that timed out.',
+            '# TYPE gateway_task_timeouts_total counter',
+            `gateway_task_timeouts_total ${metrics.taskTimeouts}`,
+            '# HELP gateway_llm_failures_total LLM requests that failed.',
+            '# TYPE gateway_llm_failures_total counter',
+            `gateway_llm_failures_total ${metrics.llmFailures}`,
+            '# HELP gateway_in_flight_tasks Current paid tasks in flight.',
+            '# TYPE gateway_in_flight_tasks gauge',
+            `gateway_in_flight_tasks ${inFlightTasks}`,
+            '',
+          ].join('\n');
+          res.writeHead(200, {
+            'content-type': 'text/plain; version=0.0.4; charset=utf-8',
+            'cache-control': 'no-store',
+            'x-content-type-options': 'nosniff',
+          });
+          res.end(lines);
+          recordStatus(200);
+          return;
+        }
+
         if (req.method === 'GET' && pathname === '/metrics') {
-          const metricsClient = authenticate(req, options.clientKeys);
+          const metricsClient = requireOrganization(req, authenticate(req, options.clientKeys), clientOrganizations);
           clientId = metricsClient.id;
           sendJson(res, 200, {
             ...metrics,
@@ -815,7 +974,7 @@ export function createGateway(options: GatewayOptions): Gateway {
           // Always consume the request body before any early exit so the
           // keep-alive connection stays in sync for the next request.
           const payload = await readJsonBody(req, maxBodyBytes);
-          const client = authenticate(req, options.clientKeys);
+          const client = requireOrganization(req, authenticate(req, options.clientKeys), clientOrganizations);
           clientId = client.id;
           if (!getAgent(agentName)) {
             throw new HttpError(404, `unknown agent '${agentName}'`);
@@ -856,8 +1015,8 @@ export function createGateway(options: GatewayOptions): Gateway {
             throw new HttpError(400, 'x-idempotency-key must be at most 200 characters');
           }
           const idempotencyKey = Array.isArray(idempotencyHeader) ? undefined : idempotencyHeader;
-          reserveBudget(clientId);
-          setBudgetHeaders(res);
+          reserveBudget(clientId, client.organization);
+          setBudgetHeaders(res, client.organization);
           metrics.invokeAccepted += 1;
           inFlightTasks += 1;
           try {
@@ -879,7 +1038,7 @@ export function createGateway(options: GatewayOptions): Gateway {
               ...result,
               schemaVersion: REQUEST_SCHEMA_VERSION,
               releaseId,
-              budget: budgetSnapshot(),
+              budget: budgetSnapshot(client.organization),
             });
             if (result.state === 'completed' && !artifactIncomplete) metrics.invokeCompleted += 1;
             else metrics.invokeFailed += 1;
@@ -900,7 +1059,7 @@ export function createGateway(options: GatewayOptions): Gateway {
         recordStatus(status);
         if (status === 401) metrics.authRejected += 1;
         if (status === 429 && message.includes('request rate limit')) metrics.rateLimitRejected += 1;
-        if (status === 429 && message.includes('daily paid-task budget')) metrics.budgetRejected += 1;
+        if (status === 429 && (message.includes('daily paid-task budget') || message.includes('organization') && message.includes('budget exhausted'))) metrics.budgetRejected += 1;
         if (status === 503 && message.includes('capacity')) metrics.capacityRejected += 1;
         if (status === 503 && message.includes('kill switch')) metrics.killSwitchRejected += 1;
         if (message.includes('artifact exceeds gateway limit')) metrics.artifactRejected += 1;

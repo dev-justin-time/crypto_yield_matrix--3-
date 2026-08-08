@@ -10,11 +10,14 @@ Copy the repository template into the deployment secret manager or local ignored
 BLOCKS_API_KEY=server_side_blocks_key
 GATEWAY_CLIENT_KEYS=research_app=replace_with_a_random_secret_at_least_16_chars
 GATEWAY_CLIENT_AGENTS=research_app=crypto_risk_analyst|matrix_research_insights_agent
+GATEWAY_CLIENT_ORGS=research_app=research_team
+GATEWAY_ORG_LIMITS=research_team=50:5.00
 GATEWAY_MAX_DAILY_TASKS=100
 GATEWAY_MAX_DAILY_SPEND_USD=10
 GATEWAY_TASK_COST_USD=0.10
 GATEWAY_HOST=127.0.0.1
 GATEWAY_ALLOW_PUBLIC_BIND=false
+GATEWAY_ALLOW_PRIVATE_BIND=false
 GATEWAY_RELEASE_ID=release-or-image-digest
 GATEWAY_MAX_REQUESTS_PER_MINUTE=30
 GATEWAY_MAX_CONCURRENT_TASKS=8
@@ -33,7 +36,7 @@ LLM_MAX_CONCURRENT=2
 LLM_MAX_REQUESTS_PER_MINUTE=10
 ```
 
-`GATEWAY_CLIENT_KEYS` contains caller credentials in `clientId=secret` form. Use a different secret from the Blocks API key. Secrets are compared in constant time and are never logged. `GATEWAY_CLIENT_AGENTS` can restrict each caller to named agents; omit it only for a trusted single-tenant gateway. The default listener is loopback-only; every non-loopback bind requires `GATEWAY_ALLOW_PUBLIC_BIND=true` and must sit behind a verified private, TLS-terminating authenticated edge. This built-in ledger is intentionally single-instance and persisted at `GATEWAY_BUDGET_STATE_FILE`; the supplied Compose file mounts a durable volume. Run one gateway instance unless an external shared quota ledger is added. Providers can scale independently through Blocks runtime settings.
+`GATEWAY_CLIENT_KEYS` contains caller credentials in `clientId=secret` form. Use a different secret from the Blocks API key. Optional `GATEWAY_CLIENT_ORGS` binds clients to organizations and requires `X-Gateway-Organization` on paid and LLM requests. `GATEWAY_ORG_LIMITS` adds per-organization daily task/spend caps. These are gateway tenant-policy hooks, not substitutes for an external identity provider or shared multi-replica ledger. Secrets are compared in constant time and are never logged. `GATEWAY_CLIENT_AGENTS` can restrict each caller to named agents; omit it only for a trusted single-tenant gateway. The default listener is loopback-only. A non-loopback bind requires either `GATEWAY_ALLOW_PRIVATE_BIND=true` for an isolated container network or `GATEWAY_ALLOW_PUBLIC_BIND=true` behind a verified private, TLS-terminating authenticated edge; never enable both. This built-in ledger is intentionally single-instance and persisted at `GATEWAY_BUDGET_STATE_FILE`; the supplied Compose file mounts a durable volume. Run one gateway instance unless an external shared quota ledger is added. Providers can scale independently through Blocks runtime settings.
 
 The gateway reserves a task before calling Blocks. The reservation is conservative: uncertain, failed, or canceled remote outcomes still consume the configured daily allowance so a network ambiguity cannot cause uncontrolled spend. Create the configured kill-switch file to stop new paid dispatches immediately. Responses include remaining task/spend budget headers and a release identifier. `X-Gateway-Schema-Version: 1` is the current optional request contract marker. Artifact count and declared/downloaded byte limits prevent unbounded response growth; artifacts with missing/over-limit declared sizes are not downloaded, and incomplete artifact retrieval returns HTTP 502 with `artifactStatus: "partial"` rather than looking like a complete success. The `X-Idempotency-Key` header is forwarded to Blocks for caller retries; the gateway itself never retries an uncertain paid send.
 
@@ -42,7 +45,8 @@ The gateway reserves a task before calling Blocks. The reservation is conservati
 - `GET /health` — no-spend liveness.
 - `GET /ready` — no-spend configuration, kill-switch, and daily-budget readiness.
 - `GET /agents` — served agent catalog.
-- `GET /metrics` — authenticated no-spend process counters for request status, auth rejection, accepted/completed/failed invokes, rate/budget/capacity/kill-switch/artifact rejection, and timeouts; it requires the gateway bearer credential and should still be restricted to a trusted operational network.
+- `GET /metrics` — authenticated JSON process counters.
+- `GET /metrics/prometheus` — authenticated Prometheus text metrics; ship it through an internal collector, never directly to the public Internet.
 - `POST /agents/:agentName/invoke` — requires `Authorization: Bearer <gateway-client-secret>` and JSON containing a non-empty `question`; this is the paid Blocks path.
 - `POST /llm/chat` — requires the same gateway credential and uses local Ollama by default. Set `provider: "hosted"` only when the operator has configured `LLM_HOSTED_BASE_URL`; pass a transient user key with `X-LLM-API-Key`.
 

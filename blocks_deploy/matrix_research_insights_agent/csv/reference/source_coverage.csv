@@ -1,0 +1,5 @@
+﻿Source,Assets Covered,Data Points
+"**Yahoo Finance** (live Aug 6, 2026)","BTC, ETH, SOL, ADA, XRP, AVAX, DOT, ATOM, LINK","Price, market cap, 24h volume, circulating supply, 52-week range, FDV, moving averages"
+**Historical prices** (2-year daily),"BTC, ETH","Real annualized volatility (BTC: 49.05% → 42.0%), max drawdown (BTC: -28.14% → -53.06%; ETH: -63.24% → -67.61%)"
+"**Web research** (5 sources, 2026)",All 59 assets,"Staking APY ranges: ETH 2.5–4%, SOL 5.5–8%, ATOM 12–19%, DOT 8–14%, ADA 2.5–4.5%, AVAX 5.5–9%, etc."
+"**DeFi analytics** (Portals, CoinLaw, CryptoRank)","ETH, SOL, Aave, Lido, EigenLayer, etc.","Real TVL figures: Ethereum DeFi \$44.8B, Solana \$5.78B, Aave \$15.15B, Lido \$19.79B"

@@ -25,7 +25,9 @@ The primary evidence files are:
 - `asset_catalog.csv` — generated one-row-per-symbol evidence-first enrichment with explicit snapshot coverage.
 - `csv/assets/<SYMBOL>.csv` — generated focused yield/enrichment views for all 59 canonical symbols.
 - `csv/quotes/<SYMBOL>.csv` — generated normalized Yahoo-style quote exports for all 59 symbols; unavailable supplied quote fields are blank and labeled.
-- `table-*.csv` — supplied source snapshots, metadata tables, and compact summaries with heterogeneous schemas; only the nine one-row asset tables are joined by the catalog builder.
+- `csv/source_snapshots/<SYMBOL>.csv` — named, original supplied market snapshot for each of the nine covered assets.
+- `csv/reference/*.csv` — named source metadata and summary exports that document coverage and feature context.
+- `csv/source_manifest.json` — SHA-256 manifest linking the former table export to its named file without losing provenance.
 - `index.html`, `matrix.js`, `styles.css` — current user-facing matrix behavior and labels.
 
 ## Agents
@@ -52,7 +54,7 @@ The primary evidence files are:
 - Forecast cards must use chronological splits, out-of-time evaluation, simple baselines, calibrated probabilities where relevant, and uncertainty intervals.
 - Agents should return `PASS`, `WARNING`, or `FAIL` status plus exact file/row/column references whenever possible.
 - The feature-engineering formulas are recomputed from source fields: `yield_momentum = yield_trend_slope * yield_volatility`, `mcap_to_tvl = mcap_end_current_usd / tvl_usd`, `risk_score = beta_vs_btc * volatility_annualized_current / sharpe_ratio_current`, and `yield_premium = agg_current - yield_vs_category_avg`. The same four fields are materialized in the generated asset catalog for dashboard/export use.
-- Asset snapshot coverage is explicit: nine assets have supplied market snapshot rows and 50 are `canonical_only`; blank snapshot fields never mean zero.
+- Asset snapshot coverage is explicit: nine assets have supplied market snapshot rows and 50 are `canonical_only`; blank snapshot fields never mean zero. Research handlers expose named snapshot fields such as price, 24-hour change, market cap, volume, market state, quote time, website, and exchange when available.
 - Quote exports are uniform across all 59 assets: nine are `source_snapshot`, 50 are `unavailable`; `quote_as_of_iso`, `quote_source_file`, and `quote_completeness_pct` make freshness and coverage visible.
 - Every local research artifact includes `user_value.decision_use`, `user_value.review_next`, and `user_value.do_not_infer` so a user receives interpretation guidance rather than an unexplained metric dump.
 - A zero `tvl_usd` or `sharpe_ratio_current` produces an undefined (`null`) ratio with a warning; it is never silently replaced with zero.

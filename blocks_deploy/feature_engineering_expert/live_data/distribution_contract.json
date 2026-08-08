@@ -1,0 +1,19 @@
+{
+  "schema_version": "live-distribution-1",
+  "purpose": "Distribute a read-only live overlay to separately deployed paid handlers without changing canonical yield evidence.",
+  "worker_output": "/app/live_data/live_snapshot.json",
+  "worker_status": "/app/live_data/worker_status.json",
+  "consumer_mount": "/app/live_data",
+  "snapshot_filename": "live_snapshot.json",
+  "status_filename": "worker_status.json",
+  "distribution": {
+    "local": "live_worker.py may mirror into blocks_deploy/*/live_data/ when LIVE_WORKER_MIRROR_DEPLOYMENTS=1.",
+    "container": "Mount the same named or managed volume at /app/live_data in the worker and every consumer runtime; consumers must mount it read-only.",
+    "hosted_blocks": "A local volume is not visible to hosted Blocks runtimes. Use an approved object-store, sidecar, or deployment-sync mechanism and preserve atomic replacement plus the same filenames."
+  },
+  "write_policy": "Worker writes atomically; consumers read only and never modify or replace the snapshot.",
+  "freshness_policy": "Consumers must require data_status=live_overlay_only, a fresh generated_at, and observation_status not equal to retained_from_previous_cycle.",
+  "failure_policy": "Worker liveness and data readiness are separate. degraded or no_fresh_observation states must alert and must not be presented as fresh live data.",
+  "canonical_source": "yield_data.csv",
+  "paid_task_policy": "Handlers never make provider network calls during a paid task; the overlay is optional, separately labeled context."
+}

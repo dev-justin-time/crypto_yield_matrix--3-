@@ -9,6 +9,7 @@ from typing import Any, Iterable
 
 ROOT = Path(__file__).resolve().parents[2]
 ASSET_CATALOG = ROOT / "asset_catalog.csv"
+SOURCE_SNAPSHOT_DIR = ROOT / "csv" / "source_snapshots"
 LIVE_SNAPSHOT = ROOT / "live_data" / "live_snapshot.json"
 CONTEXT_ALLOWLIST = {
     "validate.md",
@@ -203,9 +204,66 @@ def _snapshot_is_fresh(snapshot: dict[str, Any]) -> bool:
         return False
 
 
+def load_asset_snapshot(symbol: str) -> dict[str, Any]:
+    """Load the named supplied market snapshot for one asset, without network I/O."""
+    normalized = str(symbol).strip().upper()
+    if not normalized.isalnum() or len(normalized) > 16:
+        return {}
+    path = SOURCE_SNAPSHOT_DIR / f"{normalized}.csv"
+    if not path.exists():
+        return {}
+    try:
+        with path.open("r", encoding="utf-8-sig", newline="") as handle:
+            rows = list(csv.DictReader(handle))
+    except (OSError, csv.Error):
+        return {}
+    if len(rows) != 1:
+        return {}
+    embedded = str(rows[0].get("symbol", "")).strip().upper().removesuffix("-USD")
+    if embedded != normalized:
+        return {}
+    return rows[0]
+
+
+def snapshot_research(symbol: str) -> dict[str, Any]:
+    """Return decision-support fields from the asset-named supplied snapshot."""
+    row = load_asset_snapshot(symbol)
+    if not row:
+        return {
+            "status": "unavailable",
+            "source_file": None,
+            "symbol": f"{str(symbol).upper()}-USD",
+            "price_usd": None,
+            "change_pct_24h": None,
+            "market_cap_usd": None,
+            "volume_24h_usd": None,
+            "market_state": None,
+            "research_use": "No supplied market snapshot is available; use canonical yield evidence only.",
+        }
+    return {
+        "status": "source_snapshot",
+        "source_file": f"csv/source_snapshots/{str(symbol).upper()}.csv",
+        "symbol": row.get("symbol") or f"{str(symbol).upper()}-USD",
+        "price_usd": numeric_value(row, "regularMarketPrice"),
+        "change_pct_24h": numeric_value(row, "regularMarketChangePercent"),
+        "market_cap_usd": numeric_value(row, "marketCap"),
+        "volume_24h_usd": (
+            numeric_value(row, "regularMarketVolume")
+            if numeric_value(row, "regularMarketVolume") is not None
+            else numeric_value(row, "volume24Hr")
+        ),
+        "market_state": row.get("marketState") or None,
+        "quote_time": row.get("regularMarketTime") or None,
+        "website": row.get("website") or None,
+        "exchange": row.get("exchange") or None,
+        "research_use": "Use as supplied snapshot context; verify timestamp and current market conditions before acting.",
+    }
+
+
 def asset_enrichment(symbol: str) -> dict[str, Any]:
     row = catalog_by_symbol().get(str(symbol).upper(), {})
     return {
+        "market_snapshot": snapshot_research(symbol),
         "coverage_status": row.get("snapshot_status", "unavailable"),
         "snapshot_source_file": row.get("snapshot_source_file") or None,
         "snapshot_price_usd": numeric_value(row, "snapshot_price_usd"),

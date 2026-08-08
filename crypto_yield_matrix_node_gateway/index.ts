@@ -13,7 +13,7 @@
  *   POST /agents/:agentName/invoke  (Bearer gateway client auth required)
  */
 import 'dotenv/config';
-import { createGateway, isLoopbackHost, parseClientAgents, parseClientKeys } from './server.js';
+import { createGateway, isLoopbackHost, parseClientAgents, parseClientKeys, parseClientOrganizations, parseOrganizationLimits } from './server.js';
 import { AGENTS } from './agents.js';
 
 const apiKey = process.env.BLOCKS_API_KEY;
@@ -57,16 +57,25 @@ const budgetStateFile = process.env.GATEWAY_BUDGET_STATE_FILE || '.gateway-budge
 const killSwitchFile = process.env.GATEWAY_KILL_SWITCH_FILE || '';
 const releaseId = process.env.GATEWAY_RELEASE_ID || 'unversioned';
 const host = process.env.GATEWAY_HOST || '127.0.0.1';
-if (!isLoopbackHost(host) && process.env.GATEWAY_ALLOW_PUBLIC_BIND !== 'true') {
-  console.error('[gateway] refusing non-loopback bind; set GATEWAY_ALLOW_PUBLIC_BIND=true only behind a verified private edge');
+const privateContainerBind = process.env.GATEWAY_ALLOW_PRIVATE_BIND === 'true';
+if (!isLoopbackHost(host) && process.env.GATEWAY_ALLOW_PUBLIC_BIND !== 'true' && !privateContainerBind) {
+  console.error('[gateway] refusing non-loopback bind; set GATEWAY_ALLOW_PRIVATE_BIND=true only for an isolated private container network, or GATEWAY_ALLOW_PUBLIC_BIND=true only behind a verified private edge');
+  process.exit(1);
+}
+if (privateContainerBind && process.env.GATEWAY_ALLOW_PUBLIC_BIND === 'true') {
+  console.error('[gateway] choose either private container bind or public bind, not both');
   process.exit(1);
 }
 const rawClientKeys = process.env.GATEWAY_CLIENT_KEYS;
 let clientAgents: Record<string, ReadonlySet<string>>;
+let clientOrganizations: Record<string, string>;
+let organizationLimits: Record<string, { tasks: number; spendUsd: number }>;
 try {
   clientAgents = parseClientAgents(process.env.GATEWAY_CLIENT_AGENTS);
+  clientOrganizations = parseClientOrganizations(process.env.GATEWAY_CLIENT_ORGS);
+  organizationLimits = parseOrganizationLimits(process.env.GATEWAY_ORG_LIMITS);
 } catch (error) {
-  console.error(`[gateway] invalid GATEWAY_CLIENT_AGENTS: ${error instanceof Error ? error.message : String(error)}`);
+  console.error(`[gateway] invalid gateway client mapping: ${error instanceof Error ? error.message : String(error)}`);
   process.exit(1);
 }
 if (!rawClientKeys) {
@@ -90,6 +99,8 @@ const gateway = createGateway({
   apiKey,
   clientKeys,
   clientAgents,
+  clientOrganizations,
+  organizationLimits,
   taskTimeoutMs,
   maxBodyBytes,
   maxConcurrentTasks,

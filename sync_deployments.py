@@ -54,11 +54,23 @@ SOURCE_FILES = (
     "validate.md",
     "yield_data.csv",
     "asset_catalog.csv",
+    "live_data/README.md",
+    "live_data/live_snapshot.example.json",
+    "live_data/distribution_contract.json",
+    "live_data/worker_status.example.json",
+    "csv/source_manifest.json",
 )
 
-# Generated one-row-per-asset evidence exports are part of the reproducible
-# package, while live snapshots remain an operational overlay and are excluded.
-SOURCE_GLOBS = ("csv/assets/*.csv", "csv/quotes/*.csv")
+# Generated one-row-per-asset evidence exports and the named supplied source
+# snapshots/reference tables are part of the reproducible package. Live
+# snapshots remain an operational overlay and are excluded.
+SOURCE_GLOBS = (
+    "csv/assets/*.csv",
+    "csv/quotes/*.csv",
+    "csv/source_snapshots/*.csv",
+    "csv/reference/*.csv",
+)
+STALE_DEPLOYMENT_FILES = ("test_asset_sources.py",)
 
 
 def deployment_projects() -> list[Path]:
@@ -105,6 +117,11 @@ def records() -> list[dict[str, object]]:
 def check() -> tuple[list[dict[str, str]], list[dict[str, str]]]:
     missing: list[dict[str, str]] = []
     mismatched: list[dict[str, str]] = []
+    for project in deployment_projects():
+        for stale_name in STALE_DEPLOYMENT_FILES:
+            stale = project / stale_name
+            if stale.exists():
+                mismatched.append({"source": stale_name, "target": relative(stale)})
     for record in records():
         source = ROOT / str(record["source"])
         expected = str(record["sha256"])
@@ -118,6 +135,14 @@ def check() -> tuple[list[dict[str, str]], list[dict[str, str]]]:
 
 
 def write_mirrors() -> None:
+    for project in deployment_projects():
+        for stale_name in STALE_DEPLOYMENT_FILES:
+            stale = project / stale_name
+            if stale.exists():
+                stale_text = stale.read_text(encoding="utf-8", errors="replace")
+                if "class AssetSourceTests" not in stale_text or "if __name__ == \"__main__\"" not in stale_text:
+                    raise RuntimeError(f"refusing to remove unmanaged stale deployment file: {stale}")
+                stale.unlink()
     for record in records():
         source = ROOT / str(record["source"])
         for target_name in record["targets"]:  # type: ignore[union-attr]

@@ -1,0 +1,8 @@
+﻿Feature Group,Real Data,Synthetic (realistic estimates)
+"**Market cap, price, supply**",9 assets from Yahoo Finance,50 assets scaled by category and known tokenomics
+**Staking yields**,All 59 — from 2026 staking research,—
+**Volatility**,"BTC, ETH (from 731 days of prices)",57 assets estimated by category + mcap regression
+**Max drawdown**,"BTC, ETH (from 731 days of prices)",57 assets estimated by volatility scaling
+**Sharpe ratio**,Derived from real yield + real/synthetic vol,—
+"**Beta, correlation, RSI, momentum**",Estimated by asset category,All 59
+**Prediction targets**,"Forward yield, direction, risk-adjusted yield, score",All 59 — computed from real + estimated inputs

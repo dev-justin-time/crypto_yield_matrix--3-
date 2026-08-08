@@ -480,7 +480,8 @@
       if (liveStatus) {
         const generatedAt = liveSnapshot && liveSnapshot.generated_at ? new Date(liveSnapshot.generated_at) : null;
         const staleAfter = Number(liveSnapshot && liveSnapshot.freshness && liveSnapshot.freshness.stale_after_seconds || 900);
-        const fresh = generatedAt && Number.isFinite(generatedAt.getTime()) && (Date.now() - generatedAt.getTime()) <= staleAfter * 1000;
+        const ageMs = generatedAt && Number.isFinite(generatedAt.getTime()) ? Date.now() - generatedAt.getTime() : Infinity;
+        const fresh = ageMs >= 0 && ageMs <= staleAfter * 1000;
         liveStatus.classList.toggle('stale', Boolean(liveSnapshot) && !fresh);
         liveStatus.classList.toggle('unavailable', !liveSnapshot);
         liveStatus.textContent = liveSnapshot

@@ -1,8 +1,9 @@
 """Build evidence-first per-asset enrichment and quote exports.
 
-The canonical yield_data.csv remains the only handler request source. This script
-creates derived catalog outputs and normalized Yahoo-style quote exports; it
-never invents market values for assets without a supplied snapshot.
+The canonical yield_data.csv remains the only handler request source. Named
+asset snapshots live under csv/source_snapshots/<SYMBOL>.csv and are read-only
+supplied context; this script creates derived catalog outputs and normalized
+quote exports without inventing values for uncovered assets.
 """
 
 from __future__ import annotations
@@ -17,10 +18,12 @@ from typing import Any
 ROOT = Path(__file__).resolve().parent
 CANONICAL = ROOT / "yield_data.csv"
 SOURCE_DIR = ROOT / "csv"
+SNAPSHOT_DIR = SOURCE_DIR / "source_snapshots"
 CATALOG = ROOT / "asset_catalog.csv"
 ASSET_DIR = SOURCE_DIR / "assets"
 QUOTE_DIR = SOURCE_DIR / "quotes"
 DEPLOY_ROOT = ROOT / "blocks_deploy"
+OWNERSHIP_MARKER = "build_asset_catalog.py\n"
 
 DERIVED_FIELDS = ("yield_momentum", "mcap_to_tvl", "risk_score", "yield_premium")
 SNAPSHOT_FIELDS = (
@@ -118,13 +121,15 @@ def derived(row: dict[str, str]) -> dict[str, str]:
 
 def source_quotes() -> dict[str, tuple[Path, dict[str, str]]]:
     quotes: dict[str, tuple[Path, dict[str, str]]] = {}
-    for path in sorted(SOURCE_DIR.glob("table-*.csv")):
+    for path in sorted(SNAPSHOT_DIR.glob("*.csv")):
         rows = read_csv(path)
         if len(rows) != 1 or "symbol" not in rows[0]:
             continue
         raw = rows[0]
         raw_symbol = raw.get("symbol", "").strip()
         symbol = raw_symbol.removesuffix("-USD").upper()
+        if symbol != path.stem.upper():
+            raise RuntimeError(f"snapshot filename/symbol mismatch: {path}")
         if symbol and symbol not in quotes:
             quotes[symbol] = (path, raw)
     return quotes
@@ -226,10 +231,32 @@ def build() -> tuple[list[dict[str, str]], list[Path]]:
     headers = list(rows[0])
     ASSET_DIR.mkdir(parents=True, exist_ok=True)
     QUOTE_DIR.mkdir(parents=True, exist_ok=True)
-    for old in ASSET_DIR.glob("*.csv"):
-        old.unlink()
-    for old in QUOTE_DIR.glob("*.csv"):
-        old.unlink()
+    expected_symbols = set(selected)
+    generated_marker = ASSET_DIR / ".generated-by-build-asset-catalog"
+    quote_marker = QUOTE_DIR / ".generated-by-build-asset-catalog"
+    asset_csvs = {path.stem for path in ASSET_DIR.glob("*.csv")}
+    quote_csvs = {path.stem for path in QUOTE_DIR.glob("*.csv")}
+    asset_outputs_owned = generated_marker.exists() and generated_marker.read_text(encoding="utf-8") == OWNERSHIP_MARKER
+    quote_outputs_owned = quote_marker.exists() and quote_marker.read_text(encoding="utf-8") == OWNERSHIP_MARKER
+    # Ownership is explicit: a complete filename set is not enough because it
+    # could be user-supplied data. The marker must be committed or created by
+    # an explicit reviewed migration step before regeneration.
+    if not asset_outputs_owned and asset_csvs:
+        raise RuntimeError("refusing to overwrite unmanaged root asset CSV files")
+    if not quote_outputs_owned and quote_csvs:
+        raise RuntimeError("refusing to overwrite unmanaged root quote CSV files")
+    if asset_outputs_owned:
+        for old in ASSET_DIR.glob("*.csv"):
+            old.unlink()
+    if quote_outputs_owned:
+        for old in QUOTE_DIR.glob("*.csv"):
+            old.unlink()
+    generated_marker.write_text(OWNERSHIP_MARKER, encoding="utf-8")
+    quote_marker.write_text(OWNERSHIP_MARKER, encoding="utf-8")
+    catalog_marker = ROOT / ".generated-by-build-asset-catalog"
+    if CATALOG.exists() and (not catalog_marker.exists() or catalog_marker.read_text(encoding="utf-8") != OWNERSHIP_MARKER):
+        raise RuntimeError("refusing to overwrite unmanaged root asset_catalog.csv")
+    catalog_marker.write_text(OWNERSHIP_MARKER, encoding="utf-8")
     with CATALOG.open("w", encoding="utf-8", newline="") as handle:
         writer = csv.DictWriter(handle, fieldnames=headers, lineterminator="\n")
         writer.writeheader()
@@ -241,7 +268,13 @@ def build() -> tuple[list[dict[str, str]], list[Path]]:
     ]
     for project in deployment_projects:
         destination = project / CATALOG.name
+        catalog_marker = project / ".generated-by-build-asset-catalog"
+        if destination.exists() and not catalog_marker.exists():
+            catalog_marker.write_text(OWNERSHIP_MARKER, encoding="utf-8")
+        if destination.exists() and catalog_marker.read_text(encoding="utf-8") != OWNERSHIP_MARKER:
+            raise RuntimeError(f"refusing to overwrite unmanaged catalog: {destination}")
         shutil.copyfile(CATALOG, destination)
+        catalog_marker.write_text(OWNERSHIP_MARKER, encoding="utf-8")
         generated.append(destination)
     for row in rows:
         path = ASSET_DIR / f"{row['symbol']}.csv"
@@ -263,8 +296,18 @@ def build() -> tuple[list[dict[str, str]], list[Path]]:
     for project in deployment_projects:
         deployment_quote_dir = project / "csv" / "quotes"
         deployment_quote_dir.mkdir(parents=True, exist_ok=True)
-        for old in deployment_quote_dir.glob("*.csv"):
-            old.unlink()
+        deployment_marker = deployment_quote_dir / ".generated-by-build-asset-catalog"
+        deployment_csvs = {path.stem for path in deployment_quote_dir.glob("*.csv")}
+        deployment_owned = deployment_marker.exists() and deployment_marker.read_text(encoding="utf-8") == OWNERSHIP_MARKER
+        # Do not infer ownership from a complete filename set; deployment
+        # outputs require the explicit marker as well.
+        unmanaged = [old for old in deployment_quote_dir.glob("*.csv") if not deployment_owned]
+        if unmanaged:
+            raise RuntimeError(f"refusing to overwrite unmanaged deployment quote files: {unmanaged[0]}")
+        if deployment_owned:
+            for old in deployment_quote_dir.glob("*.csv"):
+                old.unlink()
+        deployment_marker.write_text(OWNERSHIP_MARKER, encoding="utf-8")
         for source_quote in sorted(QUOTE_DIR.glob("*.csv")):
             destination = deployment_quote_dir / source_quote.name
             shutil.copyfile(source_quote, destination)

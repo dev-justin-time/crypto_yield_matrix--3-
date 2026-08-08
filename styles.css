@@ -392,6 +392,18 @@ body {
   border-top-color: #0a1628;
 }
 
+.data-disclosure {
+  margin: 0 0 12px;
+  padding: 9px 11px;
+  border: 1px solid #bfdbfe;
+  border-radius: 8px;
+  background: #eff6ff;
+  color: #1e3a8a;
+  font-size: 10px;
+  line-height: 1.5;
+}
+.data-disclosure code { font-family: "SF Mono", Monaco, monospace; font-size: 9px; }
+
 .subhead-row {
   display: flex;
   align-items: center;
