@@ -2,7 +2,7 @@
   "identity": {
     "agentName": "tokenomics_sustainability_expert",
     "displayName": "Tokenomics Sustainability Expert",
-    "description": "Evaluates nominal yield against inflation, dilution, supply, and market-cap dynamics with transparent calculations.",
+    "description": "Separates nominal yield from inflation, dilution pressure, supply dynamics, and market-cap context. Computes real-yield proxies and flags tokens where high nominal rewards are eroded by emission schedules or supply unlocks.",
     "version": "1.1.0",
     "provider": {
       "organization": "Crypto Yield Matrix"
@@ -11,12 +11,36 @@
   "capabilities": {
     "taskKinds": [
       "request"
-    ]
+    ],
+    "expertise": [
+      "inflation-adjusted yield",
+      "dilution analysis",
+      "supply dynamics",
+      "FDV/MCAP ratio",
+      "token emission sustainability"
+    ],
+    "dataCoverage": "59 assets, inflation rate, FDV/MCAP, circulating supply, market cap change"
   },
   "tags": [
     {
-      "id": "tokenomics",
+      "id": "domain:crypto",
+      "name": "Cryptocurrency"
+    },
+    {
+      "id": "task:tokenomics",
       "name": "Tokenomics sustainability"
+    },
+    {
+      "id": "task:sustainability",
+      "name": "Yield sustainability"
+    },
+    {
+      "id": "skill:fundamental",
+      "name": "Fundamental analysis"
+    },
+    {
+      "id": "format:json",
+      "name": "Structured JSON output"
     }
   ],
   "runtime": {

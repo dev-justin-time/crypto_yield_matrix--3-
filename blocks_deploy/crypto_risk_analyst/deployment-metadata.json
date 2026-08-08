@@ -4,20 +4,20 @@
   "generator_version": "1",
   "agent_name": "crypto_risk_analyst",
   "source_card": "blocks_agents/crypto_risk_analyst.json",
-  "source_card_sha256": "ca51d2db41f5da35815cf4a2114d18caeccf631c038e64fe921b59e0f322b6f0",
-  "source_card_version": "1.0.0",
+  "source_card_sha256": "c6c5879777b1d37d367fd881b32c704b3a6f3e79e5d7d509434e3093e0dcaed4",
+  "source_card_version": "1.1.0",
   "native_card_version": "1.1.0",
   "version_policy": "Root card version describes local source semantics; native card version describes the registered package. Native version changes require blocks check and a controlled canary.",
   "runtime_policy": "Native runtime limits are package deployment policy and must remain positive, bounded, and explicitly reviewed; the adapter must remain ./handler.py:handler.",
   "source_handler": "./handlers/crypto_risk_analyst.py",
   "deployment_project": "crypto_risk_analyst",
   "deployment_card": "crypto_risk_analyst/agent-card.json",
-  "deployment_card_sha256": "ceda80df26e68830b26e689265ab40041447d57678f00120b0943949f4924de4",
+  "deployment_card_sha256": "77c6120c1cc9c037a444678b0296c4b1c52e9d24c900a8e8b57800232a142f47",
   "card_contract": {
     "identity": {
       "agentName": "crypto_risk_analyst",
       "displayName": "Crypto Risk Analyst",
-      "description": "Evaluates yield alongside volatility, drawdown, beta, correlations, and supplied risk-adjusted metrics for research decisions.",
+      "description": "Quantifies downside risk alongside yield: volatility, drawdown, beta, Sharpe ratios, and risk-adjusted return. Flags assets where yield masks elevated risk. Best used as a screening tool before deeper liquidity and tokenomics review.",
       "provider": {
         "organization": "Crypto Yield Matrix"
       }
@@ -27,8 +27,24 @@
     ],
     "tags": [
       {
-        "id": "risk",
+        "id": "domain:crypto",
+        "name": "Cryptocurrency"
+      },
+      {
+        "id": "task:risk",
         "name": "Risk and drawdown analysis"
+      },
+      {
+        "id": "task:screening",
+        "name": "Asset screening"
+      },
+      {
+        "id": "skill:quantitative",
+        "name": "Quantitative metrics"
+      },
+      {
+        "id": "format:json",
+        "name": "Structured JSON output"
       }
     ]
   },

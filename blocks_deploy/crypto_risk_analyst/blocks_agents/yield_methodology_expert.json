@@ -2,91 +2,54 @@
   "identity": {
     "agentName": "yield_methodology_expert",
     "displayName": "Yield Methodology Expert",
-    "description": "Explains and compares crypto yield mechanisms, annualization flags, aggregates, and methodology notes without treating unlike yields as interchangeable.",
-    "version": "1.0.0",
+    "description": "Makes APY/APR, staking, lending, and inflation-adjusted yields comparable. Explains annualization, compounding, and methodology differences so users don't treat unlike yields as equivalent. Flags asterisked assets and reveals whether displayed percentages are meaningful for comparison.",
+    "version": "1.1.0",
     "provider": {
       "organization": "Crypto Yield Matrix"
     }
   },
   "capabilities": {
-    "taskKinds": [
-      "request"
-    ]
+    "taskKinds": ["request"],
+    "expertise": ["yield methodology comparison", "APR/APY normalization", "annualization audit", "yield mechanism classification", "cross-asset yield comparison"],
+    "dataCoverage": "59 assets, 8 quarterly periods, annualized vs non-annualized tracking"
   },
   "tags": [
-    {
-      "id": "yield",
-      "name": "Yield methodology"
-    }
+    {"id": "domain:crypto", "name": "Cryptocurrency"},
+    {"id": "task:yield", "name": "Yield methodology"},
+    {"id": "task:comparison", "name": "Cross-asset comparison"},
+    {"id": "skill:methodology", "name": "Methodology audit"},
+    {"id": "format:json", "name": "Structured JSON output"}
   ],
   "runtime": {
     "handler": "./handlers/yield_methodology_expert.py"
   },
-  "contextFiles": [
-    "validate.md",
-    "DATA_DICTIONARY.md",
-    "yield_data.csv"
-  ],
+  "contextFiles": ["validate.md", "DATA_DICTIONARY.md", "yield_data.csv"],
   "io": {
-    "inputs": [
-      {
-        "id": "request",
-        "description": "Yield comparison question and optional asset/category filter.",
-        "contentType": "application/json",
-        "required": true,
-        "schema": {
-          "type": "object",
-          "properties": {
-            "question": {
-              "type": "string"
-            },
-            "symbol": {
-              "type": "string"
-            },
-            "category": {
-              "type": "string"
-            },
-            "metrics": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
-            }
-          }
+    "inputs": [{
+      "id": "request",
+      "description": "Yield comparison question with optional asset or category filter and metric preferences.",
+      "contentType": "application/json",
+      "required": true,
+      "schema": {
+        "type": "object",
+        "properties": {
+          "question": {"type": "string"},
+          "symbol": {"type": "string"},
+          "category": {"type": "string"},
+          "metrics": {"type": "array", "items": {"type": "string"}}
         }
       }
-    ],
-    "outputs": [
-      {
-        "id": "yield_report",
-        "description": "Comparable yield analysis with methodology, annualization status, and caveats.",
-        "contentType": "application/json",
-        "guaranteed": true
-      }
-    ]
+    }],
+    "outputs": [{
+      "id": "yield_report",
+      "description": "Comparable yield analysis with methodology notes, annualization flags, and caveats.",
+      "contentType": "application/json",
+      "guaranteed": true
+    }]
   },
   "skill": {
-    "fields": [
-      "q3_24_prior",
-      "q4_24_prior",
-      "q1_25_prior",
-      "q2_25_prior",
-      "q3_25_current",
-      "q4_25_current",
-      "q1_26_current",
-      "q2_26_current",
-      "agg_prior",
-      "agg_current",
-      "change_pp",
-      "is_annualized",
-      "notes",
-      "category"
-    ],
-    "mustReport": [
-      "yield type",
-      "annualization status",
-      "source version",
-      "methodology note"
-    ]
+    "fields": ["q3_24_prior", "q4_24_prior", "q1_25_prior", "q2_25_prior", "q3_25_current", "q4_25_current", "q1_26_current", "q2_26_current", "agg_prior", "agg_current", "change_pp", "is_annualized", "notes", "category"],
+    "mustReport": ["yield type", "annualization status", "source version", "methodology note"],
+    "userValue": "Use methodology notes and annualization flags to avoid treating unlike yield mechanisms as directly comparable. Verify APR/APY conventions, compounding, lockups, fees, and reward assets with the provider."
   }
 }

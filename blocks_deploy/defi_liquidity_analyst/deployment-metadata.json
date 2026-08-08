@@ -4,20 +4,20 @@
   "generator_version": "1",
   "agent_name": "defi_liquidity_analyst",
   "source_card": "blocks_agents/defi_liquidity_analyst.json",
-  "source_card_sha256": "a8dcce02836011789c34c93ff1e3c29d91c06a0132e7e2df14c02e692ad1629a",
-  "source_card_version": "1.0.0",
+  "source_card_sha256": "e72b8b44a70867a30ce33a4ea23b4e808171195c2851b581d855aa747e003f91",
+  "source_card_version": "1.1.0",
   "native_card_version": "1.1.0",
   "version_policy": "Root card version describes local source semantics; native card version describes the registered package. Native version changes require blocks check and a controlled canary.",
   "runtime_policy": "Native runtime limits are package deployment policy and must remain positive, bounded, and explicitly reviewed; the adapter must remain ./handler.py:handler.",
   "source_handler": "./handlers/defi_liquidity_analyst.py",
   "deployment_project": "defi_liquidity_analyst",
   "deployment_card": "defi_liquidity_analyst/agent-card.json",
-  "deployment_card_sha256": "1b08801e1fa089851f5bf8f383f14a98901b15bd4acdc75865131c9fe865fa09",
+  "deployment_card_sha256": "6045dc71fe87c9c47222397c78553842982c7ce2d0584204ed3274bb72b6d42d",
   "card_contract": {
     "identity": {
       "agentName": "defi_liquidity_analyst",
       "displayName": "DeFi Liquidity Analyst",
-      "description": "Analyzes volume, TVL, active addresses, transactions, market cap, and liquidity trend proxies from the project datasets.",
+      "description": "Reviews volume trends, TVL depth, active addresses, daily transactions, and market-cap context to identify weakening liquidity signals and exit-risk proxies before they become critical. Flags assets where high yield may be accompanied by thin market depth.",
       "provider": {
         "organization": "Crypto Yield Matrix"
       }
@@ -27,8 +27,28 @@
     ],
     "tags": [
       {
-        "id": "liquidity",
-        "name": "DeFi liquidity and activity"
+        "id": "domain:crypto",
+        "name": "Cryptocurrency"
+      },
+      {
+        "id": "domain:defi",
+        "name": "DeFi"
+      },
+      {
+        "id": "task:liquidity",
+        "name": "Liquidity and activity analysis"
+      },
+      {
+        "id": "task:screening",
+        "name": "Asset screening"
+      },
+      {
+        "id": "skill:on-chain",
+        "name": "On-chain metrics"
+      },
+      {
+        "id": "format:json",
+        "name": "Structured JSON output"
       }
     ]
   },

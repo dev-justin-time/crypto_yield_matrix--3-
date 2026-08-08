@@ -2,7 +2,7 @@
   "identity": {
     "agentName": "portfolio_scenario_expert",
     "displayName": "Portfolio Scenario Expert",
-    "description": "Runs transparent, non-advisory crypto yield/risk/liquidity scenarios under user-specified constraints.",
+    "description": "Runs transparent crypto yield/risk/liquidity scenarios under user-defined constraints. What-if analysis for yield targets, drawdown caps, liquidity floors, and category limits. Outputs include constraint violations, trade-off analysis, and sensitivity flags \u2014 never a recommendation.",
     "version": "1.1.0",
     "provider": {
       "organization": "Crypto Yield Matrix"
@@ -11,12 +11,36 @@
   "capabilities": {
     "taskKinds": [
       "request"
-    ]
+    ],
+    "expertise": [
+      "scenario analysis",
+      "constraint-based screening",
+      "trade-off evaluation",
+      "sensitivity analysis",
+      "portfolio construction research"
+    ],
+    "dataCoverage": "59 assets, yield/drawdown/vol/liquidity/correlation metrics across 16 categories"
   },
   "tags": [
     {
-      "id": "scenarios",
+      "id": "domain:crypto",
+      "name": "Cryptocurrency"
+    },
+    {
+      "id": "task:scenarios",
       "name": "Portfolio scenarios"
+    },
+    {
+      "id": "task:what-if",
+      "name": "What-if analysis"
+    },
+    {
+      "id": "skill:portfolio",
+      "name": "Portfolio research"
+    },
+    {
+      "id": "format:json",
+      "name": "Structured JSON output"
     }
   ],
   "runtime": {

@@ -2,7 +2,7 @@
   "identity": {
     "agentName": "matrix_research_insights_agent",
     "displayName": "Matrix Research Insights Agent",
-    "description": "Turns the existing crypto yield matrix, timeline, legend, and tooltip metrics into traceable research insights for users.",
+    "description": "Converts the interactive yield matrix dashboard into traceable research insights. Explains quarter-by-quarter yield rankings, prior/current aggregate comparisons, yield bands, and timeline metrics with exact source references. Ideal for generating research notes directly from dashboard exploration.",
     "version": "1.1.0",
     "provider": {
       "organization": "Crypto Yield Matrix"
@@ -11,12 +11,36 @@
   "capabilities": {
     "taskKinds": [
       "request"
-    ]
+    ],
+    "expertise": [
+      "dashboard research",
+      "yield ranking analysis",
+      "quarterly comparison",
+      "aggregate trend interpretation",
+      "matrix data extraction"
+    ],
+    "dataCoverage": "8 quarters, 59 assets, 6 focus assets, 4 yield bands, investment score breakdown"
   },
   "tags": [
     {
-      "id": "dashboard",
+      "id": "domain:crypto",
+      "name": "Cryptocurrency"
+    },
+    {
+      "id": "task:insights",
       "name": "Dashboard research insights"
+    },
+    {
+      "id": "task:ranking",
+      "name": "Yield ranking and comparison"
+    },
+    {
+      "id": "skill:interpretation",
+      "name": "Data interpretation"
+    },
+    {
+      "id": "format:json",
+      "name": "Structured JSON output"
     }
   ],
   "runtime": {

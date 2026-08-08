@@ -4,20 +4,20 @@
   "generator_version": "1",
   "agent_name": "data_provenance_auditor",
   "source_card": "blocks_agents/data_provenance_auditor.json",
-  "source_card_sha256": "ff4f11bd564381e734577d2b8c7b8257697a805643fe55f300badafabc3404a1",
-  "source_card_version": "1.0.0",
+  "source_card_sha256": "7b40061e4adc19dc20cba44016dbe1bcc080f1830481b6b210e41af3bc191207",
+  "source_card_version": "1.1.0",
   "native_card_version": "1.1.0",
   "version_policy": "Root card version describes local source semantics; native card version describes the registered package. Native version changes require blocks check and a controlled canary.",
   "runtime_policy": "Native runtime limits are package deployment policy and must remain positive, bounded, and explicitly reviewed; the adapter must remain ./handler.py:handler.",
   "source_handler": "./handlers/data_provenance_auditor.py",
   "deployment_project": "data_provenance_auditor",
   "deployment_card": "data_provenance_auditor/agent-card.json",
-  "deployment_card_sha256": "d7dd2248fe79ff5d512d48b4a9ad7c3090973f1ff627eabed9b0db4416ad166b",
+  "deployment_card_sha256": "2d33ff69a4e3eb91f0358489ce0df82eb62ca3ba8877da8b65beb32c04b47f1b",
   "card_contract": {
     "identity": {
       "agentName": "data_provenance_auditor",
       "displayName": "Data Provenance Auditor",
-      "description": "Audits CSV lineage, schema compatibility, source conflicts, and validation evidence for the crypto yield matrix.",
+      "description": "Audits CSV lineage, schema consistency, source conflicts, duplicate provenance rows, and validation evidence. Returns exact file/row/column references for every finding. Essential before trusting any downstream analysis or model output.",
       "provider": {
         "organization": "Crypto Yield Matrix"
       }
@@ -27,8 +27,24 @@
     ],
     "tags": [
       {
-        "id": "provenance",
-        "name": "Data provenance and audit"
+        "id": "domain:crypto",
+        "name": "Cryptocurrency"
+      },
+      {
+        "id": "task:audit",
+        "name": "Data auditing"
+      },
+      {
+        "id": "task:provenance",
+        "name": "Provenance tracking"
+      },
+      {
+        "id": "skill:data-quality",
+        "name": "Data quality assurance"
+      },
+      {
+        "id": "format:json",
+        "name": "Structured JSON output"
       }
     ]
   },

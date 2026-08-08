@@ -2,7 +2,7 @@
   "identity": {
     "agentName": "yield_methodology_expert",
     "displayName": "Yield Methodology Expert",
-    "description": "Explains and compares crypto yield mechanisms, annualization flags, aggregates, and methodology notes without treating unlike yields as interchangeable.",
+    "description": "Makes APY/APR, staking, lending, and inflation-adjusted yields comparable. Explains annualization, compounding, and methodology differences so users don't treat unlike yields as equivalent. Flags asterisked assets and reveals whether displayed percentages are meaningful for comparison.",
     "version": "1.1.0",
     "provider": {
       "organization": "Crypto Yield Matrix"
@@ -11,12 +11,36 @@
   "capabilities": {
     "taskKinds": [
       "request"
-    ]
+    ],
+    "expertise": [
+      "yield methodology comparison",
+      "APR/APY normalization",
+      "annualization audit",
+      "yield mechanism classification",
+      "cross-asset yield comparison"
+    ],
+    "dataCoverage": "59 assets, 8 quarterly periods, annualized vs non-annualized tracking"
   },
   "tags": [
     {
-      "id": "yield",
+      "id": "domain:crypto",
+      "name": "Cryptocurrency"
+    },
+    {
+      "id": "task:yield",
       "name": "Yield methodology"
+    },
+    {
+      "id": "task:comparison",
+      "name": "Cross-asset comparison"
+    },
+    {
+      "id": "skill:methodology",
+      "name": "Methodology audit"
+    },
+    {
+      "id": "format:json",
+      "name": "Structured JSON output"
     }
   ],
   "runtime": {

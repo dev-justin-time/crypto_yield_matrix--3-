@@ -2,7 +2,7 @@
   "identity": {
     "agentName": "data_provenance_auditor",
     "displayName": "Data Provenance Auditor",
-    "description": "Audits CSV lineage, schema compatibility, source conflicts, and validation evidence for the crypto yield matrix.",
+    "description": "Audits CSV lineage, schema consistency, source conflicts, duplicate provenance rows, and validation evidence. Returns exact file/row/column references for every finding. Essential before trusting any downstream analysis or model output.",
     "version": "1.1.0",
     "provider": {
       "organization": "Crypto Yield Matrix"
@@ -11,12 +11,36 @@
   "capabilities": {
     "taskKinds": [
       "request"
-    ]
+    ],
+    "expertise": [
+      "data lineage audit",
+      "schema validation",
+      "source conflict detection",
+      "provenance tracking",
+      "hash verification"
+    ],
+    "dataCoverage": "118 provenance-labeled rows, 61 columns, 9 source snapshots, SHA-256 verified mirrors"
   },
   "tags": [
     {
-      "id": "provenance",
-      "name": "Data provenance and audit"
+      "id": "domain:crypto",
+      "name": "Cryptocurrency"
+    },
+    {
+      "id": "task:audit",
+      "name": "Data auditing"
+    },
+    {
+      "id": "task:provenance",
+      "name": "Provenance tracking"
+    },
+    {
+      "id": "skill:data-quality",
+      "name": "Data quality assurance"
+    },
+    {
+      "id": "format:json",
+      "name": "Structured JSON output"
     }
   ],
   "runtime": {

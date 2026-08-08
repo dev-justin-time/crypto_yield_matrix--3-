@@ -2,77 +2,50 @@
   "identity": {
     "agentName": "tokenomics_sustainability_expert",
     "displayName": "Tokenomics Sustainability Expert",
-    "description": "Evaluates nominal yield against inflation, dilution, supply, and market-cap dynamics with transparent calculations.",
-    "version": "1.0.0",
-    "provider": {
-      "organization": "Crypto Yield Matrix"
-    }
+    "description": "Separates nominal yield from inflation, dilution pressure, supply dynamics, and market-cap context. Computes real-yield proxies and flags tokens where high nominal rewards are eroded by emission schedules or supply unlocks.",
+    "version": "1.1.0",
+    "provider": {"organization": "Crypto Yield Matrix"}
   },
   "capabilities": {
-    "taskKinds": [
-      "request"
-    ]
+    "taskKinds": ["request"],
+    "expertise": ["inflation-adjusted yield", "dilution analysis", "supply dynamics", "FDV/MCAP ratio", "token emission sustainability"],
+    "dataCoverage": "59 assets, inflation rate, FDV/MCAP, circulating supply, market cap change"
   },
   "tags": [
-    {
-      "id": "tokenomics",
-      "name": "Tokenomics sustainability"
-    }
+    {"id": "domain:crypto", "name": "Cryptocurrency"},
+    {"id": "task:tokenomics", "name": "Tokenomics sustainability"},
+    {"id": "task:sustainability", "name": "Yield sustainability"},
+    {"id": "skill:fundamental", "name": "Fundamental analysis"},
+    {"id": "format:json", "name": "Structured JSON output"}
   ],
-  "runtime": {
-    "handler": "./handlers/tokenomics_sustainability_expert.py"
-  },
-  "contextFiles": [
-    "validate.md",
-    "DATA_DICTIONARY.md",
-    "yield_data.csv"
-  ],
+  "runtime": {"handler": "./handlers/tokenomics_sustainability_expert.py"},
+  "contextFiles": ["validate.md", "DATA_DICTIONARY.md", "yield_data.csv"],
   "io": {
-    "inputs": [
-      {
-        "id": "request",
-        "description": "Sustainability question and optional asset filter.",
-        "contentType": "application/json",
-        "required": true,
-        "schema": {
-          "type": "object",
-          "properties": {
-            "question": {
-              "type": "string"
-            },
-            "symbol": {
-              "type": "string"
-            },
-            "thresholds": {
-              "type": "object"
-            }
-          }
+    "inputs": [{
+      "id": "request",
+      "description": "Sustainability question with optional asset filter and inflation/dilution thresholds.",
+      "contentType": "application/json",
+      "required": true,
+      "schema": {
+        "type": "object",
+        "properties": {
+          "question": {"type": "string"},
+          "symbol": {"type": "string"},
+          "thresholds": {"type": "object"}
         }
       }
-    ],
-    "outputs": [
-      {
-        "id": "sustainability_report",
-        "description": "Transparent nominal-yield, inflation, dilution, and supply report.",
-        "contentType": "application/json",
-        "guaranteed": true
-      }
-    ]
+    }],
+    "outputs": [{
+      "id": "sustainability_report",
+      "description": "Nominal-yield, inflation, dilution, and supply report with sustainability flags.",
+      "contentType": "application/json",
+      "guaranteed": true
+    }]
   },
   "skill": {
-    "fields": [
-      "agg_current",
-      "inflation_rate_pct",
-      "fdv_to_mcap_ratio",
-      "circulating_supply",
-      "mcap_change_pct",
-      "notes"
-    ],
-    "derivedMetrics": [
-      "nominal_yield_minus_inflation"
-    ],
-    "mustWarn": [
-      "not a true net yield without fees, price path, lockups, and reward composition"
-    ]
+    "fields": ["agg_current", "inflation_rate_pct", "fdv_to_mcap_ratio", "circulating_supply", "mcap_change_pct", "notes"],
+    "derivedMetrics": ["nominal_yield_minus_inflation"],
+    "mustWarn": ["not true net yield without fees, price path, lockups, and reward composition"],
+    "userValue": "Compare nominal yield with inflation, dilution, supply, and market-cap context to assess sustainability questions. Check reward composition, unlock schedules, fees, lockups, and price exposure using current primary sources."
   }
 }

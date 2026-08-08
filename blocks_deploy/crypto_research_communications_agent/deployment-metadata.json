@@ -4,20 +4,20 @@
   "generator_version": "1",
   "agent_name": "crypto_research_communications_agent",
   "source_card": "blocks_agents/crypto_research_communications_agent.json",
-  "source_card_sha256": "31c5f74eb936749208e4368780fcea617649179371cfe0e6dd2256cec762afe2",
-  "source_card_version": "1.0.0",
+  "source_card_sha256": "d7cc4a7d371722c96e64fd5a75f604e4c7fc57b5574ac48434f75f8b709c96dd",
+  "source_card_version": "1.1.0",
   "native_card_version": "1.1.0",
   "version_policy": "Root card version describes local source semantics; native card version describes the registered package. Native version changes require blocks check and a controlled canary.",
   "runtime_policy": "Native runtime limits are package deployment policy and must remain positive, bounded, and explicitly reviewed; the adapter must remain ./handler.py:handler.",
   "source_handler": "./handlers/crypto_research_communications_agent.py",
   "deployment_project": "crypto_research_communications_agent",
   "deployment_card": "crypto_research_communications_agent/agent-card.json",
-  "deployment_card_sha256": "6ba4be1c28ef2f48292590d084ee6dea30dd9e6868d790b14ae91a42563ae1e3",
+  "deployment_card_sha256": "5a5b0548796523bceb94e358b70b56d2728fa583e01e5212f47e851ff7bbf8fd",
   "card_contract": {
     "identity": {
       "agentName": "crypto_research_communications_agent",
       "displayName": "Crypto Research Communications Agent",
-      "description": "Produces concise, traceable, non-advisory crypto research notes that distinguish observed, estimated, derived, target, and conflicting data.",
+      "description": "Produces concise, traceable, non-advisory crypto research communications. Distinguishes observed, estimated, derived, and target data with exact evidence locations. Formats output as Markdown or JSON with executive summary, methodology, limitations, and responsible disclosure language.",
       "provider": {
         "organization": "Crypto Yield Matrix"
       }
@@ -27,8 +27,28 @@
     ],
     "tags": [
       {
-        "id": "research_comms",
-        "name": "Research communication and disclosure"
+        "id": "domain:crypto",
+        "name": "Cryptocurrency"
+      },
+      {
+        "id": "task:research",
+        "name": "Research communication"
+      },
+      {
+        "id": "task:disclosure",
+        "name": "Disclosure and compliance"
+      },
+      {
+        "id": "skill:writing",
+        "name": "Technical writing"
+      },
+      {
+        "id": "format:markdown",
+        "name": "Markdown output"
+      },
+      {
+        "id": "format:json",
+        "name": "JSON output"
       }
     ]
   },

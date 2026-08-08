@@ -2,7 +2,7 @@
   "identity": {
     "agentName": "model_validation_guardian",
     "displayName": "Model Validation Guardian",
-    "description": "Checks duplicate provenance rows, target circularity, temporal leakage, split integrity, calibration, baselines, and uncertainty before a crypto model is trusted.",
+    "description": "Blocks unsafe modeling practices before they produce misleading results. Checks for duplicate provenance rows as independent observations, target circularity, temporal leakage, invalid splits, and missing baselines. Returns PASS/WARNING/FAIL gates with exact remediation steps.",
     "version": "1.1.0",
     "provider": {
       "organization": "Crypto Yield Matrix"
@@ -11,12 +11,37 @@
   "capabilities": {
     "taskKinds": [
       "request"
-    ]
+    ],
+    "expertise": [
+      "model validation",
+      "leakage detection",
+      "split integrity",
+      "baseline comparison",
+      "calibration audit",
+      "uncertainty reporting"
+    ],
+    "dataCoverage": "Full dataset validation: provenance awareness, chronological ordering, feature/target separation"
   },
   "tags": [
     {
-      "id": "validation",
-      "name": "Model validation and leakage control"
+      "id": "domain:crypto",
+      "name": "Cryptocurrency"
+    },
+    {
+      "id": "task:validation",
+      "name": "Model validation"
+    },
+    {
+      "id": "task:safety",
+      "name": "Safety gate"
+    },
+    {
+      "id": "skill:ml-ops",
+      "name": "ML operations"
+    },
+    {
+      "id": "format:json",
+      "name": "Structured JSON output"
     }
   ],
   "runtime": {

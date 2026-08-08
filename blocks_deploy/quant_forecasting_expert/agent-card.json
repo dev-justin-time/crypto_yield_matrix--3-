@@ -2,7 +2,7 @@
   "identity": {
     "agentName": "quant_forecasting_expert",
     "displayName": "Quantitative Yield Forecasting Expert",
-    "description": "Designs cautious quarterly yield forecasts only after source reconciliation, chronological validation, baseline comparison, and uncertainty reporting.",
+    "description": "Designs cautious quarterly yield forecasts only after source reconciliation, chronological validation, baseline comparison, and uncertainty reporting. Returns a readiness FAIL gate when data is insufficient \u2014 currently active because the 8-quarter panel lacks sufficient dated history for validated forecasting.",
     "version": "1.1.0",
     "provider": {
       "organization": "Crypto Yield Matrix"
@@ -11,12 +11,40 @@
   "capabilities": {
     "taskKinds": [
       "request"
-    ]
+    ],
+    "expertise": [
+      "time-series forecasting",
+      "walk-forward validation",
+      "baseline comparison",
+      "uncertainty quantification",
+      "forecast readiness assessment"
+    ],
+    "dataCoverage": "8 quarterly periods, 59 assets, yield_trend_slope, yield_volatility, momentum indicators"
   },
   "tags": [
     {
-      "id": "forecasting",
+      "id": "domain:crypto",
+      "name": "Cryptocurrency"
+    },
+    {
+      "id": "task:forecasting",
       "name": "Yield forecasting"
+    },
+    {
+      "id": "task:safety",
+      "name": "Safety gate"
+    },
+    {
+      "id": "skill:quantitative",
+      "name": "Quantitative modeling"
+    },
+    {
+      "id": "skill:uncertainty",
+      "name": "Uncertainty quantification"
+    },
+    {
+      "id": "format:json",
+      "name": "Structured JSON output"
     }
   ],
   "runtime": {

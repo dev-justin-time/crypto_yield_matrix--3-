@@ -2,22 +2,23 @@
   "identity": {
     "agentName": "crypto_risk_analyst",
     "displayName": "Crypto Risk Analyst",
-    "description": "Evaluates yield alongside volatility, drawdown, beta, correlations, and supplied risk-adjusted metrics for research decisions.",
-    "version": "1.0.0",
+    "description": "Quantifies downside risk alongside yield: volatility, drawdown, beta, Sharpe ratios, and risk-adjusted return. Flags assets where yield masks elevated risk. Best used as a screening tool before deeper liquidity and tokenomics review.",
+    "version": "1.1.0",
     "provider": {
       "organization": "Crypto Yield Matrix"
     }
   },
   "capabilities": {
-    "taskKinds": [
-      "request"
-    ]
+    "taskKinds": ["request"],
+    "expertise": ["risk assessment", "volatility analysis", "drawdown evaluation", "yield-risk trade-off", "beta and correlation"],
+    "dataCoverage": "59 assets across 16 categories, 8 quarterly yield observations, 9 source-backed market snapshots"
   },
   "tags": [
-    {
-      "id": "risk",
-      "name": "Risk and drawdown analysis"
-    }
+    {"id": "domain:crypto", "name": "Cryptocurrency"},
+    {"id": "task:risk", "name": "Risk and drawdown analysis"},
+    {"id": "task:screening", "name": "Asset screening"},
+    {"id": "skill:quantitative", "name": "Quantitative metrics"},
+    {"id": "format:json", "name": "Structured JSON output"}
   ],
   "runtime": {
     "handler": "./handlers/crypto_risk_analyst.py"
@@ -28,57 +29,32 @@
     "yield_data.csv"
   ],
   "io": {
-    "inputs": [
-      {
-        "id": "request",
-        "description": "Risk question, asset filter, and optional thresholds.",
-        "contentType": "application/json",
-        "required": true,
-        "schema": {
-          "type": "object",
-          "properties": {
-            "question": {
-              "type": "string"
-            },
-            "symbol": {
-              "type": "string"
-            },
-            "max_drawdown": {
-              "type": "number"
-            },
-            "max_volatility": {
-              "type": "number"
-            }
-          }
+    "inputs": [{
+      "id": "request",
+      "description": "Risk analysis question with optional asset symbol, category filter, and risk thresholds for screening.",
+      "contentType": "application/json",
+      "required": true,
+      "schema": {
+        "type": "object",
+        "properties": {
+          "question": {"type": "string", "description": "What risk context do you need?"},
+          "symbol": {"type": "string", "description": "Single asset symbol (e.g., BTC, ETH)"},
+          "max_drawdown": {"type": "number", "description": "Maximum acceptable drawdown %"},
+          "max_volatility": {"type": "number", "description": "Maximum acceptable annualized volatility %"}
         }
       }
-    ],
-    "outputs": [
-      {
-        "id": "risk_report",
-        "description": "Risk/yield comparison with evidence, severity, and limitations.",
-        "contentType": "application/json",
-        "guaranteed": true
-      }
-    ]
+    }],
+    "outputs": [{
+      "id": "risk_report",
+      "description": "Risk/yield comparison with severity flags, risk-adjusted metrics, evidence locations, and user guidance.",
+      "contentType": "application/json",
+      "guaranteed": true
+    }]
   },
   "skill": {
-    "fields": [
-      "agg_current",
-      "volatility_annualized_current",
-      "max_drawdown_current_pct",
-      "sharpe_ratio_current",
-      "beta_vs_btc",
-      "beta_vs_eth",
-      "correlation_btc",
-      "correlation_eth",
-      "risk_adjusted_yield"
-    ],
-    "mustReport": [
-      "nominal yield",
-      "downside measure",
-      "data status",
-      "not financial advice"
-    ]
+    "fields": ["agg_current", "volatility_annualized_current", "max_drawdown_current_pct", "sharpe_ratio_current", "beta_vs_btc", "beta_vs_eth", "correlation_btc", "correlation_eth", "risk_adjusted_yield"],
+    "derivedFeatures": ["risk_score", "yield_momentum"],
+    "mustReport": ["nominal yield", "downside measure", "risk-adjusted context", "data status", "not financial advice"],
+    "userValue": "Use yield together with drawdown, volatility, beta, and risk-adjusted measures to screen downside context. Compare the result with liquidity and tokenomics evidence before making any allocation decision."
   }
 }

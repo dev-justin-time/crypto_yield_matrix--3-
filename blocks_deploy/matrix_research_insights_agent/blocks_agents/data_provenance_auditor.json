@@ -2,77 +2,49 @@
   "identity": {
     "agentName": "data_provenance_auditor",
     "displayName": "Data Provenance Auditor",
-    "description": "Audits CSV lineage, schema compatibility, source conflicts, and validation evidence for the crypto yield matrix.",
-    "version": "1.0.0",
-    "provider": {
-      "organization": "Crypto Yield Matrix"
-    }
+    "description": "Audits CSV lineage, schema consistency, source conflicts, duplicate provenance rows, and validation evidence. Returns exact file/row/column references for every finding. Essential before trusting any downstream analysis or model output.",
+    "version": "1.1.0",
+    "provider": {"organization": "Crypto Yield Matrix"}
   },
   "capabilities": {
-    "taskKinds": [
-      "request"
-    ]
+    "taskKinds": ["request"],
+    "expertise": ["data lineage audit", "schema validation", "source conflict detection", "provenance tracking", "hash verification"],
+    "dataCoverage": "118 provenance-labeled rows, 61 columns, 9 source snapshots, SHA-256 verified mirrors"
   },
   "tags": [
-    {
-      "id": "provenance",
-      "name": "Data provenance and audit"
-    }
+    {"id": "domain:crypto", "name": "Cryptocurrency"},
+    {"id": "task:audit", "name": "Data auditing"},
+    {"id": "task:provenance", "name": "Provenance tracking"},
+    {"id": "skill:data-quality", "name": "Data quality assurance"},
+    {"id": "format:json", "name": "Structured JSON output"}
   ],
-  "runtime": {
-    "handler": "./handlers/data_provenance_auditor.py"
-  },
-  "contextFiles": [
-    "validate.md",
-    "DATA_DICTIONARY.md",
-    "yield_data.csv"
-  ],
+  "runtime": {"handler": "./handlers/data_provenance_auditor.py"},
+  "contextFiles": ["validate.md", "DATA_DICTIONARY.md", "yield_data.csv"],
   "io": {
-    "inputs": [
-      {
-        "id": "request",
-        "description": "Audit question, symbols, or files to inspect.",
-        "contentType": "application/json",
-        "required": true,
-        "schema": {
-          "type": "object",
-          "properties": {
-            "question": {
-              "type": "string"
-            },
-            "files": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
-            },
-            "symbol": {
-              "type": "string"
-            }
-          }
+    "inputs": [{
+      "id": "request",
+      "description": "Audit question, symbols, or files to inspect.",
+      "contentType": "application/json",
+      "required": true,
+      "schema": {
+        "type": "object",
+        "properties": {
+          "question": {"type": "string"},
+          "files": {"type": "array", "items": {"type": "string"}},
+          "symbol": {"type": "string"}
         }
       }
-    ],
-    "outputs": [
-      {
-        "id": "audit_report",
-        "description": "Structured audit with PASS, WARNING, or FAIL status and exact evidence locations.",
-        "contentType": "application/json",
-        "guaranteed": true
-      }
-    ]
+    }],
+    "outputs": [{
+      "id": "audit_report",
+      "description": "Structured audit with PASS/WARNING/FAIL status, exact file/row/column references, and conflict evidence.",
+      "contentType": "application/json",
+      "guaranteed": true
+    }]
   },
   "skill": {
-    "checks": [
-      "schema",
-      "duplicate keys",
-      "source_file/source_row lineage",
-      "embedded provenance lineage",
-      "validate.md issue references"
-    ],
-    "mustNot": [
-      "silently merge conflicting values",
-      "treating repeated provenance rows as independent time observations"
-    ]
+    "checks": ["schema", "duplicate keys", "source_file/source_row lineage", "embedded provenance lineage", "validate.md issue references"],
+    "mustNot": ["silently merge conflicting values", "treat repeated provenance rows as independent time observations"],
+    "userValue": "Audit schemas, source conflicts, hashes, and lineage before building models. Every finding includes exact file/row/column references for traceability."
   }
 }

@@ -2,7 +2,7 @@
   "identity": {
     "agentName": "feature_engineering_expert",
     "displayName": "Crypto Feature Engineering Expert",
-    "description": "Computes transparent derived features for yield momentum, market-cap to TVL, risk, and category-relative yield analysis.",
+    "description": "Recomputes four transparent derived features from source fields: yield momentum (trend \u00d7 volatility), market-cap/TVL ratio, risk score (beta \u00d7 vol / Sharpe), and yield premium (asset vs category). Every output includes formula inputs so results are fully auditable.",
     "version": "1.1.0",
     "provider": {
       "organization": "Crypto Yield Matrix"
@@ -11,12 +11,35 @@
   "capabilities": {
     "taskKinds": [
       "request"
-    ]
+    ],
+    "expertise": [
+      "feature engineering",
+      "derived metric computation",
+      "ratio analysis",
+      "formula transparency"
+    ],
+    "dataCoverage": "4 derived features computed for all 59 assets, formula inputs exposed in every output"
   },
   "tags": [
     {
-      "id": "feature_engineering",
+      "id": "domain:crypto",
+      "name": "Cryptocurrency"
+    },
+    {
+      "id": "task:features",
       "name": "Feature engineering"
+    },
+    {
+      "id": "skill:quantitative",
+      "name": "Quantitative computation"
+    },
+    {
+      "id": "skill:transparency",
+      "name": "Formula audit trail"
+    },
+    {
+      "id": "format:json",
+      "name": "Structured JSON output"
     }
   ],
   "runtime": {

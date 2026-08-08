@@ -2,7 +2,7 @@
   "identity": {
     "agentName": "crypto_research_communications_agent",
     "displayName": "Crypto Research Communications Agent",
-    "description": "Produces concise, traceable, non-advisory crypto research notes that distinguish observed, estimated, derived, target, and conflicting data.",
+    "description": "Produces concise, traceable, non-advisory crypto research communications. Distinguishes observed, estimated, derived, and target data with exact evidence locations. Formats output as Markdown or JSON with executive summary, methodology, limitations, and responsible disclosure language.",
     "version": "1.1.0",
     "provider": {
       "organization": "Crypto Yield Matrix"
@@ -11,12 +11,40 @@
   "capabilities": {
     "taskKinds": [
       "request"
-    ]
+    ],
+    "expertise": [
+      "research writing",
+      "evidence synthesis",
+      "data-status labeling",
+      "audience adaptation",
+      "disclosure compliance"
+    ],
+    "dataCoverage": "Full project context: yield matrix, risk metrics, liquidity data, provenance audit, methodology notes"
   },
   "tags": [
     {
-      "id": "research_comms",
-      "name": "Research communication and disclosure"
+      "id": "domain:crypto",
+      "name": "Cryptocurrency"
+    },
+    {
+      "id": "task:research",
+      "name": "Research communication"
+    },
+    {
+      "id": "task:disclosure",
+      "name": "Disclosure and compliance"
+    },
+    {
+      "id": "skill:writing",
+      "name": "Technical writing"
+    },
+    {
+      "id": "format:markdown",
+      "name": "Markdown output"
+    },
+    {
+      "id": "format:json",
+      "name": "JSON output"
     }
   ],
   "runtime": {

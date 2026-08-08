@@ -2,7 +2,7 @@
   "identity": {
     "agentName": "defi_liquidity_analyst",
     "displayName": "DeFi Liquidity Analyst",
-    "description": "Analyzes volume, TVL, active addresses, transactions, market cap, and liquidity trend proxies from the project datasets.",
+    "description": "Reviews volume trends, TVL depth, active addresses, daily transactions, and market-cap context to identify weakening liquidity signals and exit-risk proxies before they become critical. Flags assets where high yield may be accompanied by thin market depth.",
     "version": "1.1.0",
     "provider": {
       "organization": "Crypto Yield Matrix"
@@ -11,12 +11,41 @@
   "capabilities": {
     "taskKinds": [
       "request"
-    ]
+    ],
+    "expertise": [
+      "liquidity analysis",
+      "volume trend detection",
+      "TVL evaluation",
+      "on-chain activity assessment",
+      "market depth proxy",
+      "exit-risk screening"
+    ],
+    "dataCoverage": "59 assets, volume/TVL/address/transaction metrics, 8 quarters of trend data"
   },
   "tags": [
     {
-      "id": "liquidity",
-      "name": "DeFi liquidity and activity"
+      "id": "domain:crypto",
+      "name": "Cryptocurrency"
+    },
+    {
+      "id": "domain:defi",
+      "name": "DeFi"
+    },
+    {
+      "id": "task:liquidity",
+      "name": "Liquidity and activity analysis"
+    },
+    {
+      "id": "task:screening",
+      "name": "Asset screening"
+    },
+    {
+      "id": "skill:on-chain",
+      "name": "On-chain metrics"
+    },
+    {
+      "id": "format:json",
+      "name": "Structured JSON output"
     }
   ],
   "runtime": {

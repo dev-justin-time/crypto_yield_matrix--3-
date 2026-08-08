@@ -9,16 +9,39 @@
     }
   },
   "capabilities": {
-    "taskKinds": ["request"],
-    "expertise": ["risk assessment", "volatility analysis", "drawdown evaluation", "yield-risk trade-off", "beta and correlation"],
+    "taskKinds": [
+      "request"
+    ],
+    "expertise": [
+      "risk assessment",
+      "volatility analysis",
+      "drawdown evaluation",
+      "yield-risk trade-off",
+      "beta and correlation"
+    ],
     "dataCoverage": "59 assets across 16 categories, 8 quarterly yield observations, 9 source-backed market snapshots"
   },
   "tags": [
-    {"id": "domain:crypto", "name": "Cryptocurrency"},
-    {"id": "task:risk", "name": "Risk and drawdown analysis"},
-    {"id": "task:screening", "name": "Asset screening"},
-    {"id": "skill:quantitative", "name": "Quantitative metrics"},
-    {"id": "format:json", "name": "Structured JSON output"}
+    {
+      "id": "domain:crypto",
+      "name": "Cryptocurrency"
+    },
+    {
+      "id": "task:risk",
+      "name": "Risk and drawdown analysis"
+    },
+    {
+      "id": "task:screening",
+      "name": "Asset screening"
+    },
+    {
+      "id": "skill:quantitative",
+      "name": "Quantitative metrics"
+    },
+    {
+      "id": "format:json",
+      "name": "Structured JSON output"
+    }
   ],
   "runtime": {
     "handler": "./handler.py",

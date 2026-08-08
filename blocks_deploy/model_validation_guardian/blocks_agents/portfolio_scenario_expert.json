@@ -2,92 +2,52 @@
   "identity": {
     "agentName": "portfolio_scenario_expert",
     "displayName": "Portfolio Scenario Expert",
-    "description": "Runs transparent, non-advisory crypto yield/risk/liquidity scenarios under user-specified constraints.",
-    "version": "1.0.0",
-    "provider": {
-      "organization": "Crypto Yield Matrix"
-    }
+    "description": "Runs transparent crypto yield/risk/liquidity scenarios under user-defined constraints. What-if analysis for yield targets, drawdown caps, liquidity floors, and category limits. Outputs include constraint violations, trade-off analysis, and sensitivity flags — never a recommendation.",
+    "version": "1.1.0",
+    "provider": {"organization": "Crypto Yield Matrix"}
   },
   "capabilities": {
-    "taskKinds": [
-      "request"
-    ]
+    "taskKinds": ["request"],
+    "expertise": ["scenario analysis", "constraint-based screening", "trade-off evaluation", "sensitivity analysis", "portfolio construction research"],
+    "dataCoverage": "59 assets, yield/drawdown/vol/liquidity/correlation metrics across 16 categories"
   },
   "tags": [
-    {
-      "id": "scenarios",
-      "name": "Portfolio scenarios"
-    }
+    {"id": "domain:crypto", "name": "Cryptocurrency"},
+    {"id": "task:scenarios", "name": "Portfolio scenarios"},
+    {"id": "task:what-if", "name": "What-if analysis"},
+    {"id": "skill:portfolio", "name": "Portfolio research"},
+    {"id": "format:json", "name": "Structured JSON output"}
   ],
-  "runtime": {
-    "handler": "./handlers/portfolio_scenario_expert.py"
-  },
-  "contextFiles": [
-    "validate.md",
-    "DATA_DICTIONARY.md",
-    "yield_data.csv"
-  ],
+  "runtime": {"handler": "./handlers/portfolio_scenario_expert.py"},
+  "contextFiles": ["validate.md", "DATA_DICTIONARY.md", "yield_data.csv"],
   "io": {
-    "inputs": [
-      {
-        "id": "request",
-        "description": "Scenario constraints such as target yield, drawdown cap, liquidity floor, and category limits.",
-        "contentType": "application/json",
-        "required": true,
-        "schema": {
-          "type": "object",
-          "properties": {
-            "question": {
-              "type": "string"
-            },
-            "symbols": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
-            },
-            "target_yield": {
-              "type": "number"
-            },
-            "max_drawdown": {
-              "type": "number"
-            },
-            "min_volume_m_usd": {
-              "type": "number"
-            },
-            "category_caps": {
-              "type": "object"
-            }
-          }
+    "inputs": [{
+      "id": "request",
+      "description": "Scenario constraints such as target yield, drawdown cap, liquidity floor, and category limits.",
+      "contentType": "application/json",
+      "required": true,
+      "schema": {
+        "type": "object",
+        "properties": {
+          "question": {"type": "string"},
+          "symbols": {"type": "array", "items": {"type": "string"}},
+          "target_yield": {"type": "number"},
+          "max_drawdown": {"type": "number"},
+          "min_volume_m_usd": {"type": "number"},
+          "category_caps": {"type": "object"}
         }
       }
-    ],
-    "outputs": [
-      {
-        "id": "scenario_report",
-        "description": "Assumptions, trade-offs, constraints, sensitivity, and evidence-backed scenario output.",
-        "contentType": "application/json",
-        "guaranteed": true
-      }
-    ]
+    }],
+    "outputs": [{
+      "id": "scenario_report",
+      "description": "Assumptions, trade-offs, constraints, sensitivity, and evidence-backed scenario output.",
+      "contentType": "application/json",
+      "guaranteed": true
+    }]
   },
   "skill": {
-    "fields": [
-      "agg_current",
-      "max_drawdown_current_pct",
-      "volatility_annualized_current",
-      "category",
-      "correlation_btc",
-      "correlation_eth",
-      "beta_vs_btc",
-      "beta_vs_eth",
-      "avg_24h_volume_m_usd_current"
-    ],
-    "mustReport": [
-      "assumptions",
-      "constraint violations",
-      "sensitivity",
-      "educational/non-advisory disclaimer"
-    ]
+    "fields": ["agg_current", "max_drawdown_current_pct", "volatility_annualized_current", "category", "correlation_btc", "correlation_eth", "beta_vs_btc", "beta_vs_eth", "avg_24h_volume_m_usd_current"],
+    "mustReport": ["assumptions", "constraint violations", "sensitivity", "educational/non-advisory disclaimer"],
+    "userValue": "Use scenario fields to compare trade-offs under explicit constraints rather than requesting an automatic recommendation. Add fees, taxes, lockups, covariance, position limits, and live execution assumptions to any real analysis."
   }
 }

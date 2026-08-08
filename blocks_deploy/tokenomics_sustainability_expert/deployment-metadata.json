@@ -4,20 +4,20 @@
   "generator_version": "1",
   "agent_name": "tokenomics_sustainability_expert",
   "source_card": "blocks_agents/tokenomics_sustainability_expert.json",
-  "source_card_sha256": "59b4e1e75669be54fce5a1c1fbd3305a462fe1786f10f9c770163fe859856c90",
-  "source_card_version": "1.0.0",
+  "source_card_sha256": "0fde8b9dc43c4dadf5f7b3ad871ad6401e8be09030660038afb0fa85c7ddc354",
+  "source_card_version": "1.1.0",
   "native_card_version": "1.1.0",
   "version_policy": "Root card version describes local source semantics; native card version describes the registered package. Native version changes require blocks check and a controlled canary.",
   "runtime_policy": "Native runtime limits are package deployment policy and must remain positive, bounded, and explicitly reviewed; the adapter must remain ./handler.py:handler.",
   "source_handler": "./handlers/tokenomics_sustainability_expert.py",
   "deployment_project": "tokenomics_sustainability_expert",
   "deployment_card": "tokenomics_sustainability_expert/agent-card.json",
-  "deployment_card_sha256": "e104a3694d721572115949ee2ad9fd39a8b8cab9669def6b34f861ded0eac4a5",
+  "deployment_card_sha256": "7b04a76599dc578a902ff203cfccfed24d55700d51bdc422398b949845ecc1c7",
   "card_contract": {
     "identity": {
       "agentName": "tokenomics_sustainability_expert",
       "displayName": "Tokenomics Sustainability Expert",
-      "description": "Evaluates nominal yield against inflation, dilution, supply, and market-cap dynamics with transparent calculations.",
+      "description": "Separates nominal yield from inflation, dilution pressure, supply dynamics, and market-cap context. Computes real-yield proxies and flags tokens where high nominal rewards are eroded by emission schedules or supply unlocks.",
       "provider": {
         "organization": "Crypto Yield Matrix"
       }
@@ -27,8 +27,24 @@
     ],
     "tags": [
       {
-        "id": "tokenomics",
+        "id": "domain:crypto",
+        "name": "Cryptocurrency"
+      },
+      {
+        "id": "task:tokenomics",
         "name": "Tokenomics sustainability"
+      },
+      {
+        "id": "task:sustainability",
+        "name": "Yield sustainability"
+      },
+      {
+        "id": "skill:fundamental",
+        "name": "Fundamental analysis"
+      },
+      {
+        "id": "format:json",
+        "name": "Structured JSON output"
       }
     ]
   },

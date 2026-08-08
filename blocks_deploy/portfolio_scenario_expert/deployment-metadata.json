@@ -4,20 +4,20 @@
   "generator_version": "1",
   "agent_name": "portfolio_scenario_expert",
   "source_card": "blocks_agents/portfolio_scenario_expert.json",
-  "source_card_sha256": "391d254cea2bd63071f5bb54806204f5ff671f58421cf273675425b1db6c728a",
-  "source_card_version": "1.0.0",
+  "source_card_sha256": "c16d26b818f0676df81885e201dc06403aa5e948aea0e286c1a3c7c9719f5e98",
+  "source_card_version": "1.1.0",
   "native_card_version": "1.1.0",
   "version_policy": "Root card version describes local source semantics; native card version describes the registered package. Native version changes require blocks check and a controlled canary.",
   "runtime_policy": "Native runtime limits are package deployment policy and must remain positive, bounded, and explicitly reviewed; the adapter must remain ./handler.py:handler.",
   "source_handler": "./handlers/portfolio_scenario_expert.py",
   "deployment_project": "portfolio_scenario_expert",
   "deployment_card": "portfolio_scenario_expert/agent-card.json",
-  "deployment_card_sha256": "7396c8fc8478a5ad904ab7a6f69279422ce5fdb050466e783127a6d1efa20d10",
+  "deployment_card_sha256": "6f8dc93d4a29d219abba4fb0180ff737d96599182cfb299d957923f8aa248d35",
   "card_contract": {
     "identity": {
       "agentName": "portfolio_scenario_expert",
       "displayName": "Portfolio Scenario Expert",
-      "description": "Runs transparent, non-advisory crypto yield/risk/liquidity scenarios under user-specified constraints.",
+      "description": "Runs transparent crypto yield/risk/liquidity scenarios under user-defined constraints. What-if analysis for yield targets, drawdown caps, liquidity floors, and category limits. Outputs include constraint violations, trade-off analysis, and sensitivity flags \u2014 never a recommendation.",
       "provider": {
         "organization": "Crypto Yield Matrix"
       }
@@ -27,8 +27,24 @@
     ],
     "tags": [
       {
-        "id": "scenarios",
+        "id": "domain:crypto",
+        "name": "Cryptocurrency"
+      },
+      {
+        "id": "task:scenarios",
         "name": "Portfolio scenarios"
+      },
+      {
+        "id": "task:what-if",
+        "name": "What-if analysis"
+      },
+      {
+        "id": "skill:portfolio",
+        "name": "Portfolio research"
+      },
+      {
+        "id": "format:json",
+        "name": "Structured JSON output"
       }
     ]
   },

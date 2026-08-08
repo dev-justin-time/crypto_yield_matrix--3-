@@ -4,20 +4,20 @@
   "generator_version": "1",
   "agent_name": "quant_forecasting_expert",
   "source_card": "blocks_agents/quant_forecasting_expert.json",
-  "source_card_sha256": "4f76fe3680ffae8970d33ae7a21eb9b17116e3d3cb1adb7ade422ebb858b3419",
-  "source_card_version": "1.0.0",
+  "source_card_sha256": "58814b145683991e8f2b18dd1367731f89df1cf00b42ba12c95b868aa4ba8cd4",
+  "source_card_version": "1.1.0",
   "native_card_version": "1.1.0",
   "version_policy": "Root card version describes local source semantics; native card version describes the registered package. Native version changes require blocks check and a controlled canary.",
   "runtime_policy": "Native runtime limits are package deployment policy and must remain positive, bounded, and explicitly reviewed; the adapter must remain ./handler.py:handler.",
   "source_handler": "./handlers/quant_forecasting_expert.py",
   "deployment_project": "quant_forecasting_expert",
   "deployment_card": "quant_forecasting_expert/agent-card.json",
-  "deployment_card_sha256": "5fe5c368a2b3fb4152e0da8a301aa0300cb5cf75b91d504ae32202fee968ce5c",
+  "deployment_card_sha256": "461918987cd03b71233540a26e85f72341793028415120fe7052cc6b42eb48f0",
   "card_contract": {
     "identity": {
       "agentName": "quant_forecasting_expert",
       "displayName": "Quantitative Yield Forecasting Expert",
-      "description": "Designs cautious quarterly yield forecasts only after source reconciliation, chronological validation, baseline comparison, and uncertainty reporting.",
+      "description": "Designs cautious quarterly yield forecasts only after source reconciliation, chronological validation, baseline comparison, and uncertainty reporting. Returns a readiness FAIL gate when data is insufficient \u2014 currently active because the 8-quarter panel lacks sufficient dated history for validated forecasting.",
       "provider": {
         "organization": "Crypto Yield Matrix"
       }
@@ -27,8 +27,28 @@
     ],
     "tags": [
       {
-        "id": "forecasting",
+        "id": "domain:crypto",
+        "name": "Cryptocurrency"
+      },
+      {
+        "id": "task:forecasting",
         "name": "Yield forecasting"
+      },
+      {
+        "id": "task:safety",
+        "name": "Safety gate"
+      },
+      {
+        "id": "skill:quantitative",
+        "name": "Quantitative modeling"
+      },
+      {
+        "id": "skill:uncertainty",
+        "name": "Uncertainty quantification"
+      },
+      {
+        "id": "format:json",
+        "name": "Structured JSON output"
       }
     ]
   },
