@@ -49,10 +49,11 @@
         </div>
       </div>
       <div id="asset-insights" class="asset-insights" aria-live="polite"></div>
+      <div id="live-feed-status" class="live-feed-status" aria-live="polite">Live overlay: checking worker snapshot…</div>
       <div class="explorer-actions">
         <button id="download-catalog" type="button">Download catalog shortlist</button>
         <button id="download-quotes" type="button" class="secondary-action">Download quote exports</button>
-        <span>Catalog exports preserve yield evidence; quote exports use the normalized Yahoo-style schema.</span>
+        <span>Catalog exports preserve yield evidence; quote exports use the normalized Yahoo-style schema. Live values are a separate, freshness-labeled overlay.</span>
       </div>
       <div id="asset-catalog-grid" class="asset-catalog-grid"></div>
     </section>
@@ -86,7 +87,7 @@
       </div>
       <div class="note-chip">
         source coverage
-        <div class="note-popup">Source snapshot means this asset has a matching one-row market table under csv/. Canonical yield only means the catalog preserves the canonical matrix row and transparent derived features, but no supplied market snapshot was available. Missing values are intentionally blank.</div>
+        <div class="note-popup">Source snapshot means this asset has a matching one-row market table under csv/. Canonical yield only means the catalog preserves the canonical matrix row and transparent derived features, but no supplied market snapshot was available. Missing values are intentionally blank. The live overlay is collected separately and never replaces this historical evidence.</div>
       </div>
       <div class="note-chip">
         asterisk meanings

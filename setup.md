@@ -91,7 +91,8 @@ Handlers accept a JSON object in the first `request` part. Common fields are:
 - `question` — the user’s question.
 - `source_file` — the single canonical `yield_data.csv` dataset; embedded `source_file`/`source_row` values preserve row lineage.
 - `asset_catalog.csv` — generated evidence-first enrichment joined by symbol; it is not a replacement source and its snapshot coverage is explicit.
-- `csv/assets/<SYMBOL>.csv` — generated per-asset views for exploration and export; blank snapshot fields mean unavailable supplied source data.
+- `csv/assets/<SYMBOL>.csv` — generated per-asset yield/enrichment views for exploration and export; blank snapshot fields mean unavailable supplied source data.
+- `csv/quotes/<SYMBOL>.csv` — generated Yahoo-style normalized quote exports for all 59 symbols; nine have supplied snapshots and the remaining files preserve the same schema with explicit blank/unavailable quote fields.
 - `symbol` — an asset symbol such as `BTC`.
 - `category` — an asset category filter.
 - `files` — optional repository context files from the declared allowlist.
@@ -104,7 +105,7 @@ The handlers reject undeclared paths, absolute paths, traversal paths, and inval
 The project data has important limitations documented in [`validate.md`](validate.md):
 
 1. `yield_data.csv` is the only canonical dataset file accepted as a handler `source_file` and contains 118 rows with embedded provenance labels.
-2. `asset_catalog.csv` and `csv/assets/*.csv` are generated evidence-first enrichment views, not alternative handler sources; rebuild them with `python build_asset_catalog.py`.
+2. `asset_catalog.csv`, `csv/assets/*.csv`, and `csv/quotes/*.csv` are generated evidence-first enrichment/export views, not alternative handler sources; rebuild them with `python build_asset_catalog.py`.
 3. Repeated symbols in `yield_data.csv` are provenance-labeled rows, not independent time observations; use an explicit row-selection policy for modeling.
 4. The data includes source-like, estimated, derived, and supplied target fields.
 4. The current panel has only eight quarterly yield observations per asset.
