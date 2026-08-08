@@ -1,7 +1,10 @@
 import json
+import sys
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
 from urllib.parse import urlparse
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from src.live.canary import fixture_opener, run_provider_canary
 from src.live.collector import LiveDataCollector, is_fresh, load_symbols, validate_provider_url

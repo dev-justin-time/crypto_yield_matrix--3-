@@ -80,6 +80,7 @@ Fixture canary passes (5/5), but no live canary has been executed with `--live -
 
 ### Strengths
 
+- **Complete dependency documentation:** `docs/familytree.md` maps every file's imports, reads, writes, and dependents in a directory-styled treemap — making onboarding, refactoring, and impact analysis straightforward.
 - **Strong defensive coding:** Common handler validates context filenames against an explicit allowlist, prevents path traversal, marks unavailable values as `null` rather than zero, never makes network calls from paid tasks.
 - **Gatekeeper pattern:** `trigger_guarded.py` requires `--live` AND `--confirm-paid` plus `BLOCKS_API_KEY` before any paid dispatch.
 - **Atomic writes:** Both `live_worker.py` and `release_gate.py` use `tempfile + rename` for atomic file writes.

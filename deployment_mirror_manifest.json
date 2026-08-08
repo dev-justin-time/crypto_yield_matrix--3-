@@ -2638,7 +2638,7 @@
     },
     {
       "source": "csv/source_manifest.json",
-      "sha256": "b6c48bd02bec51187318580a1d8355915f256716c3fadcc1cc3482b080411aea",
+      "sha256": "7abf039ca57bb072e690bb0317f09c65e036175d0b0cb497501720fae98ea86b",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/source_manifest.json",
         "blocks_deploy/crypto_risk_analyst/csv/source_manifest.json",

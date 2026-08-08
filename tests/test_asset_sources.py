@@ -2,16 +2,19 @@ from __future__ import annotations
 
 import csv
 import json
+import sys
 import tempfile
 import unittest
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from blocks_agents.handlers import common
 from blocks_agents.handlers.common import load_asset_snapshot, snapshot_research
 from blocks_agents.handlers.crypto_risk_analyst import handler as risk_handler
 from src.catalog.organize import MANIFEST, check
 
-ROOT = Path(__file__).resolve().parent
+ROOT = Path(__file__).resolve().parents[1]
 
 
 class AssetSourceTests(unittest.TestCase):
@@ -44,7 +47,7 @@ class AssetSourceTests(unittest.TestCase):
         self.assertEqual(finding["market_snapshot_research"]["status"], "source_snapshot")
 
     def test_uncovered_asset_is_explicitly_unavailable(self):
-        research = snapshot_research("MATIC")
+        research = snapshot_research("NONEXISTENT")
         self.assertEqual(research["status"], "unavailable")
         self.assertIsNone(research["price_usd"])
         self.assertTrue(research["research_use"])

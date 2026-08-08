@@ -169,6 +169,7 @@ The following checklist items are complete in the repository and were re-verifie
 - [x] Worker status separates `liveness` from `data_readiness`.
 - [x] `live_data/distribution_contract.json` defines local mirroring and atomic writes.
 - [x] Platform code audit (`audit2.md`) complete: 4 code-level findings resolved, 15/15 check suites green.
+- [x] Dependency map documented: `docs/familytree.md` traces all file imports, reads, writes, and mirrors across the entire codebase (15 sections covering 14 dependency layers from core data through agent handlers, live pipeline, catalog/build pipeline, deployments, release, gateway, tests, web, and deploy config).
 - [x] Production `docker-compose.yml` created with healthchecks, resource limits, persistent budget volume, and logging.
 - [x] Prometheus alerting rules created (`monitoring/alerting_rules.yml`) covering gateway liveness, budget, capacity, errors, auth abuse, and live worker health.
 - [x] Incident runbook enhanced with rollback procedure.

@@ -16,7 +16,8 @@ import types
 import unittest
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+ROOT = Path(__file__).resolve().parents[1]
 DEPLOYMENT = ROOT / "blocks_deploy" / "crypto_risk_analyst"
 
 
@@ -32,12 +33,12 @@ def run_python(*args: str, cwd: Path = ROOT) -> subprocess.CompletedProcess[str]
 
 class PackagingTests(unittest.TestCase):
     def test_source_scaffold_smoke(self) -> None:
-        result = run_python("-m", "blocks_agents.handlers")
+        result = run_python("-m", "blocks_agents.handlers", cwd=ROOT)
         self.assertEqual(result.returncode, 0, result.stderr or result.stdout)
         self.assertIn("crypto_risk_analyst.json: ok", result.stdout)
 
     def test_generated_contracts_are_current(self) -> None:
-        for command in [("generate_deployments.py", "--check"), ("sync_deployments.py", "--check")]:
+        for command in [("src/deployments/generate.py", "--check"), ("src/deployments/sync.py", "--check")]:
             with self.subTest(command=command):
                 result = run_python(*command)
                 self.assertEqual(result.returncode, 0, result.stderr or result.stdout)
@@ -69,19 +70,19 @@ assert payload["data_quality"]["missing_numeric_values"] == "null"
         self.assertEqual(result.returncode, 0, result.stderr or result.stdout)
 
     def test_local_fleet_gate_is_no_spend(self) -> None:
-        result = run_python("fleet_gate.py")
+        result = run_python("src/deployments/fleet_gate.py")
         self.assertEqual(result.returncode, 0, result.stderr or result.stdout)
         self.assertIn("LOCAL PREFLIGHT READY", result.stdout)
         self.assertIn("blocks check in every native project", result.stdout)
 
     def test_release_gate_rejects_blank_record_without_network(self) -> None:
-        result = run_python("release_gate.py", "--template")
+        result = run_python("src/release/gate.py", "--template")
         self.assertEqual(result.returncode, 0, result.stderr or result.stdout)
         self.assertIn('"paid_canary_task_ids"', result.stdout)
         with tempfile.TemporaryDirectory() as directory:
             record = Path(directory) / "release.json"
             record.write_text(result.stdout, encoding="utf-8")
-            incomplete = run_python("release_gate.py", "--record", str(record))
+            incomplete = run_python("src/release/gate.py", "--record", str(record))
             self.assertEqual(incomplete.returncode, 1)
             self.assertIn("release gate: INCOMPLETE", incomplete.stdout)
 
@@ -93,17 +94,17 @@ assert payload["data_quality"]["missing_numeric_values"] == "null"
         self.assertFalse(metadata["blocks_validation"]["executed_by_generator"])
 
     def test_guarded_trigger_never_dispatches_by_default(self) -> None:
-        result = run_python("trigger_guarded.py", "--agent", "crypto_risk_analyst", "--dry-run")
+        result = run_python("src/release/trigger.py", "--agent", "crypto_risk_analyst", "--dry-run")
         self.assertEqual(result.returncode, 0, result.stderr or result.stdout)
         self.assertIn("not dispatched", result.stdout)
 
     def test_guarded_trigger_requires_paid_acknowledgement(self) -> None:
-        result = run_python("trigger_guarded.py", "--agent", "crypto_risk_analyst", "--live")
+        result = run_python("src/release/trigger.py", "--agent", "crypto_risk_analyst", "--live")
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("--confirm-paid", result.stderr + result.stdout)
 
     def test_live_trigger_requires_key_before_sdk_import(self) -> None:
-        script = "import os; os.environ.pop('BLOCKS_API_KEY', None); from src.release.trigger import live_trigger; live_trigger('crypto_risk_analyst', {'question': 'x'}, 1)"
+        script = "import os, sys; sys.path.insert(0, '.'); os.environ.pop('BLOCKS_API_KEY', None); from src.release.trigger import live_trigger; live_trigger('crypto_risk_analyst', {'question': 'x'}, 1)"
         result = run_python("-c", script)
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("BLOCKS_API_KEY is required", result.stderr + result.stdout)
