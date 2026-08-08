@@ -11,15 +11,7 @@
   "capabilities": {
     "taskKinds": [
       "request"
-    ],
-    "expertise": [
-      "yield methodology comparison",
-      "APR/APY normalization",
-      "annualization audit",
-      "yield mechanism classification",
-      "cross-asset yield comparison"
-    ],
-    "dataCoverage": "59 assets, 8 quarterly periods, annualized vs non-annualized tracking"
+    ]
   },
   "tags": [
     {
@@ -41,6 +33,30 @@
     {
       "id": "format:json",
       "name": "Structured JSON output"
+    },
+    {
+      "id": "skill:yield_methodology_comparison",
+      "name": "yield methodology comparison"
+    },
+    {
+      "id": "skill:APR/APY_normalization",
+      "name": "APR/APY normalization"
+    },
+    {
+      "id": "skill:annualization_audit",
+      "name": "annualization audit"
+    },
+    {
+      "id": "skill:yield_mechanism_classification",
+      "name": "yield mechanism classification"
+    },
+    {
+      "id": "skill:cross-asset_yield_comparison",
+      "name": "cross-asset yield comparison"
+    },
+    {
+      "id": "info:data-coverage",
+      "name": "59 assets, 8 quarterly periods, annualized vs non-annualized tracking"
     }
   ],
   "runtime": {

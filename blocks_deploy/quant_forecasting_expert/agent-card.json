@@ -11,15 +11,7 @@
   "capabilities": {
     "taskKinds": [
       "request"
-    ],
-    "expertise": [
-      "time-series forecasting",
-      "walk-forward validation",
-      "baseline comparison",
-      "uncertainty quantification",
-      "forecast readiness assessment"
-    ],
-    "dataCoverage": "8 quarterly periods, 59 assets, yield_trend_slope, yield_volatility, momentum indicators"
+    ]
   },
   "tags": [
     {
@@ -45,6 +37,30 @@
     {
       "id": "format:json",
       "name": "Structured JSON output"
+    },
+    {
+      "id": "skill:time-series_forecasting",
+      "name": "time-series forecasting"
+    },
+    {
+      "id": "skill:walk-forward_validation",
+      "name": "walk-forward validation"
+    },
+    {
+      "id": "skill:baseline_comparison",
+      "name": "baseline comparison"
+    },
+    {
+      "id": "skill:uncertainty_quantification",
+      "name": "uncertainty quantification"
+    },
+    {
+      "id": "skill:forecast_readiness_assessment",
+      "name": "forecast readiness assessment"
+    },
+    {
+      "id": "info:data-coverage",
+      "name": "8 quarterly periods, 59 assets, yield_trend_slope, yield_volatility, momentum in"
     }
   ],
   "runtime": {

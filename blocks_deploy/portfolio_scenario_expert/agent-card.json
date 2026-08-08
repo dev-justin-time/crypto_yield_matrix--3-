@@ -11,15 +11,7 @@
   "capabilities": {
     "taskKinds": [
       "request"
-    ],
-    "expertise": [
-      "scenario analysis",
-      "constraint-based screening",
-      "trade-off evaluation",
-      "sensitivity analysis",
-      "portfolio construction research"
-    ],
-    "dataCoverage": "59 assets, yield/drawdown/vol/liquidity/correlation metrics across 16 categories"
+    ]
   },
   "tags": [
     {
@@ -41,6 +33,30 @@
     {
       "id": "format:json",
       "name": "Structured JSON output"
+    },
+    {
+      "id": "skill:scenario_analysis",
+      "name": "scenario analysis"
+    },
+    {
+      "id": "skill:constraint-based_screening",
+      "name": "constraint-based screening"
+    },
+    {
+      "id": "skill:trade-off_evaluation",
+      "name": "trade-off evaluation"
+    },
+    {
+      "id": "skill:sensitivity_analysis",
+      "name": "sensitivity analysis"
+    },
+    {
+      "id": "skill:portfolio_construction_research",
+      "name": "portfolio construction research"
+    },
+    {
+      "id": "info:data-coverage",
+      "name": "59 assets, yield/drawdown/vol/liquidity/correlation metrics across 16 categories"
     }
   ],
   "runtime": {

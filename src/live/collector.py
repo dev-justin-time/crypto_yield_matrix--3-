@@ -18,6 +18,13 @@ from urllib.error import HTTPError, URLError
 from urllib.parse import quote, urlparse
 from urllib.request import Request, urlopen
 
+try:
+    from dotenv import load_dotenv
+    _root = Path(__file__).resolve().parents[2]
+    load_dotenv(_root / ".env")
+except ImportError:
+    pass
+
 ROOT = Path(__file__).resolve().parents[2]
 CANONICAL = ROOT / "data/yield_data.csv"
 DEFAULT_OUTPUT = ROOT / "live_data" / "live_snapshot.json"

@@ -18,7 +18,17 @@ import base64
 import json
 import os
 import threading
+from pathlib import Path
 from typing import Any
+
+# Load .env from project root (supports BLOCKS_API_KEY and other env vars)
+try:
+    from dotenv import load_dotenv
+    _root = Path(__file__).resolve().parents[2]
+    _env_path = _root / ".env"
+    load_dotenv(_env_path)
+except ImportError:
+    pass
 
 DEFAULT_REQUEST = {"question": "Smoke test: inspect BTC yield and downside context.", "symbol": "BTC", "source_file": "yield_data.csv"}
 

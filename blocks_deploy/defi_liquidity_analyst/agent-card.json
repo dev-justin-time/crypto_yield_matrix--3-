@@ -11,16 +11,7 @@
   "capabilities": {
     "taskKinds": [
       "request"
-    ],
-    "expertise": [
-      "liquidity analysis",
-      "volume trend detection",
-      "TVL evaluation",
-      "on-chain activity assessment",
-      "market depth proxy",
-      "exit-risk screening"
-    ],
-    "dataCoverage": "59 assets, volume/TVL/address/transaction metrics, 8 quarters of trend data"
+    ]
   },
   "tags": [
     {
@@ -46,6 +37,34 @@
     {
       "id": "format:json",
       "name": "Structured JSON output"
+    },
+    {
+      "id": "skill:liquidity_analysis",
+      "name": "liquidity analysis"
+    },
+    {
+      "id": "skill:volume_trend_detection",
+      "name": "volume trend detection"
+    },
+    {
+      "id": "skill:TVL_evaluation",
+      "name": "TVL evaluation"
+    },
+    {
+      "id": "skill:on-chain_activity_assessment",
+      "name": "on-chain activity assessment"
+    },
+    {
+      "id": "skill:market_depth_proxy",
+      "name": "market depth proxy"
+    },
+    {
+      "id": "skill:exit-risk_screening",
+      "name": "exit-risk screening"
+    },
+    {
+      "id": "info:data-coverage",
+      "name": "59 assets, volume/TVL/address/transaction metrics, 8 quarters of trend data"
     }
   ],
   "runtime": {

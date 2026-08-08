@@ -114,9 +114,13 @@ blocks_agents/
 │       │
 │       │  Key design: ROOT = Path(__file__).resolve().parents[2] = project root
 │       │  _PATH_MAP resolves logical filenames → reorganized paths
+│       │    (yield_data.csv, asset_catalog.csv, DATA_DICTIONARY.md, validate.md,
+│       │     index.html, matrix.js, styles.css, live_data/live_snapshot.json)
 │       │  CONTEXT_ALLOWLIST controls what context files handlers can read
 │       │  USER_VALUE_GUIDANCE provides per-agent usage guardrails
 │       │  DERIVED_CATALOG_FIELDS = (yield_momentum, mcap_to_tvl, risk_score, yield_premium)
+│       │  datetime/timezone imported at module level (hoisted from 2 inner functions)
+│       │  _observation_is_fresh / _snapshot_is_fresh — no local imports
 │       │
 │       └── report() → produces {"artifacts": [{"data": json, "mimeType": "application/json"}]}
 │
@@ -234,7 +238,9 @@ src/live/
 │   │                                validate_provider_url)
 │   │
 │   └── BINANCE_SYMBOLS: 59 asset → USDT pair mappings
-│       COINBASE_PRODUCTS: BTC/ETH/SOL secondary verification
+│       COINBASE_PRODUCTS: dynamic keys (not hardcoded) for secondary verification
+│       _blockchain RPC: retry-once for transient 408/429/5xx errors
+│       ProviderState.failures: reset to 0 on success (was only incremented)
 │
 ├── worker.py ................................. ← 24/7 supervisor loop
 │   │  → imports  src.live.collector

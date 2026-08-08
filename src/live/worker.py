@@ -13,6 +13,13 @@ import time
 from datetime import datetime, timezone
 from pathlib import Path
 
+try:
+    from dotenv import load_dotenv
+    _root = Path(__file__).resolve().parents[2]
+    load_dotenv(_root / ".env")
+except ImportError:
+    pass
+
 from src.live.collector import DEFAULT_CYCLE_SECONDS, DEFAULT_OUTPUT, DEFAULT_STATUS, LiveDataCollector, load_symbols, write_snapshot
 
 ROOT = Path(__file__).resolve().parents[2]

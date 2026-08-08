@@ -11,14 +11,7 @@
   "capabilities": {
     "taskKinds": [
       "request"
-    ],
-    "expertise": [
-      "feature engineering",
-      "derived metric computation",
-      "ratio analysis",
-      "formula transparency"
-    ],
-    "dataCoverage": "4 derived features computed for all 59 assets, formula inputs exposed in every output"
+    ]
   },
   "tags": [
     {
@@ -40,6 +33,26 @@
     {
       "id": "format:json",
       "name": "Structured JSON output"
+    },
+    {
+      "id": "skill:feature_engineering",
+      "name": "feature engineering"
+    },
+    {
+      "id": "skill:derived_metric_computation",
+      "name": "derived metric computation"
+    },
+    {
+      "id": "skill:ratio_analysis",
+      "name": "ratio analysis"
+    },
+    {
+      "id": "skill:formula_transparency",
+      "name": "formula transparency"
+    },
+    {
+      "id": "info:data-coverage",
+      "name": "4 derived features computed for all 59 assets, formula inputs exposed in every o"
     }
   ],
   "runtime": {

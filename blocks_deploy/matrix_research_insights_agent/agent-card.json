@@ -11,15 +11,7 @@
   "capabilities": {
     "taskKinds": [
       "request"
-    ],
-    "expertise": [
-      "dashboard research",
-      "yield ranking analysis",
-      "quarterly comparison",
-      "aggregate trend interpretation",
-      "matrix data extraction"
-    ],
-    "dataCoverage": "8 quarters, 59 assets, 6 focus assets, 4 yield bands, investment score breakdown"
+    ]
   },
   "tags": [
     {
@@ -41,6 +33,30 @@
     {
       "id": "format:json",
       "name": "Structured JSON output"
+    },
+    {
+      "id": "skill:dashboard_research",
+      "name": "dashboard research"
+    },
+    {
+      "id": "skill:yield_ranking_analysis",
+      "name": "yield ranking analysis"
+    },
+    {
+      "id": "skill:quarterly_comparison",
+      "name": "quarterly comparison"
+    },
+    {
+      "id": "skill:aggregate_trend_interpretation",
+      "name": "aggregate trend interpretation"
+    },
+    {
+      "id": "skill:matrix_data_extraction",
+      "name": "matrix data extraction"
+    },
+    {
+      "id": "info:data-coverage",
+      "name": "8 quarters, 59 assets, 6 focus assets, 4 yield bands, investment score breakdown"
     }
   ],
   "runtime": {

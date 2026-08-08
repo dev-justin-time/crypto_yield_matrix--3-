@@ -11,15 +11,7 @@
   "capabilities": {
     "taskKinds": [
       "request"
-    ],
-    "expertise": [
-      "data lineage audit",
-      "schema validation",
-      "source conflict detection",
-      "provenance tracking",
-      "hash verification"
-    ],
-    "dataCoverage": "118 provenance-labeled rows, 61 columns, 9 source snapshots, SHA-256 verified mirrors"
+    ]
   },
   "tags": [
     {
@@ -41,6 +33,30 @@
     {
       "id": "format:json",
       "name": "Structured JSON output"
+    },
+    {
+      "id": "skill:data_lineage_audit",
+      "name": "data lineage audit"
+    },
+    {
+      "id": "skill:schema_validation",
+      "name": "schema validation"
+    },
+    {
+      "id": "skill:source_conflict_detection",
+      "name": "source conflict detection"
+    },
+    {
+      "id": "skill:provenance_tracking",
+      "name": "provenance tracking"
+    },
+    {
+      "id": "skill:hash_verification",
+      "name": "hash verification"
+    },
+    {
+      "id": "info:data-coverage",
+      "name": "118 provenance-labeled rows, 61 columns, 9 source snapshots, SHA-256 verified mi"
     }
   ],
   "runtime": {

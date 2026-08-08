@@ -11,15 +11,7 @@
   "capabilities": {
     "taskKinds": [
       "request"
-    ],
-    "expertise": [
-      "risk assessment",
-      "volatility analysis",
-      "drawdown evaluation",
-      "yield-risk trade-off",
-      "beta and correlation"
-    ],
-    "dataCoverage": "59 assets across 16 categories, 8 quarterly yield observations, 9 source-backed market snapshots"
+    ]
   },
   "tags": [
     {
@@ -41,6 +33,30 @@
     {
       "id": "format:json",
       "name": "Structured JSON output"
+    },
+    {
+      "id": "skill:risk_assessment",
+      "name": "risk assessment"
+    },
+    {
+      "id": "skill:volatility_analysis",
+      "name": "volatility analysis"
+    },
+    {
+      "id": "skill:drawdown_evaluation",
+      "name": "drawdown evaluation"
+    },
+    {
+      "id": "skill:yield-risk_trade-off",
+      "name": "yield-risk trade-off"
+    },
+    {
+      "id": "skill:beta_and_correlation",
+      "name": "beta and correlation"
+    },
+    {
+      "id": "info:data-coverage",
+      "name": "59 assets across 16 categories, 8 quarterly yield observations, 9 source-backed "
     }
   ],
   "runtime": {

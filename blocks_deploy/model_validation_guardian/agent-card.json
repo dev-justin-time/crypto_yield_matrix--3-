@@ -11,16 +11,7 @@
   "capabilities": {
     "taskKinds": [
       "request"
-    ],
-    "expertise": [
-      "model validation",
-      "leakage detection",
-      "split integrity",
-      "baseline comparison",
-      "calibration audit",
-      "uncertainty reporting"
-    ],
-    "dataCoverage": "Full dataset validation: provenance awareness, chronological ordering, feature/target separation"
+    ]
   },
   "tags": [
     {
@@ -42,6 +33,34 @@
     {
       "id": "format:json",
       "name": "Structured JSON output"
+    },
+    {
+      "id": "skill:model_validation",
+      "name": "model validation"
+    },
+    {
+      "id": "skill:leakage_detection",
+      "name": "leakage detection"
+    },
+    {
+      "id": "skill:split_integrity",
+      "name": "split integrity"
+    },
+    {
+      "id": "skill:baseline_comparison",
+      "name": "baseline comparison"
+    },
+    {
+      "id": "skill:calibration_audit",
+      "name": "calibration audit"
+    },
+    {
+      "id": "skill:uncertainty_reporting",
+      "name": "uncertainty reporting"
+    },
+    {
+      "id": "info:data-coverage",
+      "name": "Full dataset validation: provenance awareness, chronological ordering, feature/t"
     }
   ],
   "runtime": {

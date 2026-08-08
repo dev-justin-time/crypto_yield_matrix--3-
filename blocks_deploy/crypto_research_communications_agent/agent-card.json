@@ -11,15 +11,7 @@
   "capabilities": {
     "taskKinds": [
       "request"
-    ],
-    "expertise": [
-      "research writing",
-      "evidence synthesis",
-      "data-status labeling",
-      "audience adaptation",
-      "disclosure compliance"
-    ],
-    "dataCoverage": "Full project context: yield matrix, risk metrics, liquidity data, provenance audit, methodology notes"
+    ]
   },
   "tags": [
     {
@@ -45,6 +37,30 @@
     {
       "id": "format:json",
       "name": "JSON output"
+    },
+    {
+      "id": "skill:research_writing",
+      "name": "research writing"
+    },
+    {
+      "id": "skill:evidence_synthesis",
+      "name": "evidence synthesis"
+    },
+    {
+      "id": "skill:data-status_labeling",
+      "name": "data-status labeling"
+    },
+    {
+      "id": "skill:audience_adaptation",
+      "name": "audience adaptation"
+    },
+    {
+      "id": "skill:disclosure_compliance",
+      "name": "disclosure compliance"
+    },
+    {
+      "id": "info:data-coverage",
+      "name": "Full project context: yield matrix, risk metrics, liquidity data, provenance aud"
     }
   ],
   "runtime": {

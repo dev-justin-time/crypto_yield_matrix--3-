@@ -11,15 +11,7 @@
   "capabilities": {
     "taskKinds": [
       "request"
-    ],
-    "expertise": [
-      "inflation-adjusted yield",
-      "dilution analysis",
-      "supply dynamics",
-      "FDV/MCAP ratio",
-      "token emission sustainability"
-    ],
-    "dataCoverage": "59 assets, inflation rate, FDV/MCAP, circulating supply, market cap change"
+    ]
   },
   "tags": [
     {
@@ -41,6 +33,30 @@
     {
       "id": "format:json",
       "name": "Structured JSON output"
+    },
+    {
+      "id": "skill:inflation-adjusted_yield",
+      "name": "inflation-adjusted yield"
+    },
+    {
+      "id": "skill:dilution_analysis",
+      "name": "dilution analysis"
+    },
+    {
+      "id": "skill:supply_dynamics",
+      "name": "supply dynamics"
+    },
+    {
+      "id": "skill:FDV/MCAP_ratio",
+      "name": "FDV/MCAP ratio"
+    },
+    {
+      "id": "skill:token_emission_sustainability",
+      "name": "token emission sustainability"
+    },
+    {
+      "id": "info:data-coverage",
+      "name": "59 assets, inflation rate, FDV/MCAP, circulating supply, market cap change"
     }
   ],
   "runtime": {
