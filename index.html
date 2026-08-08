@@ -38,15 +38,22 @@
         <div>
           <span class="eyebrow">research explorer</span>
           <h2 id="explorer-title">evidence-backed asset opportunities</h2>
-          <p>Use the catalog to compare yield, risk context, and source coverage. Blank market fields mean no supplied snapshot—not a zero.</p>
+          <p>Move from headline yield to a decision-ready shortlist: compare reward momentum, risk context, market quotes, and evidence coverage. Blank fields mean unavailable supplied evidence—not a zero.</p>
         </div>
         <div class="explorer-controls">
           <label>Search <input id="asset-search" type="search" placeholder="BTC, solana…" autocomplete="off"></label>
           <label>Category <select id="category-filter"><option value="">All categories</option></select></label>
           <label>Coverage <select id="coverage-filter"><option value="">All coverage</option><option value="source_snapshot">Source snapshot</option><option value="canonical_only">Canonical yield only</option></select></label>
+          <label>Quote <select id="quote-filter"><option value="">All quote coverage</option><option value="source_snapshot">Quote supplied</option><option value="unavailable">Quote unavailable</option></select></label>
+          <label>Sort <select id="asset-sort"><option value="yield">Current yield</option><option value="change">Yield change</option><option value="score">Investment score</option><option value="market_cap">Market cap</option></select></label>
         </div>
       </div>
       <div id="asset-insights" class="asset-insights" aria-live="polite"></div>
+      <div class="explorer-actions">
+        <button id="download-catalog" type="button">Download catalog shortlist</button>
+        <button id="download-quotes" type="button" class="secondary-action">Download quote exports</button>
+        <span>Catalog exports preserve yield evidence; quote exports use the normalized Yahoo-style schema.</span>
+      </div>
       <div id="asset-catalog-grid" class="asset-catalog-grid"></div>
     </section>
 

@@ -13,6 +13,7 @@ The file intentionally retains all 118 supplied rows and its embedded `source_fi
 - Duplicate symbol count: **59** symbols; these are retained because the supplied canonical file contains all provenance rows.
 - Generated asset catalog: **59** rows and **59** per-asset files.
 - Asset snapshot coverage: **9** source-backed, **50** canonical-only.
+- Normalized quote exports: **59** per-asset files; statuses: {'unavailable': 50, 'source_snapshot': 9}.
 - Alternate dataset files checked: **0** (only embedded provenance labels remain in the canonical file).
 
 ## Embedded provenance labels
@@ -27,6 +28,8 @@ The file intentionally retains all 118 supplied rows and its embedded `source_fi
 - Alternate dataset files absent: **PASS**
 - Dictionary contains every canonical CSV field: **PASS**
 - Generated asset catalog coverage: **PASS**
+- Normalized quote exports: **PASS**
+- Deployment quote mirrors: **PASS**
 
 ## Agent rule
 

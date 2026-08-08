@@ -4,11 +4,14 @@ import re
 from collections import Counter
 from pathlib import Path
 
+from build_asset_catalog import QUOTE_FIELDS, QUOTE_SOURCE_FIELDS
+
 ROOT = Path(__file__).resolve().parent
 CANONICAL_NAME = "yield_data.csv"
 DEPLOY_ROOT = ROOT / "blocks_deploy"
 ASSET_CATALOG = ROOT / "asset_catalog.csv"
 ASSET_DIR = ROOT / "csv" / "assets"
+QUOTE_DIR = ROOT / "csv" / "quotes"
 ALTERNATE_NAMES = {"yield_data1.csv", "consolidated_yield_data.csv"}
 
 
@@ -107,6 +110,9 @@ asset_files = sorted(ASSET_DIR.glob("*.csv")) if ASSET_DIR.exists() else []
 if len(asset_files) != len(symbols):
     issues.append(f"per-asset catalog file count is {len(asset_files)}, expected {len(symbols)}")
 catalog_symbols = {row.get("symbol", "") for row in catalog_rows}
+asset_file_symbols = {path.stem for path in asset_files}
+if asset_file_symbols != set(symbols):
+    issues.append("per-asset catalog filenames do not match canonical unique symbols")
 if catalog_symbols != set(symbols):
     issues.append("asset catalog symbols do not match canonical unique symbols")
 if catalog_rows:
@@ -121,6 +127,43 @@ if catalog_rows:
     coverage = Counter(row.get("snapshot_status", "") for row in catalog_rows)
 else:
     coverage = Counter()
+
+quote_files = sorted(QUOTE_DIR.glob("*.csv")) if QUOTE_DIR.exists() else []
+quote_file_symbols = {path.stem for path in quote_files}
+if quote_file_symbols != set(symbols):
+    issues.append("quote export filenames do not match canonical unique symbols")
+if len(quote_files) != len(symbols):
+    issues.append(f"quote export file count is {len(quote_files)}, expected {len(symbols)}")
+quote_status = Counter()
+for path in quote_files:
+    quote_rows = read_rows(path)
+    if len(quote_rows) != 1:
+        issues.append(f"quote export does not contain exactly one row: {path.relative_to(ROOT)}")
+        continue
+    quote = quote_rows[0]
+    if list(quote) != list(QUOTE_FIELDS):
+        issues.append(f"quote export schema differs from the normalized contract: {path.relative_to(ROOT)}")
+    if quote.get("yield_matrix_symbol") != path.stem:
+        issues.append(f"quote export is joined to the wrong yield symbol: {path.relative_to(ROOT)}")
+    quote_status[quote.get("quote_status", "")] += 1
+    if quote.get("quote_status") == "unavailable":
+        supplied_source_fields = [field for field in QUOTE_SOURCE_FIELDS if quote.get(field)]
+        if supplied_source_fields:
+            issues.append(f"unavailable quote export contains market values: {path.relative_to(ROOT)}")
+
+deployment_quote_files = {
+    project: sorted(project.glob("csv/quotes/*.csv"))
+    for project in sorted(DEPLOY_ROOT.iterdir())
+    if project.is_dir() and project.name != "crypto_yield_a2a_orchestrator"
+}
+for project, files in deployment_quote_files.items():
+    project_symbols = {path.stem for path in files}
+    if project_symbols != set(symbols) or len(files) != len(quote_files):
+        issues.append(f"deployment quote export set differs from root: {project.relative_to(ROOT)}")
+    for path in files:
+        root_quote = QUOTE_DIR / path.name
+        if not root_quote.exists() or path.read_bytes() != root_quote.read_bytes():
+            issues.append(f"deployment quote export differs from root: {path.relative_to(ROOT)}")
 
 report = [
     "# Canonical CSV validation report",
@@ -138,6 +181,7 @@ report = [
     f"- Duplicate symbol count: **{sum(count > 1 for count in symbols.values())}** symbols; these are retained because the supplied canonical file contains all provenance rows.",
     f"- Generated asset catalog: **{len(catalog_rows)}** rows and **{len(asset_files)}** per-asset files.",
     f"- Asset snapshot coverage: **{coverage.get('source_snapshot', 0)}** source-backed, **{coverage.get('canonical_only', 0)}** canonical-only.",
+    f"- Normalized quote exports: **{len(quote_files)}** per-asset files; statuses: {dict(quote_status)}.",
     "- Alternate dataset files checked: **0** (only embedded provenance labels remain in the canonical file).",
     "",
     "## Embedded provenance labels",
@@ -153,7 +197,9 @@ report += [
     f"- Deployment copies byte-identical to root: **{'PASS' if all(path.read_bytes() == canonical.read_bytes() for path in deployment_files) else 'FAIL'}**",
     f"- Alternate dataset files absent: **{'PASS' if not noncanonical_csvs else 'FAIL'}**",
     f"- Dictionary contains every canonical CSV field: **{'PASS' if not missing_dictionary_fields else 'FAIL'}**",
-    f"- Generated asset catalog coverage: **{'PASS' if len(catalog_rows) == len(symbols) and len(asset_files) == len(symbols) and catalog_symbols == set(symbols) else 'FAIL'}**",
+    f"- Generated asset catalog coverage: **{'PASS' if len(catalog_rows) == len(symbols) and len(asset_files) == len(symbols) and catalog_symbols == set(symbols) and asset_file_symbols == set(symbols) else 'FAIL'}**",
+    f"- Normalized quote exports: **{'PASS' if len(quote_files) == len(symbols) and quote_file_symbols == set(symbols) and quote_status.get('source_snapshot', 0) == coverage.get('source_snapshot', 0) else 'FAIL'}**",
+    f"- Deployment quote mirrors: **{'PASS' if not any(issue.startswith('deployment quote export') or issue.startswith('deployment quote export set') for issue in issues) else 'FAIL'}**",
     "",
     "## Agent rule",
     "",

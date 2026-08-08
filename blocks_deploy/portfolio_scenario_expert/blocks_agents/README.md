@@ -23,7 +23,8 @@ The primary evidence files are:
 - `DATA_DICTIONARY.md` — field definitions and modeling notes.
 - `yield_data.csv` — the single canonical 118-row dataset; its `source_file` and `source_row` columns preserve row-level provenance.
 - `asset_catalog.csv` — generated one-row-per-symbol evidence-first enrichment with explicit snapshot coverage.
-- `csv/assets/<SYMBOL>.csv` — generated focused asset views for all 59 canonical symbols.
+- `csv/assets/<SYMBOL>.csv` — generated focused yield/enrichment views for all 59 canonical symbols.
+- `csv/quotes/<SYMBOL>.csv` — generated normalized Yahoo-style quote exports for all 59 symbols; unavailable supplied quote fields are blank and labeled.
 - `table-*.csv` — supplied source snapshots, metadata tables, and compact summaries with heterogeneous schemas; only the nine one-row asset tables are joined by the catalog builder.
 - `index.html`, `matrix.js`, `styles.css` — current user-facing matrix behavior and labels.
 
@@ -52,6 +53,7 @@ The primary evidence files are:
 - Agents should return `PASS`, `WARNING`, or `FAIL` status plus exact file/row/column references whenever possible.
 - The feature-engineering formulas are recomputed from source fields: `yield_momentum = yield_trend_slope * yield_volatility`, `mcap_to_tvl = mcap_end_current_usd / tvl_usd`, `risk_score = beta_vs_btc * volatility_annualized_current / sharpe_ratio_current`, and `yield_premium = agg_current - yield_vs_category_avg`. The same four fields are materialized in the generated asset catalog for dashboard/export use.
 - Asset snapshot coverage is explicit: nine assets have supplied market snapshot rows and 50 are `canonical_only`; blank snapshot fields never mean zero.
+- Quote exports are uniform across all 59 assets: nine are `source_snapshot`, 50 are `unavailable`; `quote_as_of_iso`, `quote_source_file`, and `quote_completeness_pct` make freshness and coverage visible.
 - Every local research artifact includes `user_value.decision_use`, `user_value.review_next`, and `user_value.do_not_infer` so a user receives interpretation guidance rather than an unexplained metric dump.
 - A zero `tvl_usd` or `sharpe_ratio_current` produces an undefined (`null`) ratio with a warning; it is never silently replaced with zero.
 - Outputs are research and decision-support artifacts, not financial advice or guaranteed return predictions.

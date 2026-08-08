@@ -14,10 +14,12 @@ The eight sections below document the 59 analytical columns currently present in
 `build_asset_catalog.py` joins the first canonical `yield_data.csv` evidence row for each of the 59 symbols with the nine supplied one-row market snapshot tables under `csv/`. It produces:
 
 - `asset_catalog.csv` — one normalized row for each canonical symbol;
-- `csv/assets/<SYMBOL>.csv` — one focused file for each of the 59 assets;
+- `csv/assets/<SYMBOL>.csv` — one focused yield/enrichment file for each of the 59 assets;
+- `csv/quotes/<SYMBOL>.csv` — one normalized Yahoo-style quote export for each of the 59 assets, with a stable 97-column header and explicit `quote_status`/provenance metadata;
 - per-asset derived fields: `yield_momentum`, `mcap_to_tvl`, `risk_score`, and `yield_premium`;
 - snapshot fields such as price, market cap, volume, 52-week range, supply, website, exchange, and snapshot time when a supplied table exists;
-- `snapshot_status=source_snapshot` for the nine source-backed assets and `snapshot_status=canonical_only` for the remaining assets.
+- `snapshot_status=source_snapshot` for the nine source-backed assets and `snapshot_status=canonical_only` for the remaining assets;
+- quote status is `source_snapshot` for nine assets and `unavailable` for 50 assets; unavailable quote fields remain blank.
 
 Blank snapshot fields mean that no supplied source table covered that asset. They are not zeros, estimates, or live values. The generated catalog is safe for research exploration and user-facing coverage indicators, but it must not be treated as an independent time series or validated forecast.
 

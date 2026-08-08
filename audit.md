@@ -1,202 +1,336 @@
-# Production Readiness Audit
+# Production Readiness Audit and Improvement Opportunity Report
 
 **Project:** Crypto Yield Matrix / Blocks.ai agent fleet
 **Audit date:** 2026-08-07
-**Update:** Synchronized-state post-remediation audit
-**Verdict:** **CONDITIONAL PRIVATE PILOT — NO-GO for public or unattended paid production**
-**Repository state:** The current working tree contains the documented implementation, mirror-synchronization, and audit updates; no untracked secrets or alternate datasets were introduced. No paid Blocks task was dispatched during this update.
+**Audit type:** Repository, local-runtime, security-control, deployment-topology, and no-spend validation review
+**Requested outcome:** Prepare the system for public and unattended paid production
+**Current verdict:** **NO-GO for public or unattended paid production; CONDITIONAL PRIVATE-PILOT READY after external verification**
 
-## Executive summary
+> This report does not convert unverified platform or hosting assumptions into a GO. A public paid-production GO requires live Blocks, identity, billing, network, secret-management, monitoring, and canary evidence in addition to passing repository tests.
 
-The repository-controlled blockers identified in the original audit have been addressed in code and documentation. The Node gateway now requires separate caller authentication, supports per-client agent allowlists, enforces rate and daily paid-task budgets, persists the single-instance budget ledger, validates the canonical data source, emits request-correlated structured logs, and provides no-spend health/readiness endpoints. The gateway remains compatible with the Blocks consumer `TaskClient`, paid `billingMode`, forwarded idempotency keys, native provider cards, and server-side `BLOCKS_API_KEY` handling.
+## 1. Executive decision
 
-The canonical data contract is now explicit: `yield_data.csv` contains 118 rows, 59 unique symbols, 61 columns, 59 analytical columns, and two provenance columns. The file has no alternate CSV files beside it, but its embedded `source_file` provenance field intentionally retains two historical labels (`yield_data.csv` and `yield_data1.csv`); those labels are evidence metadata, not files to load. The dictionary distinguishes current CSV fields from planned/derived fields, and `audit_csv.py` checks that every CSV field is documented. Stale multi-source setup instructions were removed, deployment dictionary copies were synchronized, and the forecasting safety gate remains intact.
+The repository has materially improved production protections:
 
-The project is now suitable for a **controlled private pilot** behind a supervised single gateway instance after external Blocks validation. It is still not ready for public exposure or unattended paid production until the live Blocks registry, provider connectivity, A2A permissions, secret-management controls, centralized observability, and a budgeted paid canary are verified.
+- Paid invocation requires a gateway credential separate from `BLOCKS_API_KEY`.
+- Per-client agent allowlists, rolling request limits, concurrent-task limits, and UTC-day task/spend reservations are implemented.
+- The budget ledger is persisted atomically for the intended single-gateway topology.
+- Request IDs, structured completion/rejection logs, liveness, readiness, and protected no-spend metrics are implemented.
+- The canonical data boundary is enforced: handlers accept `yield_data.csv` only, while generated asset files are clearly enrichment views.
+- The data dictionary, canonical CSV mirrors, asset catalog, and 59 per-asset files are validated.
+- The forecasting handler remains blocked rather than presenting unsupported predictions.
+- A2A orchestration has mocked timeout, partial-failure, artifact, and cleanup coverage.
 
-## Implemented remediation
+Those controls make the project appropriate for local development and a supervised private pilot. They do **not** prove that the live Blocks agents are registered, reachable, paid-configured, correctly permissioned, or monitored. The current gateway also remains a single-instance financial-control design, and its direct Node listener has no explicit host-binding configuration; the provided Compose file is localhost-bound, but another deployment could accidentally expose the process on all interfaces.
 
-### Gateway security and paid-task safety
+### Release decision
 
-- Added `Authorization: Bearer <gateway-client-secret>` authentication for paid invocation.
-- Kept gateway caller secrets separate from the server-side `BLOCKS_API_KEY`.
-- Compared secrets with constant-time comparison and reject client secrets equal to the Blocks key.
-- Added optional per-client agent allowlists through `GATEWAY_CLIENT_AGENTS`.
-- Added per-client rolling request limits.
-- Added conservative UTC-day task and spend budgets.
-- Persisted the budget ledger through an atomic JSON state write for the single gateway instance.
-- Preserved Blocks `billingMode: 'paid'` and forwarded `X-Idempotency-Key` behavior.
-- Kept application retries disabled after uncertain paid sends.
-- Added canonical `source_file` validation at the gateway boundary.
-- Added question-length and JSON content-type validation.
-- Added an authenticated no-spend `/metrics` endpoint with request, status, authentication, invoke-lifecycle, and separated rate-limit, budget, and capacity rejection counters; the smoke test verifies protected access and expected outcomes.
+| Release mode | Decision | Reason |
+|---|---|---|
+| Local development / demonstrations | **GO** | No-spend validation passes. |
+| Private, supervised pilot | **CONDITIONAL GO** | Requires live private Blocks verification, secret injection, private networking, and an approved canary. |
+| Public gateway with unattended paid tasks | **NO-GO** | Live platform, identity, billing, monitoring, aggregate-budget, and canary evidence is incomplete. |
+| Validated forecasting product | **NO-GO** | The intentional forecasting readiness gate remains `FAIL`. |
 
-The budget is intentionally conservative: a task reservation remains counted even if a remote result is uncertain, failed, or canceled. This prevents ambiguous network outcomes from creating uncontrolled spend. The persisted ledger is single-instance protection, not a distributed quota service; the Compose deployment mounts durable storage at `GATEWAY_BUDGET_STATE_FILE`. Do not horizontally scale gateways without replacing it with shared durable accounting.
+## 2. Audit scope and limitations
 
-### Operations and observability
+Reviewed:
 
-- Added request IDs through the `X-Request-Id` header and response body/result.
-- Added structured JSON request-completion and rejection logs without request payloads or secrets.
-- Added `/health` for no-spend liveness and `/ready` for no-spend client/budget readiness.
-- Added a non-root `Dockerfile`.
-- Added supervised single-instance `docker-compose.yml` with restart policy, localhost-only binding by default, runtime environment injection, and readiness health checks.
-- Added Docker build exclusions for secrets, dependencies, logs, and local state.
-- Documented secret rotation, caller credentials, budgets, private-network operation, and the single-gateway topology.
+- Gateway authentication, authorization, request validation, billing mode, idempotency forwarding, timeouts, cancellation, budget reservation, metrics, logging, shutdown, and Docker topology.
+- Native deployment cards, provider project structure, A2A orchestrator, local handlers, data provenance, generated asset catalog, and mirror synchronization.
+- Secret ignore rules, environment templates, local process management, package manifests, tests, smoke checks, and operator documentation.
+- No-spend local execution and static invariants; no live paid task, registration, publishing, invitation acceptance, or production mutation was performed.
 
-### Data and user-value improvements
+Not verified in this environment:
 
-- Reconciled `DATA_DICTIONARY.md` with the actual 61-column CSV contract.
-- Documented `source_file` and `source_row` as provenance columns.
-- Clearly labeled the later feature sections as planned/derived fields rather than current observed CSV columns.
-- Added dictionary field coverage checks to `audit_csv.py`.
-- Removed stale instructions about loading a second independent dataset.
-- Kept row-level provenance in research evidence so duplicate symbols remain explainable.
-- Synchronized the canonical CSV, dictionary, validation report, and shared handler scaffold across all 11 data-consuming deployments.
-- Kept the A2A orchestrator intentionally data-free; it receives provenance in requests and delegates to the specialist fleet.
-- Preserved explicit uncertainty and non-advisory language.
-- Added a consistent `user_value` contract to local research artifacts: how to use the evidence, what to review next, and what not to infer.
-- Added local smoke assertions for the user-value artifact contract.
-- Kept forecasting blocked until dated history and out-of-time validation exist.
+- A working `blocks` CLI: it is **not on PATH**.
+- Blocks account, organization, registry, provider runtime connectivity, billing configuration, or live agent versions.
+- Private invitation acceptance and A2A authorization for the orchestrator identity.
+- Hosting firewall, reverse proxy, TLS, identity provider, secret manager, container runtime, backup, alerting, and log-retention configuration.
+- Real paid latency, throughput, cancellation behavior, spend, failure rates, or artifact sizes.
 
-## Evidence and no-spend validation
+## 3. Evidence collected
 
-The following checks pass after remediation and the latest user-value hardening update:
+### 3.1 No-spend validation: PASS
 
-| Check | Result |
-|---|---|
-| Canonical CSV audit | Pass: 118 rows, 61 columns, 0 issues |
-| Dictionary field coverage | Pass through `audit_csv.py` |
-| Deployment CSV mirrors | Pass: 11 copies byte-identical to root |
-| Deployment dictionary mirrors | Pass: 11 copies byte-identical to root |
-| Python syntax/AST validation | Pass for repository Python files |
-| A2A orchestrator mocked tests | Pass; orchestrator remains data-free |
-| JSON parsing | Pass for repository JSON files |
-| Shared scaffold synchronization | Pass across 11 data-consuming deployments |
-| Gateway TypeScript check | Pass: `npm run check` |
-| Gateway no-spend smoke test | Pass: auth, readiness, metrics, budget reservation, validation; no paid dispatch |
-| Research artifact contract | Pass: local smoke validates `user_value` guidance and provenance fields |
-| Dashboard JavaScript syntax | Pass: `node --check matrix.js` |
-| Git whitespace check | Pass: `git diff --check` |
-| Tracked secrets | No real `.env`, key, or PEM files tracked |
+The authoritative local suite completed without network calls or paid task dispatch:
 
-The smoke suite injects a fake TaskClient and deliberately fails before any real Blocks task can be sent. It tests authentication rejection, protected metrics access, request IDs, source validation, content-type validation, idempotency-header validation, readiness behavior, and conservative budget exhaustion without spending money. Metrics distinguish rate-limit, daily-budget, and capacity rejection so alerts do not mistake client throttling for spend exhaustion. The repository-level synchronization check separately verifies that all 11 data-consuming deployments match the canonical CSV, dictionary, validation report, and shared handler scaffold; the A2A orchestrator is excluded from data-copy checks by design.
+| Check | Result | Evidence |
+|---|---|---|
+| Canonical CSV audit | **PASS** | `audit_csv.py`: 118 rows, 61 columns, 0 issues |
+| Canonical unique symbols | **PASS** | 59 unique symbols |
+| Asset catalog | **PASS** | 59 rows; 9 source-backed snapshots and 50 `canonical_only` rows |
+| Per-asset files | **PASS** | 59 files under `csv/assets/`, filename set and row content match catalog |
+| Deployment data mirrors | **PASS** | 11 data-consuming deployment copies match canonical `yield_data.csv` |
+| Python AST parsing | **PASS** | Repository Python files parsed successfully |
+| JSON parsing | **PASS** | Repository JSON files parsed successfully |
+| Local handler smoke | **PASS** | All local agent cards/handlers returned valid artifacts |
+| A2A mocked tests | **PASS** | Orchestrator partial-failure and timeout behavior tested; orchestrator remains data-free |
+| Gateway TypeScript check | **PASS** | `npm run check` |
+| Gateway no-spend smoke | **PASS** | Auth, readiness, protected metrics, request validation, budget behavior, 12-agent listing; no paid dispatch |
+| Dashboard syntax | **PASS** | `node --check matrix.js` |
+| Git whitespace | **PASS** | `git diff --check` |
+| Tracked secret scan | **PASS** | No real `.env`, PEM, key, or credential file tracked by the inspected patterns |
 
-## Remaining findings
+The gateway smoke test uses a fake `TaskClient` and a placeholder key. Its successful result proves local routing and safety checks only; it is not evidence of a successful Blocks call.
 
-### External release blockers
+### 3.2 Repository inventory
 
-#### EXT-001 — Live Blocks deployment is not verified
+- Native deployment projects: **12** under `blocks_deploy/`.
+- Data-consuming deployments synchronized: **11**.
+- A2A orchestrator: intentionally data-free and excluded from data-copy checks.
+- Gateway agents served: **12**.
+- Gateway package lock resolves `@blocks-network/sdk` to **1.0.11**, while `package.json` declares the dependency as `latest`.
+- Native agent cards provide bounded runtime settings: most specialists use concurrency 4, backlog 20, and 45-second runtime; the orchestrator uses concurrency 2, backlog 8, and 90-second runtime.
 
-**Status:** Open — requires credentials and platform access.
+## 4. Verified controls
 
-Run `blocks check` in every native project, register privately, verify provider runtimes, perform controlled private trigger tests, and confirm that the live billing mode matches the gateway's `billingMode: 'paid'`. Record agent versions, registry identifiers, runtime status, and test results in a release record.
+### 4.1 Gateway security and spend controls
 
-#### EXT-002 — A2A invitations and permissions are not verified
+Verified in `crypto_yield_matrix_node_gateway/server.ts` and `smoke.ts`:
 
-**Status:** Open — requires the orchestrator machine identity.
+- Separate caller bearer authentication through `GATEWAY_CLIENT_KEYS`.
+- Constant-time secret comparison and rejection of client secrets equal to the Blocks API key.
+- Optional per-client agent authorization through `GATEWAY_CLIENT_AGENTS`.
+- JSON content-type, body-size, question-length, source-file, route, and idempotency-header validation.
+- Canonical `source_file` enforcement for `yield_data.csv`.
+- Per-client rolling request limit.
+- Process-local concurrent paid-task cap.
+- Daily task and estimated-spend reservation before SDK dispatch.
+- Conservative reservation policy: uncertain, failed, or canceled requests remain reserved because their remote billing outcome is not known.
+- Atomic persisted JSON ledger for the single-instance deployment.
+- No application retry after an uncertain paid send.
+- Best-effort remote cancellation after task or artifact timeout.
+- Forwarding of `X-Idempotency-Key` to Blocks.
 
-Confirm that all required specialist invitations are accepted and that the orchestrator can call each private specialist. Test partial permission failure, timeout, cancellation, and artifact download behavior on the private network.
+The configured Blocks client uses `billingMode: 'paid'`; the gateway does not expose the server-side API key in responses.
 
-#### EXT-003 — Secret-manager and rotation controls are not verified
+### 4.2 Operational baseline
 
-**Status:** Open — hosting/platform dependent.
+Verified in the repository:
 
-Inject `BLOCKS_API_KEY`, `GATEWAY_CLIENT_KEYS`, and optional `GATEWAY_CLIENT_AGENTS` through the deployment secret manager. Do not bake secrets into images or commit them. Test rotation, revocation, expiry alerting, access review, and recovery.
+- `/health` is a no-spend liveness endpoint.
+- `/ready` checks SDK-client initialization and local budget availability without dispatching a task.
+- `/metrics` is authenticated and no-spend.
+- Structured logs include request correlation and omit payloads/secrets.
+- Docker runs as non-root `node` and includes a restart policy, readiness health check, and persistent budget volume.
+- Compose binds the gateway to `127.0.0.1:3000` by default.
+- `Restart-BlocksAgents.ps1` only terminates PIDs previously recorded by itself and is safer than broad process-name termination for local use.
 
-#### EXT-004 — Centralized production observability is not verified
+### 4.3 Data integrity and user-value controls
 
-**Status:** Repository baseline implemented; external operational gate remains open.
+- `yield_data.csv` remains the sole handler source.
+- Embedded `source_file` and `source_row` values preserve provenance; historical labels are metadata, not alternate files.
+- `asset_catalog.csv` and `csv/assets/*.csv` are generated enrichment views and label unavailable market snapshots as `canonical_only` rather than fabricating values.
+- Generated fields are transparent: `yield_momentum`, `mcap_to_tvl`, `risk_score`, and `yield_premium`.
+- Common artifacts include `user_value.decision_use`, `user_value.review_next`, and `user_value.do_not_infer`.
+- Forecasting remains a deliberate `FAIL` until dated history, independent outcomes, chronological validation, and uncertainty reporting are available.
+- Context-file access is read-only and restricted to an explicit allowlist; absolute and traversal paths are rejected.
 
-The gateway now exposes authenticated no-spend `/metrics` counters for request totals, status codes, auth rejection, accepted/completed/failed invokes, and separately classified rate-limit, daily-budget, and capacity rejection, in addition to request-correlated structured logs. The local smoke test verifies protected access and counters without dispatching a task. Ship these metrics and logs to a centralized system and add alerts for readiness failures, task failure rate, latency, cancellation failures, quota saturation, A2A permission failures, and spend anomalies before production. Keep the endpoint on a trusted operational network even with bearer authentication.
+## 5. Findings and improvement opportunities
 
-#### EXT-005 — Paid canary and budget approval are not verified
+Severity reflects risk to public unattended paid operation, not only local code quality.
 
-**Status:** Open — requires explicit owner approval.
+### CR-001 — Live paid production state is unverified
 
-Run a small private paid canary only after the preceding gates pass. Define a maximum spend, test success/failure/timeout/large-artifact cases, confirm idempotent caller retries, and document rollback and incident ownership. Never use the local smoke test as a substitute for the paid canary.
+**Status:** Open; external blocker.
+**Evidence:** The `blocks` CLI is not on PATH, and no live registration, runtime, billing, trigger, or published-agent evidence was supplied. Local smoke tests deliberately do not dispatch a task.
 
-#### VALUE-001 — Research artifacts previously lacked consistent interpretation guidance
+**Risk:** The fleet may fail registration, use different live card versions, reject paid calls, be unavailable, or partially fail A2A despite local success.
 
-**Status:** Remediated in repository; verify in native adapters.
+**Required action:** Install/authenticate the official CLI in an operator-controlled environment; run `blocks check` in all 12 native projects; privately register/update cards; verify provider runtime status; run controlled private triggers; record agent names, versions, registry IDs, billing mode, runtime state, and timestamps in a release record.
 
-Every local specialist artifact now includes `user_value.decision_use`, `user_value.review_next`, and `user_value.do_not_infer`. This makes the output more useful to a researcher while preserving the non-advisory boundary. Native Blocks adapters delegate to these handlers, and the local smoke harness asserts the contract; a live private trigger is still required to verify the serialized artifact end to end.
+### CR-002 — Public exposure depends on deployment topology, not gateway code alone
 
-### Data contract clarification
+**Status:** Open; high risk until the edge is verified.
+**Evidence:** Compose binds `127.0.0.1:3000`, but `index.ts` calls `server.listen(port)` without an explicit host and the gateway has no built-in TLS or reverse-proxy identity integration. A direct container/VM deployment can therefore expose the service more broadly than intended.
 
-#### DATA-001 — Embedded provenance labels are metadata, not alternate datasets
+**Risk:** Public callers could reach operational endpoints or attempt billable invocation if the deployment omits a trusted authenticated edge. Authentication keys may also be exposed over an unsafe transport.
 
-**Status:** Controlled and documented.
+**Required action:** Make host binding explicit and keep the application private behind a TLS-terminating, identity-aware reverse proxy or private network. Document firewall rules, allowed origins if a browser client is added, TLS renewal, and an authenticated edge-to-gateway trust boundary. Add an integration check that the production listener is not publicly reachable without the edge policy.
 
-The canonical file has 118 rows and retains two embedded provenance labels, including the historical label `yield_data1.csv`. No `yield_data1.csv` or `consolidated_yield_data.csv` file exists in the repository or deployment projects, and handlers accept only the canonical `yield_data.csv` path. Repeated symbols must remain traceable through `source_file` and `source_row`; they must not be treated as independent time observations without a documented selection policy.
+### CR-003 — Aggregate spend protection is single-instance
 
-### Intentional model gate
+**Status:** Open for horizontal scaling; acceptable only for one supervised gateway.
+**Evidence:** `GATEWAY_MAX_CONCURRENT_TASKS`, rolling windows, and the JSON budget ledger are process/local-volume controls. Multiple gateway replicas would each reserve against their own state.
 
-#### MODEL-001 — Forecasting remains blocked
+**Risk:** Scaling the gateway can bypass the intended task and spend ceilings and create duplicate or excessive paid work.
 
-**Status:** Intentional `FAIL`; do not remove yet.
+**Required action:** Before any second gateway replica, replace the local ledger with a shared durable atomic quota/budget service, or enforce one gateway instance at the edge and document that constraint. Add reconciliation against Blocks billing records and an emergency global kill switch.
 
-The current panel has eight quarterly yield observations per asset, repeated provenance-labeled rows, supplied target fields, and no demonstrated independent out-of-time outcomes. Add dated history, define row selection, use chronological evaluation, compare baselines, and report uncertainty/calibration before enabling forecasting claims.
+### HI-001 — Centralized observability and alerting are not verified
 
-## Positive controls
+**Status:** Repository baseline implemented; production control open.
+**Evidence:** Local `/metrics` and JSON logs exist, but no external collector, dashboard, retention policy, alert routing, or spend monitor is present in the repository.
 
-- Canonical `yield_data.csv` is synchronized across deployments.
-- Handlers reject undeclared, absolute, and traversal context paths.
-- Evidence includes embedded `source_file`/`source_row` provenance.
-- Native adapters preserve the Blocks `request` input and artifact envelope.
-- Gateway caller authentication is separate from Blocks authentication.
-- Paid task budgets are conservative and persisted for the single-instance topology.
-- Gateway timeouts attempt remote cancellation and sessions are closed.
-- A2A orchestration uses bounded parallelism, timeouts, cleanup, artifact handling, and partial-failure merging.
-- Forecasting does not overclaim readiness.
-- No-spend validation is available for routine CI.
+**Required action:** Export metrics/logs to a centralized system and alert on readiness failure, 5xx rate, p95/p99 latency, task timeout/cancellation, A2A permission errors, rate/budget/capacity saturation, authentication rejection spikes, artifact failures, and spend divergence. Redact secrets and payloads, define retention, and assign an incident owner.
 
-## Release decision
+### HI-002 — Readiness is configuration readiness, not fleet readiness
 
-### Conditional private pilot: allowed after external gates
+**Status:** Open.
+**Evidence:** `/ready` initializes the shared SDK client and checks local budget; it does not verify every published agent, each provider runtime, A2A grants, or a live task.
 
-The repository is ready for a controlled private pilot **only when** `blocks check`, private registration, provider connectivity, A2A permission checks, runtime secret injection, and a supervised single gateway deployment have been completed. Keep the gateway on private networking or behind an authenticated reverse proxy.
+**Required action:** Keep `/ready` no-spend, but add an operator-only fleet verification job that checks registry metadata and provider health without creating paid tasks where the platform permits. Report the last successful paid canary separately from liveness/readiness; do not make readiness depend on an uncontrolled paid call.
 
-### Public or unattended paid production: NO-GO
+### HI-003 — Native service supervision is not production-proven
 
-Do not yet:
+**Status:** Open.
+**Evidence:** The PowerShell process manager is suitable for local Windows operation; Docker Compose supplies basic restart supervision, but no production service manager, rolling deployment, resource limits, backup policy, or tested rollback is present.
 
-- Expose the gateway directly to the public Internet.
-- Run multiple gateway replicas with only the local budget ledger.
-- Publish public listings that imply live data, validated forecasts, guaranteed returns, or investment advice.
-- Remove the forecasting `FAIL` gate.
-- Treat local tests as proof of live Blocks readiness.
+**Required action:** Run the gateway and provider runtimes under a supported supervised platform with restart policy, CPU/memory/process limits, immutable versioned images, health-based replacement, secret injection, persistent ledger backup, and rollback. Treat the PowerShell script as development tooling, not HA supervision.
 
-## Release gates
+### HI-004 — Dependency reproducibility is weakened by `latest`
 
-- [x] Gateway caller authentication and canonical request validation implemented.
-- [x] Per-client rate limits and persisted single-instance task/spend budgets implemented.
-- [x] Request IDs, structured logs, liveness, readiness, and protected no-spend metrics endpoints implemented.
-- [x] Supervised non-root Docker deployment supplied.
-- [x] CSV/dictionary contract reconciled and checked automatically.
-- [x] Eleven data-consuming deployment mirrors synchronized; A2A orchestrator remains data-free by design.
-- [x] No-spend gateway security and budget tests added.
-- [x] Forecasting safety gate retained.
-- [ ] `blocks check` passes for every native project.
-- [ ] Private registration and provider connectivity verified.
-- [ ] Specialist invitations are active for the orchestrator identity.
-- [ ] Runtime secrets are injected through a production secret manager.
-- [ ] Centralized metrics, logs, alerting, and spend monitoring are active (protected repository baseline metrics now available).
-- [ ] Budgeted paid canary passes with explicit owner approval.
-- [ ] Public-facing data age, provenance, limitations, and non-advisory disclosures approved.
+**Status:** Open.
+**Evidence:** `package.json` declares `@blocks-network/sdk: "latest"`, while the lockfile currently resolves 1.0.11.
 
-## Recommended next steps
+**Risk:** A future clean install or lockfile refresh can change SDK behavior without an application change, especially around paid billing, cancellation, artifact APIs, or task schemas.
 
-1. Install/authenticate the Blocks CLI and run `blocks check` for all 12 native projects, including the data-free A2A orchestrator.
-2. Register and test privately; verify each provider runtime and all A2A grants.
-3. Deploy the gateway with the provided Docker supervision and secret manager.
-4. Put the gateway behind an authenticated reverse proxy or private network.
-5. Ship `/metrics` and structured logs to centralized monitoring; configure spend/readiness alerts.
-6. Run the smallest approved paid canary and record results.
-7. Expand dated data and validate forecasting separately before making any model claims.
+**Required action:** Pin the SDK to the tested exact version, use lockfile-only installs in CI/builds, review updates deliberately, and run the no-spend suite plus a private canary before upgrading.
 
-## Audit limitations
+### HI-005 — Live A2A permissions are unverified
 
-This report is based on repository inspection and no-spend local validation. It is not a penetration test, financial-model certification, Blocks account audit, cloud configuration audit, or production SLO certification. External platform and hosting controls remain the operator's responsibility.
+**Status:** Open.
+**Evidence:** The orchestrator code and mocked tests are present, but private specialist invitations, acceptance, grants, and live partial-failure behavior were not verified.
+
+**Required action:** Verify the orchestrator machine identity has active grants for every required specialist. Run private tests for success, permission denial, timeout, cancellation, missing/large artifacts, and partial specialist failure. Capture the exact result for each specialist.
+
+### HI-006 — Secret lifecycle is documented but not evidenced
+
+**Status:** Open.
+**Evidence:** Ignore rules and templates are correct; no production secret manager, rotation event, revocation test, expiry alert, or access review is available in the repository.
+
+**Required action:** Inject `BLOCKS_API_KEY`, `GATEWAY_CLIENT_KEYS`, and optional allowlists at runtime. Test dual-key rotation, old-key revocation, expired-key behavior, recovery, least-privilege access, and audit logging. Never bake secrets into images or `.env` artifacts.
+
+### ME-001 — No load, resilience, or resource-budget test suite
+
+**Status:** Open.
+**Evidence:** Tests cover routing and mocked logic, but there is no repeatable load test for concurrency, queue saturation, large artifacts, slow providers, process restart, or memory growth.
+
+**Improvement:** Add a no-spend fake-provider load harness that proves 401/403/429/503 behavior, bounded memory, request correlation, ledger atomicity, graceful shutdown, and timeout cleanup. Add a separately approved private load/canary plan that never runs in ordinary CI.
+
+### ME-002 — Paid canary and rollback are not evidenced
+
+**Status:** Open; mandatory before paid unattended release.
+**Required action:** Define an owner-approved maximum spend and one or a few test requests. Verify billing, artifact retrieval, idempotency behavior, timeout/cancel behavior, logs, metrics, ledger reservation, and rollback. Stop immediately on unexpected task count, cost, agent, or output.
+
+### ME-003 — Data freshness and coverage limit user value
+
+**Status:** Open as a product limitation, not a code defect.
+**Evidence:** The catalog has 9 source-backed snapshots and 50 canonical-only assets; the canonical file is a historical/provenance dataset, not a live market feed.
+
+**Improvement:** Add an explicit dataset timestamp/freshness banner to every dashboard and artifact, expose per-field coverage and source age, allow users to filter source-backed versus canonical-only assets, and add a refresh pipeline with source hashes and approval gates. Never imply real-time pricing or liquidity.
+
+### ME-004 — Forecasting and target interpretation remain unsafe for production claims
+
+**Status:** Intentional safety gate.
+**Evidence:** Eight quarterly observations per asset, repeated provenance rows, supplied target fields, no independent outcomes, and no demonstrated walk-forward validation.
+
+**Improvement:** Collect dated observations, define a row-selection policy, separate labels from features, use chronological train/validation/test splits, compare naive baselines, report calibration and uncertainty, and retain `FAIL` until predeclared thresholds are met.
+
+### ME-005 — Public API product protections can be stronger
+
+**Status:** Open improvement.
+**Improvement:** Add per-organization quotas, a user-visible remaining-budget response, an administrative kill switch, an audit trail for client/agent changes, request schema versioning, maximum artifact-size policy, and clear error codes. Consider a queue only if it preserves idempotency and global spend accounting.
+
+## 6. User-value improvement opportunities
+
+These improvements increase usefulness while preserving evidence-first behavior:
+
+1. **Decision-oriented report modes:** Add explicit modes for risk screen, liquidity screen, sustainability screen, methodology comparison, and portfolio scenario comparison, each with a defined output schema.
+2. **Evidence drawer/export:** Let users open the exact canonical row, provenance label, catalog coverage status, formula inputs, and source snapshot file from every finding; provide JSON/CSV export with hashes.
+3. **Freshness and confidence display:** Show dataset date, source-backed versus canonical-only status, missing-field counts, and confidence limitations beside—not below—the result.
+4. **Scenario sensitivity:** Allow users to vary yield, inflation, drawdown, fee, lockup, and slippage assumptions and show which conclusions change. Label this as scenario analysis, not prediction.
+5. **Cross-agent disagreement:** Surface conflicting specialist findings instead of flattening them into one score; show partial-failure and permission status.
+6. **Cost transparency:** Show estimated task cost before dispatch, reserved daily budget after dispatch, and a safe-stop response when the budget is exhausted.
+7. **Research workflow:** Add saved query IDs, reproducible request payload hashes, report version, catalog version, and “review next” checklists.
+8. **Accessibility and clarity:** Keep non-advisory disclosures visible, use plain-language explanations for annualized yield and risk metrics, and ensure keyboard/mobile access to the explorer and evidence details.
+
+## 7. Public/unattended GO release gates
+
+The following must all be true before changing the verdict to **GO**:
+
+### Repository and build
+
+- [x] Canonical CSV, dictionary, catalog, per-asset files, and deployment mirrors pass automated validation.
+- [x] Gateway typecheck and no-spend smoke pass.
+- [x] Python handlers, JSON cards, dashboard syntax, and mocked A2A tests pass.
+- [x] Forecasting `FAIL` gate and provenance restrictions remain intact.
+- [ ] SDK dependency is pinned to the tested exact version and build provenance is recorded.
+- [ ] No-spend load/resilience tests pass.
+
+### Blocks platform
+
+- [ ] `blocks check` passes in all 12 native projects using the release version.
+- [ ] Private registration/update succeeds for every provider and the orchestrator.
+- [ ] Registry names, versions, cards, billing mode, listing state, and expected runtime settings are recorded.
+- [ ] Every provider runtime is connected and remains healthy during a controlled observation window.
+- [ ] Live paid billing is confirmed for every served agent; no agent silently uses a different mode.
+- [ ] Orchestrator identity has active grants for all required private specialists.
+- [ ] Private triggers pass for success, invalid input, source rejection, forecast gate, timeout, cancellation, large artifact, and partial A2A failure.
+
+### Edge, identity, and secrets
+
+- [ ] Gateway is private by default and reachable publicly only through a TLS, authenticated, rate-limited edge.
+- [ ] Direct listener host binding and firewall behavior are verified; no unauthenticated public path exists.
+- [ ] Per-user/org authentication and agent authorization are mapped to a documented policy.
+- [ ] Production secrets are injected by a secret manager and are absent from images, logs, and repository artifacts.
+- [ ] Key rotation, revocation, expiry alerting, access review, and recovery are tested.
+- [ ] A single gateway instance is enforced, or shared atomic quota/spend accounting is deployed before scaling.
+
+### Reliability, operations, and finance
+
+- [ ] Gateway and provider runtimes use supervised deployment with resource limits, health-based restart, versioned rollout, backup, and rollback.
+- [ ] Centralized structured logs, metrics, dashboards, alert routing, retention, and incident ownership are active.
+- [ ] Alerts cover failures, latency, cancellations, A2A grants, auth abuse, capacity, budget, and spend anomalies.
+- [ ] Owner-approved paid canary completes under a hard spend ceiling and results are reconciled to Blocks billing.
+- [ ] Emergency stop/kill-switch procedure is tested.
+- [ ] Public disclosures identify data age, provenance, coverage, limitations, and non-advisory status.
+- [ ] Incident runbook and release record are approved by an accountable owner.
+
+## 8. Recommended execution order
+
+1. Pin the SDK dependency and add no-spend load/resilience tests.
+2. Install/authenticate the Blocks CLI in the controlled release environment.
+3. Validate, privately register, and version all 12 native projects.
+4. Verify provider connectivity and every A2A invitation/grant.
+5. Harden deployment edge behavior: explicit private bind, TLS/auth proxy, firewall, and one-instance budget policy.
+6. Configure secret manager injection, rotation, centralized logs/metrics, alerts, backups, and rollback.
+7. Run private functional and failure triggers without exceeding the approved test budget.
+8. Run the smallest owner-approved paid canary; reconcile task count, spend, outputs, and logs.
+9. Approve public disclosures and incident ownership.
+10. Promote to public/unattended paid production only after every GO checkbox is evidenced in a dated release record.
+
+## 9. Release-record template
+
+Record this outside the source tree or in an approved protected operations system:
+
+```text
+Release version:
+Commit/image digest:
+Audit date:
+Blocks organization:
+Provider registry IDs and versions:
+Billing mode and listed price per agent:
+Gateway image digest and SDK version:
+Gateway host/edge:
+Secret-manager reference and rotation date:
+A2A grants verified for:
+No-spend suite result:
+Private trigger result:
+Paid canary task IDs:
+Paid canary maximum approved spend:
+Actual task count / actual spend:
+Rollback tested:
+Monitoring dashboard / alert owner:
+Incident owner:
+GO approver:
+Next review/expiry date:
+```
+
+## 10. Audit limitations
+
+This is not a penetration test, financial-model certification, live Blocks account audit, cloud configuration audit, or production SLO certification. The repository can demonstrate local behavior and defensive intent; only the operator-controlled release environment can prove platform registration, identity, billing, network, secret, monitoring, and live paid behavior.
 
 ## References
 
@@ -206,6 +340,9 @@ This report is based on repository inspection and no-spend local validation. It 
 - [Blocks authentication reference](https://blocks.ai/docs/authentication)
 - [`validate.md`](validate.md)
 - [`setup.md`](setup.md)
-- [`crypto_yield_matrix_node_gateway/README.md`](crypto_yield_matrix_node_gateway/README.md)
 - [`crypto_yield_matrix_node_gateway/server.ts`](crypto_yield_matrix_node_gateway/server.ts)
+- [`crypto_yield_matrix_node_gateway/docker-compose.yml`](crypto_yield_matrix_node_gateway/docker-compose.yml)
+- [`crypto_yield_matrix_node_gateway/Dockerfile`](crypto_yield_matrix_node_gateway/Dockerfile)
 - [`blocks_deploy/crypto_yield_a2a_orchestrator/handler.py`](blocks_deploy/crypto_yield_a2a_orchestrator/handler.py)
+- [`audit_csv.py`](audit_csv.py)
+- [`build_asset_catalog.py`](build_asset_catalog.py)

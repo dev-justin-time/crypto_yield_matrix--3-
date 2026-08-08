@@ -140,7 +140,11 @@
     const search = document.getElementById('asset-search');
     const category = document.getElementById('category-filter');
     const coverage = document.getElementById('coverage-filter');
-    if (!grid || !insights || !search || !category || !coverage) return;
+    const quote = document.getElementById('quote-filter');
+    const sort = document.getElementById('asset-sort');
+    const download = document.getElementById('download-catalog');
+    const downloadQuotes = document.getElementById('download-quotes');
+    if (!grid || !insights || !search || !category || !coverage || !quote || !sort) return;
 
     const categories = [...new Set(catalog.map(asset => asset.category).filter(Boolean))].sort();
     categories.forEach(value => {
@@ -152,8 +156,16 @@
       const query = search.value.trim().toLowerCase();
       const filtered = catalog.filter(asset => {
         const matchesQuery = !query || `${asset.symbol} ${asset.name} ${asset.category}`.toLowerCase().includes(query);
-        return matchesQuery && (!category.value || asset.category === category.value) && (!coverage.value || asset.snapshot_status === coverage.value);
+        return matchesQuery && (!category.value || asset.category === category.value) && (!coverage.value || asset.snapshot_status === coverage.value) && (!quote.value || asset.quote_status === quote.value);
       });
+      const sorters = {
+        yield: (asset) => number(asset.agg_current),
+        change: (asset) => number(asset.change_pp),
+        score: (asset) => number(asset.investment_score),
+        market_cap: (asset) => number(asset.snapshot_market_cap_usd || asset.mcap_end_current_usd)
+      };
+      const score = sorters[sort.value] || sorters.yield;
+      filtered.sort((left, right) => score(right) - score(left) || left.symbol.localeCompare(right.symbol));
       grid.replaceChildren();
       filtered.slice(0, 60).forEach(asset => {
         const card = element('article', 'catalog-card');
@@ -165,19 +177,53 @@
         values.append(
           element('span', '', `${formatNumber(asset.agg_current)}% yield`),
           element('span', '', `${signed(asset.change_pp)}pp change`),
-          element('span', '', asset.snapshot_price_usd ? `${formatUsd(asset.snapshot_market_cap_usd)} mcap` : 'market snapshot unavailable')
+          element('span', '', `score ${formatNumber(asset.investment_score, 0)}`),
+          element('span', '', asset.quote_status === 'source_snapshot' ? `${formatUsd(asset.snapshot_market_cap_usd)} mcap` : 'quote unavailable')
         );
         card.append(values);
-        const note = asset.snapshot_price_usd
-          ? `Snapshot ${formatUsd(asset.snapshot_price_usd)} · ${signed(asset.snapshot_change_pct)}% latest change`
-          : 'Use the canonical yield and risk fields; obtain a current market snapshot before acting.';
+        const note = asset.quote_status === 'source_snapshot'
+          ? `Quote snapshot ${formatUsd(asset.snapshot_price_usd)} · ${signed(asset.snapshot_change_pct)}% latest change · ${asset.quote_as_of_iso || 'time unavailable'}`
+          : 'Yield matrix coverage only. Obtain a current market quote before acting; no snapshot was supplied for this asset.';
         card.append(element('p', 'catalog-note', note));
+        card.append(element('div', 'catalog-cta', asset.quote_status === 'source_snapshot' ? 'Inspect quote + yield evidence →' : 'Explore yield evidence →'));
         grid.append(card);
       });
       const sourceCount = catalog.filter(asset => asset.snapshot_status === 'source_snapshot').length;
-      insights.textContent = `${filtered.length} assets shown · ${sourceCount} source-backed snapshots · ${catalog.length - sourceCount} canonical-only rows · derived features are reproducible research aids, not forecasts.`;
+      const quoteCount = catalog.filter(asset => asset.quote_status === 'source_snapshot').length;
+      insights.textContent = `${filtered.length} assets shown · ${quoteCount} quote exports available · ${sourceCount} source-backed yield snapshots · ${catalog.length - sourceCount} canonical-only rows · derived features are research aids, not forecasts.`;
     };
-    [search, category, coverage].forEach(control => control.addEventListener('input', render));
+    [search, category, coverage, quote, sort].forEach(control => control.addEventListener('input', render));
+    const filteredCatalog = () => {
+      const query = search.value.trim().toLowerCase();
+      return catalog.filter(asset => {
+        const matchesQuery = !query || `${asset.symbol} ${asset.name} ${asset.category}`.toLowerCase().includes(query);
+        return matchesQuery && (!category.value || asset.category === category.value) && (!coverage.value || asset.snapshot_status === coverage.value) && (!quote.value || asset.quote_status === quote.value);
+      });
+    };
+    const downloadCsv = (rows, filename) => {
+      const headers = Object.keys(rows[0] || {});
+      const csv = [headers, ...rows.map(row => headers.map(header => row[header] || ''))]
+        .map(row => row.map(value => `"${String(value).replace(/"/g, '""')}"`).join(','))
+        .join('\\n');
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
+      link.download = filename;
+      link.click();
+      URL.revokeObjectURL(link.href);
+    };
+    if (download) download.addEventListener('click', () => downloadCsv(filteredCatalog(), 'crypto-yield-matrix-shortlist.csv'));
+    if (downloadQuotes) downloadQuotes.addEventListener('click', async () => {
+      const rows = [];
+      for (const asset of filteredCatalog()) {
+        try {
+          const response = await fetch(`csv/quotes/${encodeURIComponent(asset.symbol)}.csv`);
+          if (response.ok) rows.push(...parseCSV(await response.text()));
+        } catch (error) {
+          console.warn(`quote export unavailable for ${asset.symbol}`, error);
+        }
+      }
+      if (rows.length) downloadCsv(rows, 'crypto-yield-matrix-quote-exports.csv');
+    });
     render();
   }
 
@@ -196,7 +242,9 @@
       ['risk-adjusted yield', `${formatNumber(asset.risk_adjusted_yield)}%`],
       ['investment score', `${formatNumber(asset.investment_score, 0)}/100`],
       ['source coverage', coverageLabel(asset)],
-      ['snapshot price', asset.snapshot_price_usd ? formatUsd(asset.snapshot_price_usd) : 'not supplied']
+      ['snapshot price', asset.snapshot_price_usd ? formatUsd(asset.snapshot_price_usd) : 'not supplied'],
+      ['quote coverage', asset.quote_status === 'source_snapshot' ? `${asset.quote_completeness_pct || 0}% fields supplied` : 'unavailable'],
+      ['quote export', asset.quote_file || 'not generated']
     ].forEach(([label, value]) => {
       const line = element('div', 'tooltip-detail');
       line.append(text(element('span', 'tooltip-label'), label));
