@@ -23,6 +23,7 @@ The file intentionally retains all 118 supplied rows and its embedded `source_fi
 - Aggregate formula checks: **PASS**
 - Deployment copies byte-identical to root: **PASS**
 - Alternate dataset files absent: **PASS**
+- Dictionary contains every canonical CSV field: **PASS**
 
 ## Agent rule
 

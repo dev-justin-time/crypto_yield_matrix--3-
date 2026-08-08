@@ -1,7 +1,19 @@
 # Yield Data Dictionary — cryptocurrentcy Underlying Asset Cash Yield Matrix
-**Version:** 2.0 Production | **Assets:** 59 | **Features:** 118 | **Date:** 2026-08-06
+**Version:** 2.1 Production Contract | **Rows:** 118 | **Unique symbols:** 59 | **Canonical CSV columns:** 61 | **Analytical columns:** 59 | **Date:** 2026-08-07
 
 ---
+
+## Canonical CSV contract
+
+The root and deployment copies of `yield_data.csv` are the single current dataset. It contains **118 data rows**, **59 unique symbols**, and **61 columns**: **59 analytical columns** plus the two provenance columns `source_file` and `source_row`. The repeated symbols are provenance-labeled rows and must not be treated as independent time observations without an explicit row-selection policy.
+
+The eight sections below document the 59 analytical columns currently present in the CSV. The later `Planned/derived` sections are design definitions only; they are **not columns in the current canonical CSV** and must not be passed to a model as observed features until materialized and validated.
+
+### Provenance columns (2 columns)
+| Column | Type | Description |
+|--------|------|-------------|
+| source_file | string | Embedded origin label; currently `yield_data.csv` for every canonical row |
+| source_row | int | Embedded original row reference used for evidence traceability |
 
 ## Core Yield Data (17 columns)
 | Column | Type | Description |
@@ -17,7 +29,7 @@
 | is_annualized | int (0/1) | 1 = annualized/lending-market equivalent |
 | notes | string | Asset-specific yield methodology notes |
 
-## Market Data (11 columns)
+## Market Data (12 columns)
 | Column | Type | Description |
 |--------|------|-------------|
 | category | string | Asset classification: layer1, defi, payments, oracle, ai, depin, storage, infrastructure, rwa, nft, enterprise, media, privacy, other |
@@ -33,7 +45,7 @@
 | price_change_pct_prior | float | Price change % during prior window |
 | price_change_pct_current | float | Price change % during current window |
 
-## Liquidity & On-Chain (5 columns)
+## Liquidity & On-Chain (8 columns)
 | Column | Type | Description |
 |--------|------|-------------|
 | volatility_annualized_prior | float | Annualized price volatility %, prior window |
@@ -89,7 +101,7 @@
 
 ---
 
-## NEW: Market Size Features (7 columns)
+## Planned/derived: Market Size Features (not in canonical CSV)
 | Column | Type | Description |
 |--------|------|-------------|
 | mcap_rank | int | Rank by market cap (1 = largest) |
@@ -100,14 +112,14 @@
 | mcap_to_tvl_ratio | float | Market cap / TVL (valuation efficiency) |
 | volume_to_mcap_ratio | float | 24h volume / market cap (liquidity depth) |
 
-## NEW: Price Momentum Features (3 columns)
+## Planned/derived: Price Momentum Features (not in canonical CSV)
 | Column | Type | Description |
 |--------|------|-------------|
 | price_momentum_1y | float | Full-year price change % (prior start to current end) |
 | is_above_50d_ma | int (0/1) | Price above 50-day moving average |
 | trend_strength | float | Absolute MA50/200 cross distance |
 
-## NEW: Yield Quality Features (7 columns)
+## Planned/derived: Yield Quality Features (not in canonical CSV)
 | Column | Type | Description |
 |--------|------|-------------|
 | yield_consistency | float | 1 / (1 + yield_volatility), higher = more stable |
@@ -118,7 +130,7 @@
 | yield_to_vol_ratio | float | Yield / annualized volatility (income per unit risk) |
 | yield_to_drawdown_ratio | float | Yield / max drawdown (income per unit tail risk) |
 
-## NEW: Risk-Adjusted Performance (6 columns)
+## Planned/derived: Risk-Adjusted Performance (not in canonical CSV)
 | Column | Type | Description |
 |--------|------|-------------|
 | sortino_ratio | float | Yield / downside deviation proxy |
@@ -128,7 +140,7 @@
 | information_ratio | float | Outperformance / tracking error (yield vol) |
 | omega_ratio_proxy | float | (Yield + 5) / max drawdown (gain/loss asymmetry) |
 
-## NEW: Portfolio Construction (4 columns)
+## Planned/derived: Portfolio Construction (not in canonical CSV)
 | Column | Type | Description |
 |--------|------|-------------|
 | diversification_score | float | Lower correlation = higher diversification (0–100) |
@@ -136,7 +148,7 @@
 | idiosyncratic_risk_pct | float | 100 – systematic_risk_pct (% of risk unique to asset) |
 | tail_risk_score | float | Max drawdown / volatility (tail event severity) |
 
-## NEW: On-Chain Health (4 columns)
+## Planned/derived: On-Chain Health (not in canonical CSV)
 | Column | Type | Description |
 |--------|------|-------------|
 | network_value_to_tx | float | Market cap / daily transactions (NVT proxy) |
@@ -144,7 +156,7 @@
 | tx_velocity | float | Daily transactions / circulating supply (turnover) |
 | supply_liquidity_ratio | float | Circulating supply / 24h volume (liquidity depth) |
 
-## NEW: Tokenomics Features (5 columns)
+## Planned/derived: Tokenomics Features (not in canonical CSV)
 | Column | Type | Description |
 |--------|------|-------------|
 | supply_inflation_adjusted_yield | float | Yield minus inflation rate (real yield) |
@@ -153,7 +165,7 @@
 | fdv_premium | float | (FDV/mcap – 1) × 100 (dilution risk premium) |
 | scarcity_score | float | 0–100, higher = lower dilution risk |
 
-## NEW: Technical Regime (8 columns)
+## Planned/derived: Technical Regime (not in canonical CSV)
 | Column | Type | Description |
 |--------|------|-------------|
 | is_overbought | int (0/1) | RSI > 70 |
@@ -165,7 +177,7 @@
 | high_vol_regime | int (0/1) | Volatility > 80% |
 | low_vol_regime | int (0/1) | Volatility < 50% |
 
-## NEW: Composite Scores (4 columns)
+## Planned/derived: Composite Scores (not in canonical CSV)
 | Column | Type | Description |
 |--------|------|-------------|
 | quality_score | float | Sharpe + consistency + diversification + drawdown |
@@ -173,7 +185,7 @@
 | momentum_score | float | Price momentum + yield trend + volume trend + price change |
 | risk_score | float | Drawdown + volatility + beta + tail risk (higher = riskier) |
 
-## NEW: Advanced Prediction Targets (5 columns)
+## Planned/derived: Advanced Prediction Targets (not in canonical CSV)
 | Column | Type | Description |
 |--------|------|-------------|
 | yield_regime | string | low / medium / high / very_high (binned yield) |
@@ -182,14 +194,14 @@
 | expected_max_drawdown | float | Model-implied worst-case drawdown % |
 | probability_positive_return | float | Estimated probability of positive return (1–99%) |
 
-## NEW: ML Pipeline (3 columns)
+## Planned/derived: ML Pipeline (not in canonical CSV)
 | Column | Type | Description |
 |--------|------|-------------|
 | ml_fold | string | train / val / test split indicator |
 | ml_weight | float | Sample weight for weighted training (0.8–1.2) |
 | data_quality_flag | int | 0=clean, 1=annualized, 2=extreme_vol, 3=suspicious_sharpe |
 
-## NEW: Rankings (3 columns)
+## Planned/derived: Rankings (not in canonical CSV)
 | Column | Type | Description |
 |--------|------|-------------|
 | sharpe_rank | int | Rank by Sharpe ratio (1 = best) |
@@ -199,6 +211,8 @@
 ---
 
 ## Model Training Suggestions
+
+The following suggestions reference planned/derived fields. They are design guidance only and are not evidence that those fields exist in `yield_data.csv`. Do not train or publish a forecast using them until the fields are materialized, dated, and independently validated.
 
 ### Regression Tasks
 - **Predict `q3_26_forward_yield`** from: yield history + price momentum + volatility + yield_trend_slope + yield_consistency

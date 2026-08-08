@@ -1,12 +1,13 @@
 import csv
 import hashlib
+import re
 from collections import Counter
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
 CANONICAL_NAME = "yield_data.csv"
-ALTERNATE_NAMES = {"yield_data1.csv", "consolidated_yield_data.csv"}
 DEPLOY_ROOT = ROOT / "blocks_deploy"
+ALTERNATE_NAMES = {"yield_data1.csv", "consolidated_yield_data.csv"}
 
 
 def read_rows(path: Path) -> list[dict[str, str]]:
@@ -44,7 +45,33 @@ def validate_row(row: dict[str, str], line: int) -> list[str]:
 canonical = ROOT / CANONICAL_NAME
 rows = read_rows(canonical)
 headers = list(rows[0]) if rows else []
+dictionary_path = ROOT / "DATA_DICTIONARY.md"
+dictionary_text = dictionary_path.read_text(encoding="utf-8") if dictionary_path.exists() else ""
 issues: list[str] = []
+dictionary_fields: set[str] = set()
+for line in dictionary_text.splitlines():
+    if not line.startswith("|"):
+        continue
+    cells = [cell.strip() for cell in line.strip().strip("|").split("|")]
+    if not cells or cells[0] in {"Column", "--------"}:
+        continue
+    field = cells[0]
+    if " — " in field:
+        start, end = [part.strip() for part in field.split(" — ", 1)]
+        quarter_fields = [
+            "q3_24_prior", "q4_24_prior", "q1_25_prior", "q2_25_prior",
+            "q3_25_current", "q4_25_current", "q1_26_current", "q2_26_current",
+        ]
+        if start == quarter_fields[0] and end == quarter_fields[-1]:
+            dictionary_fields.update(quarter_fields)
+            continue
+    if re.fullmatch(r"[A-Za-z][A-Za-z0-9_]*", field):
+        dictionary_fields.add(field)
+missing_dictionary_fields = [header for header in headers if header not in dictionary_fields]
+if missing_dictionary_fields:
+    issues.append("dictionary is missing canonical fields: " + ", ".join(missing_dictionary_fields))
+if "Canonical CSV columns:** 61" not in dictionary_text:
+    issues.append("dictionary does not declare the 61-column canonical CSV contract")
 if len(rows) != 118:
     issues.append(f"canonical row count is {len(rows)}, expected 118")
 if len(headers) != 61:
@@ -99,6 +126,7 @@ report += [
     f"- Aggregate formula checks: **{'PASS' if not issues else 'FAIL'}**",
     f"- Deployment copies byte-identical to root: **{'PASS' if all(path.read_bytes() == canonical.read_bytes() for path in deployment_files) else 'FAIL'}**",
     f"- Alternate dataset files absent: **{'PASS' if not noncanonical_csvs else 'FAIL'}**",
+    f"- Dictionary contains every canonical CSV field: **{'PASS' if not missing_dictionary_fields else 'FAIL'}**",
     "",
     "## Agent rule",
     "",

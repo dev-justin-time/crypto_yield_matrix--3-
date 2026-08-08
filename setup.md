@@ -89,7 +89,7 @@ print(result["artifacts"][0]["data"])
 Handlers accept a JSON object in the first `request` part. Common fields are:
 
 - `question` — the user’s question.
-- `source_file` — `yield_data.csv` or `yield_data.csv`.
+- `source_file` — the single canonical `yield_data.csv` dataset; embedded `source_file`/`source_row` values preserve row lineage.
 - `symbol` — an asset symbol such as `BTC`.
 - `category` — an asset category filter.
 - `files` — optional repository context files from the declared allowlist.
@@ -101,8 +101,8 @@ The handlers reject undeclared paths, absolute paths, traversal paths, and inval
 
 The project data has important limitations documented in [`validate.md`](validate.md):
 
-1. `yield_data.csv` and `yield_data.csv` have the same schema but disagree for every asset row.
-2. `yield_data.csv` preserves the supplied 118 rows; it is not automatically a canonical modeling table.
+1. `yield_data.csv` is the only dataset file accepted by handlers and contains 118 rows with embedded provenance labels.
+2. Repeated symbols in `yield_data.csv` are provenance-labeled rows, not independent time observations; use an explicit row-selection policy for modeling.
 3. The data includes source-like, estimated, derived, and supplied target fields.
 4. The current panel has only eight quarterly yield observations per asset.
 5. **Corrected forecasting caveat:** The current dataset is not suitable for validated production forecasting until source identity is resolved, additional dated observations are added, leakage-controlled walk-forward testing is performed, and independently observed outcomes are available. The full audit wording is maintained in [`validate.md`](validate.md).
@@ -355,7 +355,7 @@ The official Quickstart says a successful trigger should complete with a task re
 Test at least these cases before inviting anyone:
 
 1. A valid BTC request using `yield_data.csv`.
-2. A valid request using `yield_data.csv` that clearly labels the alternate source.
+2. A valid request that returns both embedded provenance rows for BTC and labels their `source_row` evidence.
 3. A request with an invalid `source_file`.
 4. A request containing `../` or an absolute path.
 5. A request that asks for a forecast; verify the readiness `FAIL` gate remains visible.
@@ -521,7 +521,7 @@ The deployed cards now use a bounded paid-runtime profile:
 
 `expectedInstances` remains `1` as the conservative starting point. Increase it only after observing CPU/memory usage, task latency, provider rate limits, and spend. The orchestrator's five specialist calls already run in parallel; do not increase its instance count and concurrency simultaneously without load-test evidence.
 
-The Node gateway uses one shared paid `TaskClient`, validates the required `question` locally, and limits in-flight billable tasks with `GATEWAY_MAX_CONCURRENT_TASKS=8` (process-local and best-effort; the Blocks provider backlog remains authoritative). It does not retry `sendMessage` at the application layer: retrying after an uncertain network outcome can create duplicate paid tasks. If a task wait times out, the gateway makes a best-effort remote cancel before returning 504. Send a stable `X-Idempotency-Key` header when your caller may retry an uncertain request; the key is forwarded to Blocks.
+The Node gateway uses one shared paid `TaskClient`, validates the required `question` locally, requires a separate caller `Authorization: Bearer ...` credential, and reserves billable work against per-client rate limits plus a UTC-day task/spend budget. `GATEWAY_MAX_CONCURRENT_TASKS` is process-local, so the production topology keeps one gateway instance; scale provider runtimes through Blocks instead of multiplying gateway budget ledgers. It does not retry `sendMessage` at the application layer: retrying after an uncertain network outcome can create duplicate paid tasks. If a task wait times out, the gateway makes a best-effort remote cancel before returning 504. Send a stable `X-Idempotency-Key` header when your caller may retry an uncertain request; the key is forwarded to Blocks.
 
 ### Paid publish sequence
 
@@ -537,6 +537,9 @@ blocks run
 # After private trigger tests pass, publish explicitly as paid.
 # Confirm the exact flags with `blocks publish --help` for your installed CLI:
 blocks publish --billing-mode paid --listing private --price-per-task 0.10 --accept-terms
+
+# Configure the gateway separately; never reuse or expose BLOCKS_API_KEY as a caller key.
+# GATEWAY_CLIENT_KEYS=client_id=<random-secret-at-least-16-chars>
 ```
 
 Use `--listing public` only after the private fleet is stable. The `billingMode` used by the gateway must match the live registry configuration; a paid target requires the gateway's `billingMode: 'paid'`. Do not run publish/register from this assistant session, and do not use a real trigger as a performance test unless you explicitly accept the per-task charge.
@@ -559,7 +562,7 @@ Use `--listing public` only after the private fleet is stable. The `billingMode`
 - [ ] `blocks run` stays connected.
 - [ ] Trigger test completes.
 - [ ] Invalid source and path requests fail safely.
-- [ ] Both yield versions are labeled as conflicting alternatives.
+- [ ] Repeated provenance rows are labeled with `source_file` and `source_row`, and are not treated as independent time observations.
 - [ ] Forecast requests remain blocked until the documented data gates are met.
 - [ ] Outputs contain evidence, assumptions, limitations, and provenance.
 
@@ -620,7 +623,8 @@ This is intentional. The project currently has embedded provenance rows and insu
 
 - `GET /health` — liveness and fleet summary.
 - `GET /agents` — lists the 12 served agents with descriptions.
-- `POST /agents/:agentName/invoke` — forwards a JSON request to one published agent and returns its terminal state, progress, and artifacts.
+- `GET /ready` — no-spend configuration and budget readiness check.
+- `POST /agents/:agentName/invoke` — authenticated endpoint; requires `Authorization: Bearer <gateway-client-secret>` and forwards a JSON request to one published agent.
 
 The request body is passed through verbatim as the `request` part, so handler-specific fields (`question`, `symbol`, `category`, `source_file`, `features`, `target`, `split`, ...) work unchanged. Because every published agent is paid ($0.10/task), the shared client uses `billingMode: 'paid'`. The API key stays server-side in the ignored `.env` and is never returned by any endpoint.
 
@@ -633,13 +637,15 @@ blocks login --write-env   # writes BLOCKS_API_KEY to the ignored .env
 npm start                  # http://localhost:3000
 ```
 
-Environment variables: `GATEWAY_PORT` (default 3000), `GATEWAY_TASK_TIMEOUT_MS` (default 120000), `GATEWAY_MAX_BODY_BYTES` (default 1000000), and `GATEWAY_MAX_CONCURRENT_TASKS` (default 8). The concurrency cap is deliberate: every accepted invocation is paid, so excess requests receive HTTP 503 with `Retry-After: 5` instead of creating an unbounded billable backlog.
+Environment variables: `GATEWAY_PORT` (default 3000), `GATEWAY_TASK_TIMEOUT_MS` (default 120000), `GATEWAY_MAX_BODY_BYTES` (default 1000000), `GATEWAY_MAX_QUESTION_CHARS` (default 4000), `GATEWAY_MAX_CONCURRENT_TASKS` (default 8), `GATEWAY_MAX_REQUESTS_PER_MINUTE` (default 30), `GATEWAY_MAX_DAILY_TASKS` (default 100), `GATEWAY_MAX_DAILY_SPEND_USD` (default 10), `GATEWAY_TASK_COST_USD` (default 0.10), and required `GATEWAY_CLIENT_KEYS` (`clientId=secret,...`). The gateway client secret is separate from `BLOCKS_API_KEY`. The concurrency cap and daily ledger are process-local and deliberate; keep one gateway instance unless a shared quota ledger is added. Excess requests receive HTTP 429/503 instead of creating an unbounded billable backlog.
 
 Example invocation:
 
 ```bash
 curl -s localhost:3000/agents/crypto_risk_analyst/invoke \
   -H 'content-type: application/json' \
+  -H 'authorization: Bearer YOUR_GATEWAY_CLIENT_SECRET' \
+  -H 'x-idempotency-key: btc-risk-demo-001' \
   -d '{"question":"Compare BTC yield and downside context","symbol":"BTC","source_file":"yield_data.csv"}'
 ```
 
@@ -650,7 +656,7 @@ npm run check   # tsc --noEmit
 npm run smoke   # routing/validation only — never dispatches a paid task
 ```
 
-The smoke test uses a placeholder key and exercises only health, listing, unknown-agent 404s, malformed-body 400s, required-question validation, and idempotency-header validation; it never calls a real agent.
+The smoke test uses placeholder Blocks and gateway credentials and exercises only health, readiness, listing, authentication rejection, unknown-agent 404s, malformed-body 400s, required-question validation, and idempotency-header validation; it never calls a real agent.
 
 The gateway process is also managed by [`Restart-BlocksAgents.ps1`](Restart-BlocksAgents.ps1): it starts `node --import tsx index.ts` from this directory (state entry `gateway`, logs under `blocks-agent-logs/gateway/`). Use `-AgentName gateway` to manage only the gateway or `-SkipGateway` to leave it out of fleet restarts. The gateway reads `BLOCKS_API_KEY` from its ignored `.env` and honors `GATEWAY_PORT` from its environment or `.env`.
 
