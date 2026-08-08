@@ -1,12 +1,50 @@
 # Production Readiness Audit and Improvement Opportunity Report
 
 **Project:** Crypto Yield Matrix / Blocks.ai agent fleet
-**Audit date:** 2026-08-07
-**Audit type:** Repository, local-runtime, security-control, deterministic-packaging, deployment-topology, and no-spend validation review
+**Audit date:** 2026-08-08
+**Audit type:** Repository, local-runtime, live-gate attempt, security-control, deterministic-packaging, deployment-topology, and no-spend validation review
+**Live-audit execution:** 2026-08-08; read-only checks only; no registration, publishing, runtime start, secret rotation, firewall mutation, or paid task dispatch
+**Audit refresh:** 2026-08-08 07:17 UTC; repository and no-spend evidence rechecked; no live-gate state changed
 **Requested outcome:** Prepare the system for public and unattended paid production
 **Current verdict:** **NO-GO for public or unattended paid production; CONDITIONAL PRIVATE-PILOT READY after external verification**
 
 > This report does not convert unverified platform or hosting assumptions into a GO. A public paid-production GO requires live Blocks, identity, billing, network, secret-management, monitoring, and canary evidence in addition to passing repository tests.
+
+## Live gate execution record — 2026-08-08
+
+The requested live gates were attempted from this Windows environment using read-only or no-spend checks. No production state was changed.
+
+| Gate | Result | Evidence and limitation |
+|---|---|---|
+| Blocks CLI availability | **UNVERIFIED / BLOCKED** | `blocks --version` and `blocks --help` returned `command not found`; the CLI is not on PATH. |
+| Native `blocks check` | **UNVERIFIED / BLOCKED** | All 12 `blocks_deploy/*` projects were attempted individually; every command returned exit 127 because the CLI is unavailable. No project can be marked passed. |
+| Registration and live registry | **UNVERIFIED** | No CLI access, account context, registry identifiers, agent URLs, or populated release record were available. No registration was attempted. |
+| Provider runtime connectivity | **UNVERIFIED** | No live `blocks run` status or provider observation window was available. The local gateway was not running at `127.0.0.1:3000`. |
+| A2A invitations and permissions | **UNVERIFIED** | No live grant/acceptance output or controlled orchestrator task result was available. Repository documentation and mocked tests are not proof of active grants. |
+| Authenticated TLS edge and firewall | **NOT PROVEN** | Windows Domain, Private, and Public firewall profiles were ON with `BlockInbound,AllowOutbound`; this is host-local evidence only. No target production reverse proxy, TLS certificate/renewal, edge authentication, or unauthenticated reachability test was available. |
+| Secret-manager injection and rotation | **NOT PROVEN** | `BLOCKS_API_KEY`, gateway client credentials, hosted LLM endpoint, and secret-manager URL were unset in the audit shell. An ignored gateway `.env` exists and contains a `BLOCKS_API_KEY` name, but its value was not inspected. No secret manager, rotation, revocation, expiry alert, or access-review evidence was available. |
+| Centralized monitoring | **NOT PROVEN** | Repository-local metrics/logging and Compose healthchecks exist, but no collector, dashboard, alert routing, retention, or spend-monitor evidence is present. |
+| Supervised deployment | **NOT PROVEN** | Docker is installed, but the Docker daemon was unavailable and Compose could not inspect a running service. No production supervisor, rollout, resource-limit, backup, or rollback evidence was available. |
+| Owner-approved paid canary | **NOT RUN** | No approval record, budget, task ID, billing reconciliation, or live canary result exists. The guarded trigger remains intentionally unexecuted. |
+
+This record confirms the correct conservative outcome: repository readiness has improved, but the requested external gates remain open. A live Blocks CLI, authenticated release environment, and accountable operator are required to complete them.
+
+## Audit refresh record — 2026-08-08 07:17 UTC
+
+The audit was refreshed against the current working tree. The refresh introduced no production changes and found no new live release evidence:
+
+| Refresh check | Result | Evidence |
+|---|---|---|
+| Repository state | **PASS with unrelated worktree note** | `audit.md` is modified as the requested report; an untracked `.vscode/` directory is present and was not evaluated as production evidence. |
+| Deterministic packaging and mirrors | **PASS** | `python generate_deployments.py --check`; `python sync_deployments.py --check`; zero differences/mismatches. |
+| Packaging and handler tests | **PASS** | `python test_packaging.py` (8 tests) and `python -m blocks_agents.handlers`. |
+| Data and syntax checks | **PASS** | `python audit_csv.py` (118 rows, 61 columns, 0 issues), `node --check matrix.js`, and Python compilation. |
+| Gateway no-spend suite | **PASS** | `npm run check`, `npm run smoke`, `npm run resilience`, and `npm run llm-smoke`; no network or paid task dispatch. |
+| Blocks CLI and native checks | **UNVERIFIED / BLOCKED** | `blocks` remains unavailable; no native check can be promoted to PASS. |
+| Gateway/Docker runtime | **NOT RUNNING / UNVERIFIED** | `127.0.0.1:3000/health` refused the connection; Docker Compose could not connect to the Docker daemon. |
+| Live registration/provider/A2A/canary evidence | **UNCHANGED / OPEN** | No populated registry IDs, provider health window, active A2A grants, billing reconciliation, secret rotation record, monitoring dashboard, or approved canary was found. |
+
+The refresh confirms the existing release decision; it does not authorize registration, publishing, deployment, or paid operation.
 
 ## 1. Executive decision
 
@@ -49,10 +87,11 @@ Reviewed:
 
 Not verified in this environment:
 
-- A working `blocks` CLI: it is **not on PATH**.
+- A working `blocks` CLI: the 2026-08-08 refresh again found `blocks` unavailable; the prior live attempt recorded `blocks --version`, `blocks --help`, and all 12 native `blocks check` attempts as command-not-found/exit 127.
 - Blocks account, organization, registry, provider runtime connectivity, billing configuration, or live agent versions.
 - Private invitation acceptance and A2A authorization for the orchestrator identity.
-- Hosting firewall, reverse proxy, TLS, identity provider, secret manager, container runtime, backup, alerting, and log-retention configuration.
+- Target production firewall, reverse proxy, TLS certificate/renewal, identity provider, secret manager, container runtime, backup, alerting, and log-retention configuration.
+- Local gateway runtime state: `GET /health` and `GET /ready` were connection-refused, and Docker Compose could not connect to the Docker daemon.
 - Real paid latency, throughput, cancellation behavior, spend, failure rates, or artifact sizes.
 
 ## 3. Evidence collected
@@ -84,6 +123,8 @@ The authoritative local suite completed without network calls or paid task dispa
 | Native dependency pin check | **PASS** | Python and Node Blocks SDK dependencies pinned to 1.0.11 |
 | Gateway resilience suite | **PASS** | No-spend deterministic capacity saturation, timeout cleanup path, and metrics checks |
 | Gateway bind/stop/response controls | **PASS** | Explicit loopback policy, kill-switch readiness, schema marker, budget headers, release ID, artifact caps |
+| Live-gate attempt | **PASS as a no-mutation audit; gates remain open** | CLI and all 12 native checks attempted safely; no registration, runtime start, secret mutation, firewall mutation, or paid dispatch performed |
+| Audit refresh | **PASS** | 2026-08-08 07:17 UTC no-spend suite rechecked; no new live evidence or production mutation |
 
 The gateway smoke test uses a fake `TaskClient` and a placeholder key. Its successful result proves local routing and safety checks only; it is not evidence of a successful Blocks call.
 
@@ -168,7 +209,7 @@ Severity reflects risk to public unattended paid operation, not only local code 
 ### CR-001 — Live paid production state is unverified
 
 **Status:** Open; external blocker.
-**Evidence:** The `blocks` CLI is not on PATH, and no live registration, runtime, billing, trigger, or published-agent evidence was supplied. Local smoke tests and `trigger_guarded.py --dry-run` deliberately do not dispatch a task. The guarded live path explicitly requests `billing_mode="paid"`, but it has not been executed here.
+**Evidence:** During the 2026-08-08 live-gate attempt, `blocks --version` and `blocks --help` returned command-not-found. `blocks check` was attempted in each of the 12 native projects and returned exit 127 in every project. No live registration, runtime, billing, trigger, or published-agent evidence was supplied. Local smoke tests and `trigger_guarded.py --dry-run` deliberately do not dispatch a task. The guarded live path explicitly requests `billing_mode="paid"`, but it has not been executed here.
 
 **Risk:** The fleet may fail registration, use different live card versions, reject paid calls, be unavailable, or partially fail A2A despite local success.
 
@@ -177,7 +218,7 @@ Severity reflects risk to public unattended paid operation, not only local code 
 ### CR-002 — Public exposure depends on deployment topology, not gateway code alone
 
 **Status:** Repository remediation complete; external edge verification remains open.
-**Evidence:** `index.ts` now calls `server.listen(port, host)`, defaults `GATEWAY_HOST` to `127.0.0.1`, and refuses every non-loopback host unless `GATEWAY_ALLOW_PUBLIC_BIND=true`. Compose keeps host publication loopback-only while allowing the container to bind its private interface. The application still has no built-in TLS or reverse-proxy identity integration.
+**Evidence:** `index.ts` now calls `server.listen(port, host)`, defaults `GATEWAY_HOST` to `127.0.0.1`, and refuses every non-loopback host unless `GATEWAY_ALLOW_PUBLIC_BIND=true`. Compose keeps host publication loopback-only while allowing the container to bind its private interface. The application still has no built-in TLS or reverse-proxy identity integration. In the live audit environment, `GET /health` and `GET /ready` were connection-refused because no gateway was running; Docker Compose could not connect to the Docker daemon.
 
 **Risk:** Public callers could reach operational endpoints or attempt billable invocation if the deployment omits a trusted authenticated edge. Authentication keys may also be exposed over an unsafe transport.
 
@@ -195,7 +236,7 @@ Severity reflects risk to public unattended paid operation, not only local code 
 ### HI-001 — Centralized observability and alerting are not verified
 
 **Status:** Repository baseline implemented; production control open.
-**Evidence:** Local `/metrics` and JSON logs exist, but no external collector, dashboard, retention policy, alert routing, or spend monitor is present in the repository.
+**Evidence:** Local `/metrics` and JSON logs exist, but no external collector, dashboard, retention policy, alert routing, or spend monitor is present in the repository. No populated monitoring URL, alert owner, or production telemetry evidence was found during the live audit.
 
 **Required action:** Export metrics/logs to a centralized system and alert on readiness failure, 5xx rate, p95/p99 latency, task timeout/cancellation, A2A permission errors, rate/budget/capacity saturation, authentication rejection spikes, artifact failures, and spend divergence. Redact secrets and payloads, define retention, and assign an incident owner.
 
@@ -208,8 +249,8 @@ Severity reflects risk to public unattended paid operation, not only local code 
 
 ### HI-003 — Native service supervision is not production-proven
 
-**Status:** Open.
-**Evidence:** The PowerShell process manager is suitable for local Windows operation; Docker Compose supplies basic restart supervision, but no production service manager, rolling deployment, resource limits, backup policy, or tested rollback is present.
+**Status:** Open; external blocker.
+**Evidence:** The PowerShell process manager is suitable for local Windows operation; Docker Compose supplies basic restart supervision, but the Docker daemon was unavailable during this audit and no production service manager, running service, rolling deployment, resource limits, backup policy, or tested rollback is evidenced.
 
 **Required action:** Run the gateway and provider runtimes under a supported supervised platform with restart policy, CPU/memory/process limits, immutable versioned images, health-based replacement, secret injection, persistent ledger backup, and rollback. Treat the PowerShell script as development tooling, not HA supervision.
 
@@ -231,8 +272,8 @@ Severity reflects risk to public unattended paid operation, not only local code 
 
 ### HI-006 — Secret lifecycle is documented but not evidenced
 
-**Status:** Open.
-**Evidence:** Ignore rules and templates are correct; no production secret manager, rotation event, revocation test, expiry alert, or access review is available in the repository.
+**Status:** Open; external blocker.
+**Evidence:** Ignore rules and templates are correct; in the audit shell `BLOCKS_API_KEY`, gateway client credentials, hosted LLM endpoint, and secret-manager URL were unset. An ignored gateway `.env` file exists with a `BLOCKS_API_KEY` variable name, but the value was intentionally not inspected. No production secret manager, rotation event, revocation test, expiry alert, or access review is available in the repository or audit evidence.
 
 **Required action:** Inject `BLOCKS_API_KEY`, `GATEWAY_CLIENT_KEYS`, and optional allowlists at runtime. Test dual-key rotation, old-key revocation, expired-key behavior, recovery, least-privilege access, and audit logging. Never bake secrets into images or `.env` artifacts.
 
@@ -246,7 +287,7 @@ Severity reflects risk to public unattended paid operation, not only local code 
 ### ME-002 — Paid canary and rollback are not evidenced
 
 **Status:** Open; mandatory before paid unattended release.
-**Repository control:** The guarded trigger now requires `--live --confirm-paid`, forces the paid SDK mode, and exits nonzero for failure, cancellation, or timeout. That safety control is locally tested; it is not a live canary.
+**Repository control:** The guarded trigger now requires `--live --confirm-paid`, forces the paid SDK mode, and exits nonzero for failure, cancellation, or timeout. That safety control is locally tested; it is not a live canary. The 2026-08-08 audit found no owner approval, hard budget, task ID, billing reconciliation, or rollback result; the canary was not run.
 **Required action:** Define an owner-approved maximum spend and one or a few test requests. Verify billing, artifact retrieval, idempotency behavior, timeout/cancel behavior, logs, metrics, ledger reservation, and rollback. Stop immediately on unexpected task count, cost, agent, or output.
 
 ### ME-003 — Data freshness and coverage limit user value
