@@ -22,3 +22,11 @@ jobs:
         run: python test_packaging.py
       - name: Validate Python syntax
         run: python -m compileall -q blocks_agents blocks_deploy test_packaging.py generate_deployments.py sync_deployments.py trigger_guarded.py
+      - name: Validate gateway without paid dispatch
+        working-directory: crypto_yield_matrix_node_gateway
+        run: |
+          npm ci
+          npm run check
+          npm run smoke
+          npm run resilience
+          npm run llm-smoke

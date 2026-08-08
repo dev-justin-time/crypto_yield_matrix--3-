@@ -103,6 +103,8 @@ const gateway = createGateway({
   killSwitchFile: killSwitchFile || undefined,
   releaseId,
   budgetStateFile,
+  maxLlmConcurrent: positiveIntegerEnv('LLM_MAX_CONCURRENT', 2),
+  maxLlmRequestsPerMinute: positiveIntegerEnv('LLM_MAX_REQUESTS_PER_MINUTE', 10),
 });
 
 gateway.server.listen(port, host, () => {

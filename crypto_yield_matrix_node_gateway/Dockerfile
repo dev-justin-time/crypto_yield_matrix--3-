@@ -6,7 +6,7 @@ ENV NODE_ENV=production
 COPY package.json package-lock.json ./
 RUN npm ci
 
-COPY tsconfig.json index.ts server.ts agents.ts smoke.ts ./
+COPY tsconfig.json index.ts server.ts agents.ts smoke.ts resilience.ts llm.ts llm_smoke.ts ./
 RUN mkdir -p /app/.gateway-state && npm run check && chown -R node:node /app
 
 USER node

@@ -8,11 +8,13 @@
  *   GET  /health                  -> public liveness + fleet summary
  *   GET  /ready                   -> public configuration/readiness summary
  *   GET  /agents                  -> public served-agent catalog
- *   GET  /metrics                 -> authenticated operational counters
- *   POST /agents/:name/invoke     -> authenticated paid task dispatch
+ *   GET  /metrics                 -> authenticated operational counters  *   POST /agents/:name/invoke     -> authenticated paid task dispatch
+  *   POST /llm/chat                -> authenticated Ollama/hosted LLM chat
+
  *
- * The request body is forwarded verbatim to the agent's `request` part, so
- * handler-specific fields (question, symbol, category, source_file, ...)
+ * The request body is forwarded verbatim to the agent's `request` part, so  * handler-specific fields (question, symbol, category, source_file, ...)
+  * LLM calls are separate from Blocks billing and default to local Ollama.
+
  * pass through unchanged.
  */
 import { randomUUID, timingSafeEqual } from 'node:crypto';
@@ -27,6 +29,7 @@ import type {
   TerminalEvent,
 } from '@blocks-network/sdk';
 import { AGENTS, getAgent } from './agents.js';
+import { createLlmServiceFromEnv, LlmError, type LlmService } from './llm.js';
 
 /**
  * All agents in this fleet are published with paid billing at $0.10/task,
@@ -87,6 +90,10 @@ export interface GatewayOptions {
   maxArtifactCount?: number;
   /** Release/image identifier exposed in safe operational responses. */
   releaseId?: string;
+  /** Optional LLM service; defaults to Ollama from environment when omitted. */
+  llmService?: LlmService;
+  maxLlmConcurrent?: number;
+  maxLlmRequestsPerMinute?: number;
 }
 
 export interface Gateway {
@@ -124,6 +131,10 @@ interface GatewayMetrics {
   killSwitchRejected: number;
   artifactRejected: number;
   taskTimeouts: number;
+  llmRequests: number;
+  llmFailures: number;
+  llmRateRejected: number;
+  llmCapacityRejected: number;
 }
 
 class HttpError extends Error {
@@ -299,16 +310,23 @@ async function sendTaskWithDeadline(
   }
 }
 
+interface ArtifactDownloadResult {
+  artifacts: unknown[];
+  complete: boolean;
+}
+
 async function downloadArtifacts(
   session: TaskSession,
   taskTimeoutMs: number,
   maxArtifactBytes: number,
   maxArtifactCount: number,
-): Promise<unknown[]> {
+): Promise<ArtifactDownloadResult> {
   const refs = session.listArtifacts();
   const downloadTimeoutMs = Math.min(30_000, taskTimeoutMs);
   const out: unknown[] = [];
+  let complete = true;
   if (refs.length > maxArtifactCount) {
+    complete = false;
     out.push({
       error: `artifact count exceeds gateway limit of ${maxArtifactCount}`,
       omittedCount: refs.length - maxArtifactCount,
@@ -316,7 +334,17 @@ async function downloadArtifacts(
   }
   for (const ref of refs.slice(0, maxArtifactCount)) {
     try {
-      if (typeof ref.size === 'number' && ref.size > maxArtifactBytes) {
+      if (typeof ref.size !== 'number' || !Number.isFinite(ref.size) || ref.size < 0) {
+        complete = false;
+        out.push({
+          fileName: ref.fileName ?? null,
+          mimeType: ref.mimeType ?? '',
+          error: 'artifact size is unavailable; refusing unbounded download',
+        });
+        continue;
+      }
+      if (ref.size > maxArtifactBytes) {
+        complete = false;
         out.push({
           fileName: ref.fileName ?? null,
           mimeType: ref.mimeType ?? '',
@@ -331,6 +359,7 @@ async function downloadArtifacts(
         'artifact download timed out',
       );
       if (downloaded.data.byteLength > maxArtifactBytes) {
+        complete = false;
         out.push({
           fileName: ref.fileName ?? downloaded.fileName ?? null,
           mimeType: downloaded.mimeType || ref.mimeType || '',
@@ -349,6 +378,7 @@ async function downloadArtifacts(
         data: isJson ? tryParseJson(text) : text,
       });
     } catch (err) {
+      complete = false;
       out.push({
         fileName: ref.fileName ?? null,
         mimeType: ref.mimeType ?? '',
@@ -356,7 +386,7 @@ async function downloadArtifacts(
       });
     }
   }
-  return out;
+  return { artifacts: out, complete };
 }
 
 interface InvokeResult {
@@ -367,6 +397,7 @@ interface InvokeResult {
   durationMs: number;
   progress: string[];
   artifacts?: unknown[];
+  artifactStatus?: 'complete' | 'partial';
   reason?: string;
   error?: string;
 }
@@ -422,7 +453,12 @@ async function invokeAgent(
 
   try {
     if (terminal.state === 'completed') {
-      result.artifacts = await downloadArtifacts(session, taskTimeoutMs, maxArtifactBytes, maxArtifactCount);
+      const artifactResult = await downloadArtifacts(session, taskTimeoutMs, maxArtifactBytes, maxArtifactCount);
+      result.artifacts = artifactResult.artifacts;
+      result.artifactStatus = artifactResult.complete ? 'complete' : 'partial';
+      if (!artifactResult.complete) {
+        result.error = 'task completed but artifact retrieval was incomplete';
+      }
     } else if (terminal.reason !== undefined) {
       result.reason = terminal.reason;
     } else if (terminal.error !== undefined) {
@@ -524,6 +560,10 @@ export function createGateway(options: GatewayOptions): Gateway {
     killSwitchRejected: 0,
     artifactRejected: 0,
     taskTimeouts: 0,
+    llmRequests: 0,
+    llmFailures: 0,
+    llmRateRejected: 0,
+    llmCapacityRejected: 0,
   };
   let clientPromise: Promise<TaskClient> | null = null;
   let clientReady = false;
@@ -558,6 +598,13 @@ export function createGateway(options: GatewayOptions): Gateway {
   };
 
   const killSwitchActive = (): boolean => Boolean(options.killSwitchFile && existsSync(options.killSwitchFile));
+  const llmService = options.llmService ?? createLlmServiceFromEnv();
+  const maxLlmConcurrent = options.maxLlmConcurrent ?? 2;
+  const maxLlmRequestsPerMinute = options.maxLlmRequestsPerMinute ?? 10;
+  let llmInFlight = 0;
+  const llmWindows = new Map<string, ClientWindow>();
+  positiveInteger(maxLlmConcurrent, 'maxLlmConcurrent');
+  positiveInteger(maxLlmRequestsPerMinute, 'maxLlmRequestsPerMinute');
 
   const budgetSnapshot = (): Record<string, number | string> => {
     resetBudgetIfNeeded();
@@ -637,9 +684,11 @@ export function createGateway(options: GatewayOptions): Gateway {
     void (async () => {
       let clientId: string | undefined;
       let agentName: string | undefined;
+      let routePathname: string | undefined;
       try {
         const url = new URL(req.url ?? '/', 'http://localhost');
         const { pathname } = url;
+        routePathname = pathname;
 
         if (req.method === 'GET' && pathname === '/health') {
           sendJson(res, 200, {
@@ -697,6 +746,52 @@ export function createGateway(options: GatewayOptions): Gateway {
           sendJson(res, 200, { agents: AGENTS });
           recordStatus(200);
           return;
+        }
+
+        if (req.method === 'POST' && pathname === '/llm/chat') {
+          const client = authenticate(req, options.clientKeys);
+          const now = Date.now();
+          const window = llmWindows.get(client.id);
+          if (!window || now - window.startedAt >= 60_000) {
+            llmWindows.set(client.id, { startedAt: now, requests: 1 });
+          } else if (window.requests >= maxLlmRequestsPerMinute) {
+            metrics.llmRateRejected += 1;
+            throw new HttpError(429, 'LLM request rate limit exceeded', 60);
+          } else {
+            window.requests += 1;
+          }
+          if (llmInFlight >= maxLlmConcurrent) {
+            metrics.llmCapacityRejected += 1;
+            throw new HttpError(503, 'LLM capacity is full; retry shortly', 5);
+          }
+          clientId = client.id;
+          const payload = await readJsonBody(req, maxBodyBytes);
+          if (typeof payload !== 'object' || payload === null || Array.isArray(payload)) {
+            throw new HttpError(400, 'LLM request body must be a JSON object');
+          }
+          if (req.headers['content-type'] && !req.headers['content-type'].toLowerCase().includes('application/json')) {
+            throw new HttpError(415, 'content-type must be application/json');
+          }
+          const request = payload as Record<string, unknown>;
+          const apiKeyHeader = req.headers['x-llm-api-key'];
+          const userApiKey = Array.isArray(apiKeyHeader) ? undefined : apiKeyHeader;
+          if (userApiKey !== undefined && (userApiKey.length < 16 || userApiKey.length > 512 || /[\r\n\t\s]/.test(userApiKey))) {
+            throw new HttpError(400, 'X-LLM-API-Key must be a single non-whitespace header value');
+          }
+          llmInFlight += 1;
+          metrics.llmRequests += 1;
+          try {
+            const result = await llmService.chat(request as any, userApiKey);
+            sendJson(res, 200, {
+              ...result,
+              requestId: correlationId,
+              // Keys are intentionally never included in this response.
+            });
+            recordStatus(200);
+            return;
+          } finally {
+            llmInFlight -= 1;
+          }
         }
 
         if (req.method === 'GET' && pathname === '/metrics') {
@@ -778,18 +873,18 @@ export function createGateway(options: GatewayOptions): Gateway {
               maxArtifactBytes,
               maxArtifactCount,
             );
-            sendJson(res, 200, {
+            const artifactIncomplete = result.artifactStatus === 'partial';
+            const responseStatus = artifactIncomplete ? 502 : 200;
+            sendJson(res, responseStatus, {
               ...result,
               schemaVersion: REQUEST_SCHEMA_VERSION,
               releaseId,
               budget: budgetSnapshot(),
             });
-            if (result.state === 'completed') metrics.invokeCompleted += 1;
+            if (result.state === 'completed' && !artifactIncomplete) metrics.invokeCompleted += 1;
             else metrics.invokeFailed += 1;
-            if (result.artifacts?.some((artifact) => typeof artifact === 'object' && artifact !== null && 'error' in artifact)) {
-              metrics.artifactRejected += 1;
-            }
-            recordStatus(200);
+            if (artifactIncomplete) metrics.artifactRejected += 1;
+            recordStatus(responseStatus);
           } finally {
             inFlightTasks -= 1;
           }
@@ -800,8 +895,8 @@ export function createGateway(options: GatewayOptions): Gateway {
         await drainRequest(req, maxBodyBytes);
         throw new HttpError(404, `no route for ${req.method ?? ''} ${pathname}`);
       } catch (err) {
-        const status = err instanceof HttpError ? err.status : 500;
-        const message = err instanceof HttpError ? err.message : 'gateway dispatch failed';
+        const status = err instanceof HttpError ? err.status : err instanceof LlmError ? err.status : 500;
+        const message = err instanceof HttpError || err instanceof LlmError ? err.message : 'gateway dispatch failed';
         recordStatus(status);
         if (status === 401) metrics.authRejected += 1;
         if (status === 429 && message.includes('request rate limit')) metrics.rateLimitRejected += 1;
@@ -810,6 +905,7 @@ export function createGateway(options: GatewayOptions): Gateway {
         if (status === 503 && message.includes('kill switch')) metrics.killSwitchRejected += 1;
         if (message.includes('artifact exceeds gateway limit')) metrics.artifactRejected += 1;
         if (status === 504) metrics.taskTimeouts += 1;
+        if (routePathname === '/llm/chat' && status >= 400) metrics.llmFailures += 1;
         if (agentName && status >= 500) metrics.invokeFailed += 1;
         if (err instanceof HttpError && err.retryAfterSeconds !== undefined) {
           res.setHeader('retry-after', String(err.retryAfterSeconds));

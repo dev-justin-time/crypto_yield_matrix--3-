@@ -67,7 +67,40 @@ async function main(): Promise<void> {
   }
   await gateway.destroy();
   await new Promise<void>((resolve) => gateway.server.close(() => resolve()));
-  console.log('resilience: PASS (no-spend capacity rejection, timeout, and metrics)');
+
+  let downloadCalled = false;
+  const artifactGateway = createGateway({
+    apiKey: API_KEY,
+    clientKeys: { resilience: CLIENT_SECRET },
+    taskTimeoutMs: 500,
+    maxArtifactBytes: 10,
+    budgetStateFile: '',
+    taskClientFactory: async () => ({
+      destroy() {},
+      sendMessage: async () => ({
+        taskId: 'fake-artifact-task',
+        onProgress() {},
+        waitForTerminal: async () => ({ state: 'completed' }),
+        listArtifacts: () => [{ kind: 'file', fileName: 'too-large.json', mimeType: 'application/json', size: 100 }],
+        downloadArtifact: async () => { downloadCalled = true; throw new Error('download must not be called'); },
+        close() {},
+      }),
+    } as any),
+  });
+  await new Promise<void>((resolve) => artifactGateway.server.listen(0, '127.0.0.1', resolve));
+  const artifactAddress = artifactGateway.server.address();
+  if (!artifactAddress || typeof artifactAddress === 'string') throw new Error('artifact test server did not bind');
+  const artifactResponse = await fetch(`http://127.0.0.1:${artifactAddress.port}/agents/crypto_risk_analyst/invoke`, {
+    ...init,
+    body: JSON.stringify({ question: 'declared artifact limit test' }),
+  });
+  const artifactBody = await artifactResponse.json() as { artifactStatus?: string; error?: string };
+  if (artifactResponse.status !== 502 || artifactBody.artifactStatus !== 'partial' || downloadCalled) {
+    throw new Error('declared oversized artifact was not rejected before download');
+  }
+  await artifactGateway.destroy();
+  await new Promise<void>((resolve) => artifactGateway.server.close(() => resolve()));
+  console.log('resilience: PASS (no-spend capacity, timeout, metrics, and artifact cap)');
 }
 
 main().catch((error) => {

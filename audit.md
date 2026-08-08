@@ -128,7 +128,8 @@ Verified in the repository:
 - `/metrics` is authenticated and no-spend.
 - The default listener is loopback-only; non-loopback startup requires explicit `GATEWAY_ALLOW_PUBLIC_BIND=true`.
 - A configured kill-switch file pauses new paid dispatches and makes readiness fail closed.
-- Responses expose a release ID, request schema version, remaining task/spend budget headers, and bounded artifact behavior.
+- Responses expose a release ID, request schema version, remaining task/spend budget headers, and bounded artifact behavior; incomplete artifact retrieval is explicit and returns HTTP 502 rather than a false complete success.
+- The optional LLM route defaults to local Ollama, uses operator-configured HTTPS host allowlists for hosted mode, validates transient user keys without persistence/logging, bounds response size, and applies independent per-client rate/concurrency limits. A fixed production egress policy remains required for authoritative SSRF protection.
 - Structured logs include request correlation and omit payloads/secrets.
 - Docker runs as non-root `node` and includes a restart policy, readiness health check, and persistent budget volume.
 - Compose binds the gateway to `127.0.0.1:3000` by default.
@@ -240,7 +241,7 @@ Severity reflects risk to public unattended paid operation, not only local code 
 **Status:** Repository baseline improved; production-scale evidence remains open.
 **Evidence:** `crypto_yield_matrix_node_gateway/resilience.ts` now provides a deterministic no-spend fake-provider check for capacity saturation, timeout handling, and metrics. Smoke coverage also verifies bind policy, kill-switch readiness, schema rejection, and remaining-budget headers. There is still no repeatable production-scale load test for process restart, resource limits, large live artifacts, or multi-instance accounting.
 
-**Remaining action:** Run an approved private load/restart/resource test and keep it out of ordinary CI if it can dispatch paid work. Before a second gateway replica, deploy shared atomic quota/spend accounting.
+**Remaining action:** Run an approved private load/restart/resource test and keep it out of ordinary CI if it can dispatch paid work. Before a second gateway replica, deploy shared atomic quota/spend accounting. The gateway rejects artifacts without a declared size before download and returns an explicit HTTP 502 partial result when artifact limits or downloads fail; an SDK-native bounded streaming path should replace this conservative rejection if the platform later provides one.
 
 ### ME-002 — Paid canary and rollback are not evidenced
 
@@ -295,7 +296,7 @@ The following must all be true before changing the verdict to **GO**:
 - [x] Deterministic adapter generation and source-to-deployment hash checks pass in CI.
 - [x] Root scaffold and one materialized deployment package pass no-spend tests.
 - [x] Guarded trigger requires explicit paid acknowledgement and rejects non-success terminal states.
-- [x] Gateway response/schema, release, budget-header, artifact-cap, and kill-switch controls are implemented and no-spend tested.
+- [x] Gateway response/schema, release, budget-header, artifact-cap, explicit partial-artifact status, kill-switch, and optional Ollama-default LLM controls are implemented; no-spend smoke/resilience/LLM contract tests pass.
 - [x] Deterministic no-spend gateway resilience test passes for capacity saturation, timeout, and metrics.
 - [ ] Production-scale load, restart, resource, and multi-instance accounting evidence passes.
 

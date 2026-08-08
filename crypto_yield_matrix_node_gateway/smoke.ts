@@ -186,6 +186,11 @@ async function main(): Promise<void> {
   // A file-based emergency stop changes readiness and blocks paid dispatch.
   writeFileSync(killSwitchFile, 'pause');
   await expectStatus(`${base}/ready`, { method: 'GET' }, 503);
+  await expectStatus(
+    `${base}/agents/crypto_risk_analyst/invoke`,
+    { method: 'POST', body: JSON.stringify({ question: 'paused task' }), headers: invokeHeaders },
+    503,
+  );
   unlinkSync(killSwitchFile);
 
   // Unknown route -> 404.
@@ -195,8 +200,8 @@ async function main(): Promise<void> {
   if (metricsAfter.status !== 200) {
     throw new Error(`expected 200 for authenticated GET ${base}/metrics, got ${metricsAfter.status}: ${await metricsAfter.text()}`);
   }
-  const finalMetrics = (await metricsAfter.json()) as { authRejected: number; budgetRejected: number; rateLimitRejected: number; responsesByStatus: Record<string, number> };
-  if (finalMetrics.authRejected < 1 || finalMetrics.budgetRejected < 1 || finalMetrics.rateLimitRejected < 1 || finalMetrics.killSwitchRejected < 0 || !finalMetrics.responsesByStatus['400']) {
+  const finalMetrics = (await metricsAfter.json()) as { authRejected: number; budgetRejected: number; rateLimitRejected: number; killSwitchRejected: number; responsesByStatus: Record<string, number> };
+  if (finalMetrics.authRejected < 1 || finalMetrics.budgetRejected < 1 || finalMetrics.rateLimitRejected < 1 || finalMetrics.killSwitchRejected < 1 || !finalMetrics.responsesByStatus['400']) {
     throw new Error('metrics endpoint did not record smoke-test outcomes');
   }
   console.log(`smoke: PASS (auth, readiness, protected metrics, budget, health, ${agentsBody.agents.length} agents, validation; no paid dispatch)`);

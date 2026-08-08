@@ -641,7 +641,8 @@ This is intentional. The project currently has embedded provenance rows and insu
 - `GET /health` — liveness and fleet summary.
 - `GET /agents` — lists the 12 served agents with descriptions.
 - `GET /ready` — no-spend configuration and budget readiness check.
-- `GET /metrics` — authenticated no-spend local counters for request outcomes, authentication rejection, invoke lifecycle, and separated rate/budget/capacity rejection; route it only through a trusted operational boundary.
+- `GET /metrics` — authenticated no-spend local counters for request outcomes, authentication rejection, invoke lifecycle, separated rate/budget/capacity rejection, and LLM outcomes; route it only through a trusted operational boundary.
+- `POST /llm/chat` — authenticated LLM route, local Ollama by default; hosted mode requires an operator-configured HTTPS endpoint plus hostname allowlist, performs a private-address DNS preflight, and accepts a transient user `X-LLM-API-Key` that is never stored or logged. Use a fixed egress proxy/network policy for the authoritative production SSRF boundary.
 - `POST /agents/:agentName/invoke` — authenticated endpoint; requires `Authorization: Bearer <gateway-client-secret>` and forwards a JSON request to one published agent. Optional per-client agent allowlists are enforced when configured.
 
 The request body is passed through verbatim as the `request` part, so handler-specific fields (`question`, `symbol`, `category`, `source_file`, `features`, `target`, `split`, ...) work unchanged. Because every published agent is paid ($0.10/task), the shared client uses `billingMode: 'paid'`. The API key stays server-side in the ignored `.env` and is never returned by any endpoint.
@@ -676,7 +677,7 @@ npm run smoke   # routing/validation only — never dispatches a paid task
 
 The smoke test uses placeholder Blocks and gateway credentials and exercises health, readiness, metrics, listing, authentication rejection, unknown-agent 404s, malformed-body 400s, required-question validation, and idempotency-header validation; `npm run resilience` additionally verifies deterministic capacity saturation and timeout metrics. Neither test calls a real agent.
 
-The gateway process is also managed by [`Restart-BlocksAgents.ps1`](Restart-BlocksAgents.ps1): it starts `node --import tsx index.ts` from this directory (state entry `gateway`, logs under `blocks-agent-logs/gateway/`). Use `-AgentName gateway` to manage only the gateway or `-SkipGateway` to leave it out of fleet restarts. The gateway reads `BLOCKS_API_KEY` from its ignored `.env` and honors `GATEWAY_PORT` from its environment or `.env`.
+The gateway process is also managed by [`Restart-BlocksAgents.ps1`](Restart-BlocksAgents.ps1): it starts `node --import tsx index.ts` from this directory (state entry `gateway`, logs under `blocks-agent-logs/gateway/`). Use `-AgentName gateway` to manage only the gateway or `-SkipGateway` to leave it out of fleet restarts. The gateway reads `BLOCKS_API_KEY` from its ignored `.env` and honors `GATEWAY_PORT` from its environment or `.env`. LLM configuration uses local Ollama by default (`OLLAMA_BASE_URL`, `OLLAMA_MODEL`); hosted mode uses an operator allowlisted `LLM_HOSTED_BASE_URL` and per-request `X-LLM-API-Key`.
 
 ## 20. Live market and blockchain overlay
 

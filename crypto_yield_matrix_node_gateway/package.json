@@ -14,7 +14,8 @@
     "start": "tsx index.ts",
     "check": "tsc --noEmit",
     "smoke": "tsx smoke.ts",
-    "resilience": "tsx resilience.ts"
+    "resilience": "tsx resilience.ts",
+    "llm-smoke": "tsx llm_smoke.ts"
   },
   "type": "module",
   "version": "1.0.0"
