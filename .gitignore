@@ -4,3 +4,9 @@ blocks_deploy/**/.env
 blocks_deploy/**/.venv/
 *.pem
 *.key
+.blocks-agent-state.json
+blocks-agent-logs/
+*.egg-info/
+**/node_modules/
+**/__pycache__/
+*.py[cod]

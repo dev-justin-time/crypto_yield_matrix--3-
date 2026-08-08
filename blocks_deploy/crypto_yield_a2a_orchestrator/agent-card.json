@@ -3,7 +3,7 @@
     "agentName": "crypto_yield_a2a_orchestrator",
     "displayName": "Crypto Yield A2A Orchestrator",
     "description": "Coordinates private crypto yield specialists in parallel and merges their evidence into one research artifact.",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "provider": { "organization": "Crypto Yield Matrix" }
   },
   "capabilities": { "taskKinds": ["request"] },
@@ -14,8 +14,9 @@
   "runtime": {
     "handler": "./handler.py",
     "handlerExport": "handler",
-    "concurrency": 1,
+    "concurrency": 2,
     "expectedInstances": 1,
+    "maxPendingBacklog": 8,
     "maxRunningTimeSec": 90
   },
   "io": {

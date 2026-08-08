@@ -444,7 +444,7 @@ The repository now includes a native Blocks Provider project at `blocks_deploy/c
 - `defi_liquidity_analyst`
 - `tokenomics_sustainability_expert`
 
-The orchestrator uses the Python SDK's `SendMessageRequestPart`, omits `ownerId`, applies a 30-second specialist timeout, downloads non-inline artifacts, tolerates terminal/artifact event reordering, and merges partial failures into one JSON artifact.
+The orchestrator uses the Python SDK's `SendMessageRequestPart`, omits `ownerId`, applies a 30-second specialist timeout, cancels timed-out specialist sessions on a best-effort basis, cleans up late send results, downloads non-inline artifacts, tolerates terminal/artifact event reordering, and merges partial failures into one JSON artifact.
 
 ### Local A2A validation
 
@@ -453,11 +453,41 @@ cd blocks_deploy/crypto_yield_a2a_orchestrator
 .venv/Scripts/python test_handler.py
 ```
 
-The native card passes `blocks check`. Test the deployed orchestrator with:
+After installing the Blocks CLI, run `blocks check` from the native orchestrator project and confirm it passes for your installed CLI/schema. This repository session cannot verify that command because the `blocks` binary is not on PATH. Test the deployed orchestrator with:
 
 ```bash
 python trigger.py
 ```
+
+### Restart provider runtimes and the gateway on Windows
+
+The repository-root [`Restart-BlocksAgents.ps1`](Restart-BlocksAgents.ps1) manages the local `blocks run` processes for the native deployments **and** the all-agent Node gateway (`crypto_yield_matrix_node_gateway`). It targets only PIDs previously recorded by that script, so it does not terminate unrelated Blocks or Node processes.
+
+From PowerShell at the repository root:
+
+```powershell
+# Restart all provider runtimes plus the Node gateway (the default).
+.\\Restart-BlocksAgents.ps1
+
+# Restart one provider only (the gateway is left untouched).
+.\\Restart-BlocksAgents.ps1 -AgentName crypto_risk_analyst
+
+# Manage only the Node gateway process.
+.\\Restart-BlocksAgents.ps1 -AgentName gateway
+
+# Restart the providers but not the gateway.
+.\\Restart-BlocksAgents.ps1 -SkipGateway
+
+# Stop managed runtimes without starting them again.
+.\\Restart-BlocksAgents.ps1 -StopOnly
+
+# Preview which processes would be stopped/started.
+.\\Restart-BlocksAgents.ps1 -WhatIf
+```
+
+Process output is written to `blocks-agent-logs/<name>/stdout.log` and `stderr.log` (including `blocks-agent-logs/gateway/`); PID state is stored in the ignored `.blocks-agent-state.json`. The script uses the installed native Blocks CLI for providers and the `node` on PATH for the gateway, and expects authentication to remain available in the projects' ignored `.env` files. It does not publish, register, or change billing settings. Before the first run, stop any provider runtimes started manually with `blocks run`; the script intentionally does not discover or terminate unmanaged processes.
+
+Real (non-`-WhatIf`) runs prompt for confirmation on each stop/start action because the script declares `ConfirmImpact = 'High'`. For automated or scheduled invocations, set `$ConfirmPreference = 'None'` first (or answer the prompts interactively), otherwise the run will pause waiting for confirmation.
 
 ### Private-agent permissions
 
@@ -480,7 +510,38 @@ blocks invite list data_provenance_auditor
 
 The CLI accepts invitations with `blocks invite accept <token>`. The token must be accepted by the invitee identity; do not substitute the invitation ID, and do not publish the agents publicly to bypass private access controls.
 
-## 16. Operational checklist
+## 16. Paid production performance profile
+
+The deployed cards now use a bounded paid-runtime profile:
+
+| Agent tier | `concurrency` | `maxPendingBacklog` | `maxRunningTimeSec` | Reason |
+|---|---:|---:|---:|---|
+| Eleven independent specialists | 4 | 20 | 45 | Four parallel tasks per instance improves throughput while keeping queue growth and runaway billing bounded. |
+| `crypto_yield_a2a_orchestrator` | 2 | 8 | 90 | Two concurrent orchestrations are enough to overlap requests without multiplying five-specialist fan-outs uncontrollably. |
+
+`expectedInstances` remains `1` as the conservative starting point. Increase it only after observing CPU/memory usage, task latency, provider rate limits, and spend. The orchestrator's five specialist calls already run in parallel; do not increase its instance count and concurrency simultaneously without load-test evidence.
+
+The Node gateway uses one shared paid `TaskClient`, validates the required `question` locally, and limits in-flight billable tasks with `GATEWAY_MAX_CONCURRENT_TASKS=8` (process-local and best-effort; the Blocks provider backlog remains authoritative). It does not retry `sendMessage` at the application layer: retrying after an uncertain network outcome can create duplicate paid tasks. If a task wait times out, the gateway makes a best-effort remote cancel before returning 504. Send a stable `X-Idempotency-Key` header when your caller may retry an uncertain request; the key is forwarded to Blocks.
+
+### Paid publish sequence
+
+Publishing changes the external Blocks registry and may incur billing or platform obligations, so run these commands manually only after credentials, descriptions, provenance warnings, and pricing have been reviewed:
+
+```bash
+# In each blocks_deploy/<agent>/ project:
+blocks check
+blocks login --write-env
+blocks register
+blocks run
+
+# After private trigger tests pass, publish explicitly as paid.
+# Confirm the exact flags with `blocks publish --help` for your installed CLI:
+blocks publish --billing-mode paid --listing private --price-per-task 0.10 --accept-terms
+```
+
+Use `--listing public` only after the private fleet is stable. The `billingMode` used by the gateway must match the live registry configuration; a paid target requires the gateway's `billingMode: 'paid'`. Do not run publish/register from this assistant session, and do not use a real trigger as a performance test unless you explicitly accept the per-task charge.
+
+## 17. Operational checklist
 
 ### Before registration
 
@@ -511,7 +572,7 @@ The CLI accepts invitations with `blocks invite accept <token>`. The token must 
 - [ ] Credential rotation and monitoring procedures are documented.
 - [ ] Public/private listing and free/paid billing flags are explicitly reviewed.
 
-## 17. Troubleshooting
+## 18. Troubleshooting
 
 ### `blocks` is not found
 
@@ -551,7 +612,49 @@ Do not execute a handler file directly if it uses package-relative imports.
 
 This is intentional. The project currently has conflicting source versions and insufficient dated history for validated production forecasting. Resolve source identity, add dated observations, define independently observed future outcomes, and implement chronological evaluation before relaxing the gate.
 
-## 18. Official references
+## 19. Node.js gateway: one instance for all agents
+
+`crypto_yield_matrix_node_gateway/` is a Node.js consumer project that serves all 12 published agents from a single process. It was generated with the official Blocks CLI (`blocks init crypto_yield_matrix_node_gateway --mode consumer --language node --yes`) and extended with a small HTTP gateway that shares one `TaskClient` across every agent.
+
+### Endpoints
+
+- `GET /health` — liveness and fleet summary.
+- `GET /agents` — lists the 12 served agents with descriptions.
+- `POST /agents/:agentName/invoke` — forwards a JSON request to one published agent and returns its terminal state, progress, and artifacts.
+
+The request body is passed through verbatim as the `request` part, so handler-specific fields (`question`, `symbol`, `category`, `source_file`, `features`, `target`, `split`, ...) work unchanged. Because every published agent is paid ($0.10/task), the shared client uses `billingMode: 'paid'`. The API key stays server-side in the ignored `.env` and is never returned by any endpoint.
+
+### Run it
+
+```bash
+cd crypto_yield_matrix_node_gateway
+npm install
+blocks login --write-env   # writes BLOCKS_API_KEY to the ignored .env
+npm start                  # http://localhost:3000
+```
+
+Environment variables: `GATEWAY_PORT` (default 3000), `GATEWAY_TASK_TIMEOUT_MS` (default 120000), `GATEWAY_MAX_BODY_BYTES` (default 1000000), and `GATEWAY_MAX_CONCURRENT_TASKS` (default 8). The concurrency cap is deliberate: every accepted invocation is paid, so excess requests receive HTTP 503 with `Retry-After: 5` instead of creating an unbounded billable backlog.
+
+Example invocation:
+
+```bash
+curl -s localhost:3000/agents/crypto_risk_analyst/invoke \
+  -H 'content-type: application/json' \
+  -d '{"question":"Compare BTC yield and downside context","symbol":"BTC","source_file":"yield_data.csv"}'
+```
+
+### Validate without spending
+
+```bash
+npm run check   # tsc --noEmit
+npm run smoke   # routing/validation only — never dispatches a paid task
+```
+
+The smoke test uses a placeholder key and exercises only health, listing, unknown-agent 404s, malformed-body 400s, required-question validation, and idempotency-header validation; it never calls a real agent.
+
+The gateway process is also managed by [`Restart-BlocksAgents.ps1`](Restart-BlocksAgents.ps1): it starts `node --import tsx index.ts` from this directory (state entry `gateway`, logs under `blocks-agent-logs/gateway/`). Use `-AgentName gateway` to manage only the gateway or `-SkipGateway` to leave it out of fleet restarts. The gateway reads `BLOCKS_API_KEY` from its ignored `.env` and honors `GATEWAY_PORT` from its environment or `.env`.
+
+## 20. Official references
 
 - [Blocks docs home](https://blocks.ai/docs)
 - [Blocks Quickstart](https://blocks.ai/docs/quickstart)

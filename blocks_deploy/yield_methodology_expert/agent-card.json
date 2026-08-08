@@ -3,7 +3,7 @@
     "agentName": "yield_methodology_expert",
     "displayName": "Yield Methodology Expert",
     "description": "Explains and compares crypto yield mechanisms, annualization flags, aggregates, and methodology notes without treating unlike yields as interchangeable.",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "provider": {
       "organization": "Crypto Yield Matrix"
     }
@@ -21,9 +21,10 @@
   ],
   "runtime": {
     "handler": "./handler.py",
-    "handlerExport": "handler",
-    "concurrency": 1,
-    "expectedInstances": 1
+    "handlerExport": "handler",      "concurrency": 4,
+      "expectedInstances": 1,
+      "maxPendingBacklog": 20,
+      "maxRunningTimeSec": 45
   },
   "io": {
     "inputs": [

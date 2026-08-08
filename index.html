@@ -3,70 +3,72 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Interactive quarterly crypto asset cash-yield matrix with 12-month comparisons and market metrics.">
 <title>cryptocurrentcy Underlying Asset Cash Yield Matrix</title>
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<main id="cy-infographic">
-  <header class="header-bar">
+
+<div id="cy-infographic">
+
+  <div class="header-bar">
     <div class="header-top">
-      <div>
-        <p class="eyebrow">for crypto investors and researchers</p>
-        <h1 class="title-main">cryptocurrentcy Underlying Asset Cash Yield Matrix</h1>
-      </div>
-      <div class="header-meta" aria-label="Statistical windows">
-        <span class="meta-pill">comparison · 2024.07 — 2025.06</span>
-        <span class="meta-pill">current / modeled · 2025.07 — 2026.06</span>
+      <h1 class="title-main">cryptocurrentcy Underlying Asset Cash Yield Matrix</h1>
+      <div class="header-meta">
+        <span class="meta-pill">2024.07 — 2025.06</span>
+        <span class="meta-pill">vs 2023.07 — 2024.06</span>
       </div>
     </div>
-    <div class="formula-bar">annualized value-yield = (end value − start value + cash distributions) ÷ start value × (365 ÷ days held) × 100</div>
-  </header>
+    <div class="formula-bar">
+      annualized value-yield = (end value − start value + cash distributions) ÷ start value × (365 ÷ days held) × 100
+    </div>
+  </div>
 
-  <section class="matrix-wrap" aria-labelledby="matrix-heading">
-    <div class="section-intro">
-      <div>
-        <p class="section-kicker">quarterly yield map</p>
-        <h2 id="matrix-heading">Eight-quarter performance, sorted within each quarter</h2>
-      </div>
-      <div class="subhead-row" aria-label="Window legend">
-        <span class="window-badge prior-badge">comparison 12-month window</span>
-        <span class="window-separator" aria-hidden="true"></span>
-        <span class="window-badge current-badge">current / modeled 12-month window</span>
-        <span class="compare-badge">descending annualized yield · ties by current market cap</span>
+  <div class="matrix-wrap">
+    <div class="subhead-row">
+      <span class="window-badge">prior 12-month window</span>
+      <span style="color:#93c5fd;">|</span>
+      <span class="window-badge" style="background:#1e3a5f;">current 12-month window</span>
+      <span class="compare-badge">sorted by descending annualized yield per quarter</span>
+    </div>
+
+    <div class="scroll-hint">← scroll horizontally to view full matrix →</div>
+
+    <div class="matrix-grid" id="matrix-grid">
+      <!-- Rendered dynamically by matrix.js from yield_data.csv -->
+      <div style="grid-column:1/-1;padding:40px;text-align:center;color:#9ca3af;">
+        Loading yield data from CSV...
       </div>
     </div>
 
-    <p class="scroll-hint">← scroll horizontally to inspect every quarter →</p>
-    <div class="matrix-grid" id="matrix-grid" aria-live="polite">
-      <div class="loading-state">Loading yield data from CSV…</div>
+    <div class="legend-row" id="legend-row">
+      <!-- Rendered dynamically by matrix.js -->
     </div>
 
-    <div class="legend-row" id="legend-row" aria-label="Yield range and asset category legend"></div>
+    <div class="timeline-bar">
+      <div class="timeline-title">key data metrics — aggregate across all tracked assets</div>
+      <div class="timeline-metrics" id="timeline-metrics">
+        <!-- Rendered dynamically by matrix.js -->
+      </div>
+    </div>
 
-    <section class="timeline-bar" aria-labelledby="timeline-heading">
-      <div class="timeline-title" id="timeline-heading">Key data metrics · loading</div>
-      <div class="timeline-track" aria-hidden="true"><span class="timeline-point first"></span><span class="timeline-line"></span><span class="timeline-point latest"></span></div>
-      <div class="timeline-labels" aria-hidden="true"><span>first value · Q3 ’24</span><span>latest value · Q2 ’26</span></div>
-      <div class="timeline-metrics" id="timeline-metrics"></div>
-    </section>
+    <div class="notes-bar">
+      <div class="note-chip">
+        calculation basis
+        <div class="note-popup">Yield is computed as annualized total return: (ending NAV + distributions − starting NAV) ÷ starting NAV, annualized to 365 days. Sources: on-chain staking data, exchange lending rates, protocol revenue distributions, and validator reward APIs.</div>
+      </div>
+      <div class="note-chip">
+        sorting rules
+        <div class="note-popup">Within each quarter, assets are stacked in descending order of annualized yield. Ties broken by market-cap weight. Aggregate columns show arithmetic mean of quarterly yields across the 12-month window.</div>
+      </div>
+      <div class="note-chip">
+        asterisk meanings
+        <div class="note-popup">* = newly listed or annualized category. Assets marked with an asterisk have yields annualized from monthly snapshots or lending-market equivalents due to limited on-chain staking infrastructure. Hover any block to see asset-specific notes.</div>
+      </div>
+    </div>
+  </div>
 
-    <aside class="notes-bar" aria-label="Methodology notes">
-      <details class="note-chip">
-        <summary>calculation basis</summary>
-        <p class="note-popup">Yield is computed as annualized total return: (ending NAV + distributions − starting NAV) ÷ starting NAV, annualized to 365 days. The enriched dataset combines staking, lending-market equivalents, protocol rewards, market, liquidity, risk, and model features.</p>
-      </details>
-      <details class="note-chip">
-        <summary>sorting rules</summary>
-        <p class="note-popup">Within each quarter, assets are stacked in descending annualized yield. Equal values are ordered by current market cap. Aggregate columns use the supplied prior and current 12-month mean yields and show the supplied change in percentage points.</p>
-      </details>
-      <details class="note-chip">
-        <summary>asterisk meanings</summary>
-        <p class="note-popup">An asterisk marks an annualized or newly listed category. These values may come from monthly snapshots, inflation pools, lending-market equivalents, or other comparable reward sources; hover a colored block for the asset-specific basis.</p>
-      </details>
-    </aside>
-  </section>
-</main>
+</div>
+
 <script src="matrix.js"></script>
 </body>
 </html>

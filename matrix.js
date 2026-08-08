@@ -158,13 +158,19 @@
   function createAssetBlock(asset, yieldValue, quarterLabel, aggregate = false) {
     const block = element('button', aggregate ? 'agg-block' : 'asset-block');
     block.type = 'button';
-    block.style.setProperty('--asset-color', validColor(asset.color));
+    const assetColor = validColor(asset.color);
+    block.style.setProperty('--asset-color', assetColor);
+    // The original renderer painted each yield block directly. Keep that
+    // behavior here instead of relying on a CSS variable that older themes
+    // may not consume.
+    if (!aggregate) block.style.backgroundColor = assetColor;
     tooltipId += 1;
     block.classList.toggle('block-light', LIGHT_BLOCKS.has(asset.symbol));
     block.setAttribute('aria-label', `${asset.name}, ${quarterLabel}, ${formatNumber(yieldValue)} percent annualized yield`);
 
     const left = element('span', 'asset-left');
     const icon = element('span', 'asset-icon', asset.icon || asset.symbol.slice(0, 1));
+    icon.style.backgroundColor = aggregate ? assetColor : 'rgba(0, 0, 0, 0.25)';
     icon.setAttribute('aria-hidden', 'true');
     const name = element('span', 'asset-name', asset.name);
     left.append(icon, name);

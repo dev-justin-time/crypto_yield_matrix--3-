@@ -3,7 +3,7 @@
     "agentName": "feature_engineering_expert",
     "displayName": "Crypto Feature Engineering Expert",
     "description": "Computes transparent derived features for yield momentum, market-cap to TVL, risk, and category-relative yield analysis.",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "provider": {
       "organization": "Crypto Yield Matrix"
     }
@@ -21,9 +21,10 @@
   ],
   "runtime": {
     "handler": "./handler.py",
-    "handlerExport": "handler",
-    "concurrency": 1,
-    "expectedInstances": 1
+    "handlerExport": "handler",      "concurrency": 4,
+      "expectedInstances": 1,
+      "maxPendingBacklog": 20,
+      "maxRunningTimeSec": 45
   },
   "io": {
     "inputs": [

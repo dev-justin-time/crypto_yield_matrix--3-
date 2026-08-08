@@ -55,9 +55,33 @@ def execute_subtask(task_client: Any, agent_name: str, payload: dict[str, Any]) 
         agent_name=agent_name,
         request_parts=[SendMessageRequestPart(part_id="request", text=json.dumps(payload))],
     )
+    send_state = {"timed_out": False}
+
+    def cleanup_late_send(future: Any) -> None:
+        if not send_state["timed_out"]:
+            return
+        try:
+            late_session = future.result()
+        except Exception:
+            return
+        cancel = getattr(late_session, "cancel", None)
+        if callable(cancel):
+            try:
+                cancel()
+            except Exception:
+                pass
+        close = getattr(late_session, "close", None)
+        if callable(close):
+            close()
+
+    send_future.add_done_callback(cleanup_late_send)
     try:
         session = send_future.result(timeout=5)
     except Exception as exc:
+        if exc.__class__.__name__ == "TimeoutError":
+            send_state["timed_out"] = True
+            if send_future.done():
+                cleanup_late_send(send_future)
         send_future.cancel()
         return {"agent": agent_name, "status": "timeout" if exc.__class__.__name__ == "TimeoutError" else "failed", "error": str(exc)}
     finally:
@@ -104,6 +128,12 @@ def execute_subtask(task_client: Any, agent_name: str, payload: dict[str, Any]) 
     session.on_terminal(on_terminal)
     try:
         if not finished.wait(timeout=SUBTASK_TIMEOUT_SECONDS):
+            cancel = getattr(session, "cancel", None)
+            if callable(cancel):
+                try:
+                    cancel()
+                except Exception:
+                    pass
             return {"agent": agent_name, "status": "timeout", "error": "specialist timed out"}
         if state.get("error"):
             return {"agent": agent_name, "status": "failed", "error": state["error"]}
