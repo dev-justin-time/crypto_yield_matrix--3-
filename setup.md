@@ -24,7 +24,7 @@ The repository contains eleven blockchain and cryptocurrency research agents:
 | `tokenomics_sustainability_expert` | Compares nominal yield with inflation and dilution pressure. |
 | `quant_forecasting_expert` | Designs cautious forecasts and enforces readiness gates. |
 | `portfolio_scenario_expert` | Explains educational yield/risk/liquidity scenarios. |
-| `model_validation_guardian` | Checks source duplication, leakage, target circularity, and time splits. |
+| `model_validation_guardian` | Checks duplicate provenance rows, leakage, target circularity, and time splits. |
 | `matrix_research_insights_agent` | Converts the dashboard matrix into traceable research insights. |
 | `crypto_research_communications_agent` | Produces cautious, evidence-linked research notes. |
 | `feature_engineering_expert` | Recomputes four transparent derived yield, liquidity, risk, and peer features. |
@@ -359,7 +359,7 @@ Test at least these cases before inviting anyone:
 3. A request with an invalid `source_file`.
 4. A request containing `../` or an absolute path.
 5. A request that asks for a forecast; verify the readiness `FAIL` gate remains visible.
-6. A request that attempts to use both conflicting source versions as independent training data.
+6. A request that attempts to use both embedded provenance rows as independent training data.
 7. A request with an unknown symbol or category.
 8. A large output artifact and a normal small output artifact.
 
@@ -610,7 +610,7 @@ Do not execute a handler file directly if it uses package-relative imports.
 
 ### Forecasting returns `FAIL`
 
-This is intentional. The project currently has conflicting source versions and insufficient dated history for validated production forecasting. Resolve source identity, add dated observations, define independently observed future outcomes, and implement chronological evaluation before relaxing the gate.
+This is intentional. The project currently has embedded provenance rows and insufficient dated history for validated production forecasting. Resolve source identity, add dated observations, define independently observed future outcomes, and implement chronological evaluation before relaxing the gate.
 
 ## 19. Node.js gateway: one instance for all agents
 

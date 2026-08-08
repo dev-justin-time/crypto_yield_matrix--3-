@@ -2,7 +2,7 @@
   "identity": {
     "agentName": "model_validation_guardian",
     "displayName": "Model Validation Guardian",
-    "description": "Checks source duplication, target circularity, temporal leakage, split integrity, calibration, baselines, and uncertainty before a crypto model is trusted.",
+    "description": "Checks duplicate provenance rows, target circularity, temporal leakage, split integrity, calibration, baselines, and uncertainty before a crypto model is trusted.",
     "version": "1.1.0",
     "provider": {
       "organization": "Crypto Yield Matrix"

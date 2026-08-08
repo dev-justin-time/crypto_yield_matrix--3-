@@ -2,7 +2,7 @@
   "identity": {
     "agentName": "model_validation_guardian",
     "displayName": "Model Validation Guardian",
-    "description": "Checks source duplication, target circularity, temporal leakage, split integrity, calibration, baselines, and uncertainty before a crypto model is trusted.",
+    "description": "Checks duplicate provenance rows, target circularity, temporal leakage, split integrity, calibration, baselines, and uncertainty before a crypto model is trusted.",
     "version": "1.0.0",
     "provider": {
       "organization": "Crypto Yield Matrix"
@@ -73,7 +73,7 @@
   },
   "skill": {
     "checks": [
-      "source duplication",
+      "duplicate provenance rows",
       "target circularity",
       "current/future feature leakage",
       "chronological walk-forward splits",
@@ -82,7 +82,7 @@
       "prediction interval coverage"
     ],
     "mustFail": [
-      "training both yield source versions as independent rows",
+      "treating repeated provenance rows as independent time observations",
       "using supplied targets as features",
       "random split for temporal forecasting"
     ]

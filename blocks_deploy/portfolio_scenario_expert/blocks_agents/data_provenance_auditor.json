@@ -67,12 +67,12 @@
       "schema",
       "duplicate keys",
       "source_file/source_row lineage",
-      "yield_data version conflicts",
+      "embedded provenance lineage",
       "validate.md issue references"
     ],
     "mustNot": [
       "silently merge conflicting values",
-      "treat duplicate source versions as independent observations"
+      "treating repeated provenance rows as independent time observations"
     ]
   }
 }

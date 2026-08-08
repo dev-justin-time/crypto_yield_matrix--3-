@@ -21,7 +21,7 @@ The primary evidence files are:
 
 - `validate.md` — audit findings, provenance conflicts, research use cases, and modeling guardrails.
 - `DATA_DICTIONARY.md` — field definitions and modeling notes.
-- `yield_data.csv` and `yield_data.csv` — conflicting source snapshots with the same schema.
+- `yield_data.csv` and `yield_data.csv` — embedded provenance rows with the same schema.
 - `yield_data.csv` — both source versions appended with `source_file` and `source_row` provenance.
 - `table-*.csv` — source snapshots, metadata tables, and compact summaries with heterogeneous schemas.
 - `index.html`, `matrix.js`, `styles.css` — current user-facing matrix behavior and labels.
@@ -37,7 +37,7 @@ The primary evidence files are:
 | `tokenomics_sustainability_expert.json` | Tokenomics sustainability | Separates nominal yield from inflation and dilution pressure. |
 | `quant_forecasting_expert.json` | Quantitative forecasting | Designs cautious, leakage-controlled yield forecasts with uncertainty. |
 | `portfolio_scenario_expert.json` | Portfolio scenarios | Explains educational yield/risk/liquidity trade-offs under user constraints. |
-| `model_validation_guardian.json` | Model validation | Blocks source duplication, target leakage, invalid splits, and overclaiming. |
+| `model_validation_guardian.json` | Model validation | Blocks duplicate provenance rows, target leakage, invalid splits, and overclaiming. |
 | `matrix_research_insights_agent.json` | Dashboard research insights | Converts existing matrix metrics into traceable user-facing findings. |
 | `crypto_research_communications_agent.json` | Research communication | Produces cautious, sourced, non-advisory reports with evidence locations. |
 | `feature_engineering_expert.json` | Feature engineering | Recomputes yield momentum, market-cap/TVL, risk, and yield-premium features. |

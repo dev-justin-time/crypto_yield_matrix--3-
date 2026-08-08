@@ -144,7 +144,7 @@ Generated after inventorying every original CSV in the project and semantically 
 - The market snapshots cannot be safely unioned with the yield schema without an explicit field mapping and timestamp policy.
 - Small price differences found in snapshot comparisons are consistent with rounded values in the yield file; they are documented rather than changed.
 - The ATOM summary row contains substantive yield, volatility, and Sharpe conflicts and should be reconciled before use as a view of `yield_data.csv`.
-- **Corrected forecasting caveat:** The current dataset’s limited history and conflicting source versions make it unsuitable for validated production forecasting. Production forecasting requires source reconciliation, additional dated observations, leakage-controlled walk-forward testing, baseline comparison, and independently observed future outcomes.
+- **Corrected forecasting caveat:** The current dataset’s limited history and embedded provenance rows make it unsuitable for validated production forecasting. Production forecasting requires source reconciliation, additional dated observations, leakage-controlled walk-forward testing, baseline comparison, and independently observed future outcomes.
 
 ## Blocks.ai-compatible expert-agent scaffold
 
@@ -159,7 +159,7 @@ Eleven local expert-agent cards were created in `blocks_agents/`. They are file-
 5. `tokenomics_sustainability_expert` — nominal yield versus inflation, FDV/mcap, supply, and market-cap dynamics.
 6. `quant_forecasting_expert` — forecast readiness, targets, chronological splits, baselines, and uncertainty.
 7. `portfolio_scenario_expert` — transparent, educational yield/risk/liquidity constraint scenarios.
-8. `model_validation_guardian` — source duplication, circular targets, leakage, calibration, and backtesting gates.
+8. `model_validation_guardian` — duplicate provenance rows, circular targets, leakage, calibration, and backtesting gates.
 9. `matrix_research_insights_agent` — user-facing insights aligned with the existing matrix, timeline, legends, and tooltips.
 10. `crypto_research_communications_agent` — evidence-linked, cautious, non-advisory research notes.
 11. `feature_engineering_expert` — recomputed yield momentum, mcap/TVL, risk, and category-premium features.
@@ -169,7 +169,7 @@ Eleven local expert-agent cards were created in `blocks_agents/`. They are file-
 - Shared read-only context is declared in `blocks_agents/README.md` and the card manifests, including `validate.md`, `DATA_DICTIONARY.md`, both yield sources, the provenance-preserving consolidation, and the current UI files.
 - Requests use JSON input with a declared `request` part; outputs are structured JSON or Markdown artifacts with status, evidence locations, assumptions, and limitations.
 - The cards are local scaffolding with runnable standard-library handlers. `blocks_agents/loader.py` resolves the manifest-relative `./handlers/...` paths, while `handlers/common.py` enforces the declared read-only context allowlist and common artifact envelope. No Blocks account, API key, SDK installation, registration, or publication was performed. A Blocks CLI/configuration check should be run only after the official SDK/CLI is explicitly installed and credentials are supplied by the user.
-- Agents must never treat both conflicting yield files as independent training observations, must label estimated/derived/target fields, and must not present outputs as guaranteed returns or financial advice.
+- Agents must never treat repeated provenance rows as independent training observations, must label estimated/derived/target fields, and must not present outputs as guaranteed returns or financial advice.
 
 ## Research-backed user value and real problem opportunities
 
@@ -259,7 +259,7 @@ A future canonical dataset should add `observation_status` (`observed`, `estimat
 ### 6. Anomaly and provenance detection — unsupervised/data operations
 
 - **User question:** “Which records require human review before publication?”
-- **Signals:** disagreement between the two yield versions, compact-table conflicts, snapshot precision gaps, unusual yield jumps, impossible ranges, missing fields, and stale timestamps.
+- **Signals:** disagreement between the repeated provenance rows, compact-table conflicts, snapshot precision gaps, unusual yield jumps, impossible ranges, missing fields, and stale timestamps.
 - **Output:** data-quality queue with severity, exact file/row/column location, and suggested action (reconcile, label as estimated, or exclude).
 - **Metrics:** confirmed issue precision, review time saved, false-positive rate, and percentage of published records with traceable provenance.
 

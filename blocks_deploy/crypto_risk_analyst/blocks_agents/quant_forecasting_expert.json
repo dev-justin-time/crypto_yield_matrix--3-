@@ -84,7 +84,7 @@
       "inflation_rate_pct"
     ],
     "gates": [
-      "select one source version",
+      "use the canonical yield_data.csv dataset",
       "minimum additional dated history",
       "walk-forward split",
       "persistence and rolling-mean baselines",
