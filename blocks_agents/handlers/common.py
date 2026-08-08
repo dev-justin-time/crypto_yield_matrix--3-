@@ -17,6 +17,50 @@ CONTEXT_ALLOWLIST = {
 }
 YIELD_SOURCES = {"yield_data.csv"}
 
+USER_VALUE_GUIDANCE: dict[str, dict[str, str]] = {
+    "crypto_risk_analyst": {
+        "decision_use": "Use yield together with drawdown, volatility, beta, and risk-adjusted measures to screen downside context.",
+        "review_next": "Compare the result with liquidity and tokenomics evidence before making any allocation decision.",
+        "do_not_infer": "A high yield or favorable risk metric is not a safety guarantee, expected return, or recommendation.",
+    },
+    "defi_liquidity_analyst": {
+        "decision_use": "Use volume, TVL, activity, and trend fields to identify liquidity and exit-risk questions for follow-up.",
+        "review_next": "Confirm live pool depth, slippage, venue concentration, and withdrawal constraints before acting.",
+        "do_not_infer": "Snapshot volume or TVL is not a real-time liquidity guarantee and may include bots or routing activity.",
+    },
+    "tokenomics_sustainability_expert": {
+        "decision_use": "Compare nominal yield with inflation, dilution, supply, and market-cap context to assess sustainability questions.",
+        "review_next": "Check reward composition, unlock schedules, fees, lockups, and price exposure using current primary sources.",
+        "do_not_infer": "Nominal-minus-inflation is a diagnostic proxy, not realized return or a complete real-yield calculation.",
+    },
+    "yield_methodology_expert": {
+        "decision_use": "Use methodology notes and annualization flags to avoid treating unlike yield mechanisms as directly comparable.",
+        "review_next": "Verify APR/APY conventions, compounding, lockups, fees, and reward assets with the provider.",
+        "do_not_infer": "A displayed percentage is not necessarily an equivalent, guaranteed, or currently available return.",
+    },
+    "matrix_research_insights_agent": {
+        "decision_use": "Use the matrix to prioritize assets and questions for deeper risk, liquidity, methodology, and provenance review.",
+        "review_next": "Open the cited source rows and compare the supplied target labels with independently observed data before modeling.",
+        "do_not_infer": "Dashboard target fields are not validated forecasts and should not be treated as predictions.",
+    },
+    "feature_engineering_expert": {
+        "decision_use": "Use transparent derived features as reproducible research inputs and audit the formula inputs beside each result.",
+        "review_next": "Check units, missing denominators, outliers, and chronological leakage before using a feature in a model.",
+        "do_not_infer": "A derived score is not a validated signal, ranking, or investment recommendation.",
+    },
+    "portfolio_scenario_expert": {
+        "decision_use": "Use the scenario fields to compare trade-offs under explicit constraints rather than request an automatic recommendation.",
+        "review_next": "Add fees, taxes, lockups, covariance, position limits, and live execution assumptions to any real analysis.",
+        "do_not_infer": "The scenario summary does not constitute portfolio advice, suitability assessment, or execution instruction.",
+    },
+}
+
+DEFAULT_USER_VALUE = {
+    "decision_use": "Use the findings as traceable research evidence to decide what requires deeper review.",
+    "review_next": "Validate important claims against current primary sources and the cited provenance rows.",
+    "do_not_infer": "This artifact is decision support, not financial advice, a guarantee, or a validated forecast.",
+}
+
 
 def task_payload(task: Any) -> dict[str, Any]:
     parts = getattr(task, "request_parts", None)
@@ -145,6 +189,7 @@ def report(agent: str, status: str, summary: str, findings: list[dict[str, Any]]
         "findings": findings,
         "assumptions": assumptions or [],
         "limitations": limitations or [],
+        "user_value": USER_VALUE_GUIDANCE.get(agent, DEFAULT_USER_VALUE),
         "provenance": {
             "mode": "repository_read_only",
             "sources": "Project context files only; no live network data was requested.",
@@ -152,7 +197,7 @@ def report(agent: str, status: str, summary: str, findings: list[dict[str, Any]]
             "context_files": accessed,
         },
     }
-    required = {"agent", "status", "summary", "findings", "assumptions", "limitations", "provenance"}
+    required = {"agent", "status", "summary", "findings", "assumptions", "limitations", "user_value", "provenance"}
     if set(payload) != required:
         raise RuntimeError("common artifact envelope failed validation")
     return {"artifacts": [{"data": json.dumps(payload, indent=2), "mimeType": "application/json"}]}

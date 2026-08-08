@@ -8,6 +8,7 @@
  *   GET  /health                  -> public liveness + fleet summary
  *   GET  /ready                   -> public configuration/readiness summary
  *   GET  /agents                  -> public served-agent catalog
+ *   GET  /metrics                 -> authenticated operational counters
  *   POST /agents/:name/invoke     -> authenticated paid task dispatch
  *
  * The request body is forwarded verbatim to the agent's `request` part, so
@@ -82,6 +83,19 @@ interface BudgetState {
 
 interface AuthenticatedClient {
   id: string;
+}
+
+interface GatewayMetrics {
+  startedAt: string;
+  requestsTotal: number;
+  responsesByStatus: Record<string, number>;
+  invokeAccepted: number;
+  invokeCompleted: number;
+  invokeFailed: number;
+  authRejected: number;
+  rateLimitRejected: number;
+  budgetRejected: number;
+  capacityRejected: number;
 }
 
 class HttpError extends Error {
@@ -432,6 +446,18 @@ export function createGateway(options: GatewayOptions): Gateway {
   if (taskCostUsd <= 0) throw new Error('taskCostUsd must be greater than zero');
 
   let inFlightTasks = 0;
+  const metrics: GatewayMetrics = {
+    startedAt: new Date().toISOString(),
+    requestsTotal: 0,
+    responsesByStatus: {},
+    invokeAccepted: 0,
+    invokeCompleted: 0,
+    invokeFailed: 0,
+    authRejected: 0,
+    rateLimitRejected: 0,
+    budgetRejected: 0,
+    capacityRejected: 0,
+  };
   let clientPromise: Promise<TaskClient> | null = null;
   let clientReady = false;
   const clientWindows = new Map<string, ClientWindow>();
@@ -518,6 +544,11 @@ export function createGateway(options: GatewayOptions): Gateway {
     const correlationId = requestId(req);
     res.setHeader('x-request-id', correlationId);
     const startedAt = Date.now();
+    metrics.requestsTotal += 1;
+    const recordStatus = (status: number): void => {
+      const key = String(status);
+      metrics.responsesByStatus[key] = (metrics.responsesByStatus[key] ?? 0) + 1;
+    };
     void (async () => {
       let clientId: string | undefined;
       let agentName: string | undefined;
@@ -535,6 +566,7 @@ export function createGateway(options: GatewayOptions): Gateway {
             inFlightTasks,
             maxConcurrentTasks,
           });
+          recordStatus(200);
           return;
         }
 
@@ -563,11 +595,28 @@ export function createGateway(options: GatewayOptions): Gateway {
               taskCostUsd,
             },
           });
+          recordStatus(budgetAvailable ? 200 : 503);
           return;
         }
 
         if (req.method === 'GET' && pathname === '/agents') {
           sendJson(res, 200, { agents: AGENTS });
+          recordStatus(200);
+          return;
+        }
+
+        if (req.method === 'GET' && pathname === '/metrics') {
+          const metricsClient = authenticate(req, options.clientKeys);
+          clientId = metricsClient.id;
+          sendJson(res, 200, {
+            ...metrics,
+            uptimeSeconds: Math.round(process.uptime()),
+            inFlightTasks,
+            maxConcurrentTasks,
+            billingMode: BILLING_MODE,
+            paidTaskCostUsd: taskCostUsd,
+          });
+          recordStatus(200);
           return;
         }
 
@@ -612,6 +661,7 @@ export function createGateway(options: GatewayOptions): Gateway {
           }
           const idempotencyKey = Array.isArray(idempotencyHeader) ? undefined : idempotencyHeader;
           reserveBudget(clientId);
+          metrics.invokeAccepted += 1;
           inFlightTasks += 1;
           try {
             const blocksClient = await getClient();
@@ -625,6 +675,8 @@ export function createGateway(options: GatewayOptions): Gateway {
               correlationId,
             );
             sendJson(res, 200, result);
+            metrics.invokeCompleted += 1;
+            recordStatus(200);
           } finally {
             inFlightTasks -= 1;
           }
@@ -637,6 +689,12 @@ export function createGateway(options: GatewayOptions): Gateway {
       } catch (err) {
         const status = err instanceof HttpError ? err.status : 500;
         const message = err instanceof HttpError ? err.message : 'gateway dispatch failed';
+        recordStatus(status);
+        if (status === 401) metrics.authRejected += 1;
+        if (status === 429 && message.includes('request rate limit')) metrics.rateLimitRejected += 1;
+        if (status === 429 && message.includes('daily paid-task budget')) metrics.budgetRejected += 1;
+        if (status === 503 && message.includes('capacity')) metrics.capacityRejected += 1;
+        if (agentName && status >= 500) metrics.invokeFailed += 1;
         if (err instanceof HttpError && err.retryAfterSeconds !== undefined) {
           res.setHeader('retry-after', String(err.retryAfterSeconds));
         }

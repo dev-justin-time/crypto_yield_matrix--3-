@@ -68,6 +68,18 @@ async function main(): Promise<void> {
   await expectStatus(`${base}/ready`, { method: 'GET' }, 200);
 
   // Fleet listing: exactly the 12 published agents.
+  const metricsBeforeUnauthorized = await fetch(`${base}/metrics`);
+  if (metricsBeforeUnauthorized.status !== 401) {
+    throw new Error(`expected 401 for unauthenticated GET ${base}/metrics, got ${metricsBeforeUnauthorized.status}`);
+  }
+  const metricsBefore = await fetch(`${base}/metrics`, { headers: { authorization: `Bearer ${CLIENT_SECRET}` } });
+  if (metricsBefore.status !== 200) {
+    throw new Error(`expected 200 for authenticated GET ${base}/metrics, got ${metricsBefore.status}: ${await metricsBefore.text()}`);
+  }
+  const metricsBody = (await metricsBefore.json()) as { requestsTotal: number; billingMode: string };
+  if (metricsBody.billingMode !== 'paid' || metricsBody.requestsTotal < 1) {
+    throw new Error('metrics endpoint did not expose safe request/billing counters');
+  }
   const agentsRes = await fetch(`${base}/agents`);
   const agentsBody = (await agentsRes.json()) as { agents: unknown[] };
   if (agentsRes.status !== 200 || agentsBody.agents.length !== 12) {
@@ -147,11 +159,26 @@ async function main(): Promise<void> {
     { method: 'POST', body: JSON.stringify({ question: 'test again' }), headers: invokeHeaders },
     429,
   );
+  // The budget rejection still consumed the client request window; the next
+  // request is rejected specifically by the rolling rate limit.
+  await expectStatus(
+    `${base}/agents/crypto_risk_analyst/invoke`,
+    { method: 'POST', body: JSON.stringify({ question: 'rate limited' }), headers: invokeHeaders },
+    429,
+  );
 
   // Unknown route -> 404.
   await expectStatus(`${base}/nope`, { method: 'GET' }, 404);
 
-  console.log(`smoke: PASS (auth, readiness, budget, health, ${agentsBody.agents.length} agents, validation; no paid dispatch)`);
+  const metricsAfter = await fetch(`${base}/metrics`, { headers: { authorization: `Bearer ${CLIENT_SECRET}` } });
+  if (metricsAfter.status !== 200) {
+    throw new Error(`expected 200 for authenticated GET ${base}/metrics, got ${metricsAfter.status}: ${await metricsAfter.text()}`);
+  }
+  const finalMetrics = (await metricsAfter.json()) as { authRejected: number; budgetRejected: number; rateLimitRejected: number; responsesByStatus: Record<string, number> };
+  if (finalMetrics.authRejected < 1 || finalMetrics.budgetRejected < 1 || finalMetrics.rateLimitRejected < 1 || !finalMetrics.responsesByStatus['400']) {
+    throw new Error('metrics endpoint did not record smoke-test outcomes');
+  }
+  console.log(`smoke: PASS (auth, readiness, protected metrics, budget, health, ${agentsBody.agents.length} agents, validation; no paid dispatch)`);
   await gateway.destroy();
   await new Promise<void>((resolve) => gateway.server.close(() => resolve()));
 }

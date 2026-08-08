@@ -27,6 +27,7 @@ The gateway reserves a task before calling Blocks. The reservation is conservati
 - `GET /health` — no-spend liveness.
 - `GET /ready` — no-spend configuration and daily-budget readiness.
 - `GET /agents` — served agent catalog.
+- `GET /metrics` — authenticated no-spend process counters for request status, auth rejection, accepted/completed/failed invokes, and separated rate/budget/capacity rejection; it requires the gateway bearer credential and should still be restricted to a trusted operational network.
 - `POST /agents/:agentName/invoke` — requires `Authorization: Bearer <gateway-client-secret>` and JSON containing a non-empty `question`.
 
 Example:
@@ -39,7 +40,7 @@ curl -s http://localhost:3000/agents/crypto_risk_analyst/invoke \
   -d '{"question":"Compare BTC yield and downside context","symbol":"BTC","source_file":"yield_data.csv"}'
 ```
 
-Responses include an `x-request-id` correlation header and task results include the same `requestId`. Logs are structured JSON and exclude payloads and secrets.
+Responses include an `x-request-id` correlation header and task results include the same `requestId`. Logs are structured JSON and exclude payloads and secrets. `/metrics` is an authenticated lightweight local baseline; ship it and the structured logs to centralized monitoring before production or horizontal scaling.
 
 ## Local validation (no paid calls)
 

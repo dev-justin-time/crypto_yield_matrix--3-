@@ -21,5 +21,9 @@ if __name__ == "__main__":
     task = Task([Part('{"question":"smoke test", "symbol":"BTC"}')])
     for card in index["agents"]:
         result = run_card(card, task)
-        assert result["artifacts"][0]["mimeType"] == "application/json"
+        artifact = result["artifacts"][0]
+        assert artifact["mimeType"] == "application/json"
+        payload = json.loads(artifact["data"])
+        assert {"decision_use", "review_next", "do_not_infer"} <= set(payload["user_value"])
+        assert payload["provenance"]["source_file"] in {None, "yield_data.csv"}
         print(f"{card}: ok")

@@ -49,6 +49,7 @@ The primary evidence files are:
 - Forecast cards must use chronological splits, out-of-time evaluation, simple baselines, calibrated probabilities where relevant, and uncertainty intervals.
 - Agents should return `PASS`, `WARNING`, or `FAIL` status plus exact file/row/column references whenever possible.
 - The feature-engineering formulas are recomputed from source fields: `yield_momentum = yield_trend_slope * yield_volatility`, `mcap_to_tvl = mcap_end_current_usd / tvl_usd`, `risk_score = beta_vs_btc * volatility_annualized_current / sharpe_ratio_current`, and `yield_premium = agg_current - yield_vs_category_avg`.
+- Every local research artifact includes `user_value.decision_use`, `user_value.review_next`, and `user_value.do_not_infer` so a user receives interpretation guidance rather than an unexplained metric dump.
 - A zero `tvl_usd` or `sharpe_ratio_current` produces an undefined (`null`) ratio with a warning; it is never silently replaced with zero.
 - Outputs are research and decision-support artifacts, not financial advice or guaranteed return predictions.
 
@@ -56,7 +57,7 @@ The primary evidence files are:
 
 1. Select a card and send a JSON request containing `question` and optional `source_file`, `symbol`, `category`, `features`, or `target` fields.
 2. Mount this repository read-only for the handler; the included handlers resolve files relative to the repository root.
-3. Return the common envelope: `agent`, `status`, `summary`, `findings`, `assumptions`, `limitations`, and `provenance`.
+3. Return the common envelope: `agent`, `status`, `summary`, `findings`, `assumptions`, `limitations`, `user_value`, and `provenance`.
 4. Run Blocks CLI validation or publishing only after installing the official SDK/CLI and supplying the user's credentials explicitly.
 5. The forecasting handler intentionally returns a readiness `FAIL` until a canonical source and additional dated history are available; this is a safety gate, not a runtime defect.
 

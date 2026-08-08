@@ -184,6 +184,11 @@ def merge_results(results: list[dict[str, Any]], payload: dict[str, Any]) -> dic
         "agent": "crypto_yield_a2a_orchestrator",
         "status": status,
         "summary": f"Merged {len(successful)} of {len(results)} specialist analyses for {payload.get('symbol') or 'the requested scope'}.",
+        "user_value": {
+            "decision_use": "Use the merged evidence to prioritize methodology, risk, liquidity, tokenomics, feature, and provenance follow-up questions.",
+            "review_next": "Inspect each specialist's cited provenance and confirm live permissions, data freshness, and assumptions before acting.",
+            "do_not_infer": "Partial or merged specialist output is not a validated forecast, recommendation, or guarantee.",
+        },
         "findings": findings,
         "assumptions": assumptions,
         "limitations": list(dict.fromkeys(limitations + [
