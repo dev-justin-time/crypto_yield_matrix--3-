@@ -9,6 +9,7 @@ from typing import Any, Iterable
 
 ROOT = Path(__file__).resolve().parents[2]
 ASSET_CATALOG = ROOT / "asset_catalog.csv"
+LIVE_SNAPSHOT = ROOT / "live_data" / "live_snapshot.json"
 CONTEXT_ALLOWLIST = {
     "validate.md",
     "DATA_DICTIONARY.md",
@@ -17,6 +18,7 @@ CONTEXT_ALLOWLIST = {
     "matrix.js",
     "styles.css",
     "asset_catalog.csv",
+    "live_data/live_snapshot.json",
 }
 YIELD_SOURCES = {"yield_data.csv"}
 
@@ -135,6 +137,48 @@ def catalog_by_symbol() -> dict[str, dict[str, str]]:
     return {row.get("symbol", "").upper(): row for row in load_asset_catalog() if row.get("symbol")}
 
 
+@lru_cache(maxsize=1)
+def load_live_snapshot() -> dict[str, Any]:
+    """Read the worker's overlay without making network calls in a paid task."""
+    if not LIVE_SNAPSHOT.exists():
+        return {}
+    try:
+        value = json.loads(LIVE_SNAPSHOT.read_text(encoding="utf-8"))
+        return value if isinstance(value, dict) else {}
+    except (OSError, json.JSONDecodeError):
+        return {}
+
+
+def live_enrichment(symbol: str) -> dict[str, Any]:
+    snapshot = load_live_snapshot()
+    market = snapshot.get("market", {}).get("assets", {})
+    observation = market.get(str(symbol).upper(), {}) if isinstance(market, dict) else {}
+    generated_at = snapshot.get("generated_at")
+    return {
+        "status": snapshot.get("data_status", "unavailable") if snapshot else "unavailable",
+        "generated_at": generated_at,
+        "freshness": snapshot.get("freshness", {}),
+        "is_fresh": _snapshot_is_fresh(snapshot),
+        "market": observation if isinstance(observation, dict) else {},
+        "defi_chain_observations": snapshot.get("defi", {}).get("chains", []) if snapshot else [],
+        "blockchain_observations": snapshot.get("blockchain", {}).get("observations", []) if snapshot else [],
+        "provider_errors": snapshot.get("errors", []) if snapshot else [],
+    }
+
+
+def _snapshot_is_fresh(snapshot: dict[str, Any]) -> bool:
+    if not snapshot or not snapshot.get("generated_at"):
+        return False
+    try:
+        from datetime import datetime, timezone
+        generated = datetime.fromisoformat(str(snapshot["generated_at"]).replace("Z", "+00:00"))
+        age = (datetime.now(timezone.utc) - generated).total_seconds()
+        limit = float(snapshot.get("freshness", {}).get("stale_after_seconds", 900))
+        return age >= 0 and age <= limit
+    except (TypeError, ValueError, OverflowError):
+        return False
+
+
 def asset_enrichment(symbol: str) -> dict[str, Any]:
     row = catalog_by_symbol().get(str(symbol).upper(), {})
     return {
@@ -155,6 +199,7 @@ def asset_enrichment(symbol: str) -> dict[str, Any]:
         "mcap_to_tvl": numeric_value(row, "mcap_to_tvl"),
         "risk_score": numeric_value(row, "risk_score"),
         "yield_premium": numeric_value(row, "yield_premium"),
+        "live_overlay": live_enrichment(symbol),
     }
 
 
@@ -251,6 +296,11 @@ def report(agent: str, status: str, summary: str, findings: list[dict[str, Any]]
             "quote_source_rows": sum(row.get("quote_status") == "source_snapshot" for row in load_asset_catalog()),
             "policy": "Generated enrichment only; canonical yield_data.csv remains the sole handler source. Quote exports preserve supplied fields and leave unavailable values blank.",
         },
+        "live_overlay": {
+            "available": bool(LIVE_SNAPSHOT.exists()),
+            "path": "live_data/live_snapshot.json" if LIVE_SNAPSHOT.exists() else None,
+            "policy": "Read-only worker output; never replaces historical yield_data.csv and is labeled with provider, observed_at, freshness, and errors.",
+        },
         "provenance": {
             "mode": "repository_read_only",
             "sources": "Project context files only; no live network data was requested.",
@@ -258,7 +308,7 @@ def report(agent: str, status: str, summary: str, findings: list[dict[str, Any]]
             "context_files": accessed,
         },
     }
-    required = {"agent", "status", "summary", "findings", "assumptions", "limitations", "user_value", "asset_catalog", "provenance"}
+    required = {"agent", "status", "summary", "findings", "assumptions", "limitations", "user_value", "asset_catalog", "live_overlay", "provenance"}
     if set(payload) != required:
         raise RuntimeError("common artifact envelope failed validation")
     return {"artifacts": [{"data": json.dumps(payload, indent=2), "mimeType": "application/json"}]}

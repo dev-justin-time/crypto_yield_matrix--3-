@@ -13,3 +13,7 @@ crypto_yield_matrix_node_gateway/.gateway-state/
 **/node_modules/
 **/__pycache__/
 *.py[cod]
+live_data/live_snapshot.json
+live_data/worker_status.json
+blocks_deploy/**/live_data/live_snapshot.json
+blocks_deploy/**/live_data/worker_status.json

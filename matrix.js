@@ -18,6 +18,7 @@
   const LIGHT_BLOCKS = new Set(['SOL', 'SUI', 'APT', 'CELO', 'FLOW', 'GLMR', 'MINA', 'MNDE', 'PENDLE', 'HYPE', 'ONDO']);
   const FOCUS_SYMBOLS = ['BTC', 'ETH', 'SOL', 'MATIC', 'ADA', 'XRP'];
   const ASSET_CATALOG_URL = 'asset_catalog.csv';
+  const LIVE_SNAPSHOT_URL = 'live_data/live_snapshot.json';
   const SOURCE_COVERAGE_LABELS = { source_snapshot: 'source snapshot', canonical_only: 'canonical yield only' };
   let tooltipId = 0;
   const CATEGORY_LABELS = {
@@ -134,7 +135,7 @@
     return SOURCE_COVERAGE_LABELS[asset.snapshot_status] || 'coverage unavailable';
   }
 
-  function buildExplorer(assets, catalog) {
+  function buildExplorer(assets, catalog, liveSnapshot) {
     const grid = document.getElementById('asset-catalog-grid');
     const insights = document.getElementById('asset-insights');
     const search = document.getElementById('asset-search');
@@ -185,12 +186,21 @@
           ? `Quote snapshot ${formatUsd(asset.snapshot_price_usd)} · ${signed(asset.snapshot_change_pct)}% latest change · ${asset.quote_as_of_iso || 'time unavailable'}`
           : 'Yield matrix coverage only. Obtain a current market quote before acting; no snapshot was supplied for this asset.';
         card.append(element('p', 'catalog-note', note));
+        const liveAsset = liveSnapshot && liveSnapshot.market && liveSnapshot.market.assets
+          ? liveSnapshot.market.assets[asset.symbol]
+          : null;
+        if (liveAsset && liveAsset.price_usd != null) {
+          card.append(element('div', 'catalog-live', `Live overlay · ${formatUsd(liveAsset.price_usd)} · ${signed(liveAsset.change_24h_pct)}% 24h · ${liveAsset.provider || 'provider'} · ${liveAsset.observed_at || 'time unavailable'}`));
+        } else {
+          card.append(element('div', 'catalog-live', 'Live overlay unavailable for this asset; historical evidence remains unchanged.'));
+        }
         card.append(element('div', 'catalog-cta', asset.quote_status === 'source_snapshot' ? 'Inspect quote + yield evidence →' : 'Explore yield evidence →'));
         grid.append(card);
       });
       const sourceCount = catalog.filter(asset => asset.snapshot_status === 'source_snapshot').length;
       const quoteCount = catalog.filter(asset => asset.quote_status === 'source_snapshot').length;
-      insights.textContent = `${filtered.length} assets shown · ${quoteCount} quote exports available · ${sourceCount} source-backed yield snapshots · ${catalog.length - sourceCount} canonical-only rows · derived features are research aids, not forecasts.`;
+      const liveCount = liveSnapshot && liveSnapshot.market ? Number(liveSnapshot.market.asset_count || 0) : 0;
+      insights.textContent = `${filtered.length} assets shown · ${quoteCount} quote exports available · ${liveCount} live market observations · ${sourceCount} source-backed yield snapshots · ${catalog.length - sourceCount} canonical-only rows · derived features are research aids, not forecasts.`;
     };
     [search, category, coverage, quote, sort].forEach(control => control.addEventListener('input', render));
     const filteredCatalog = () => {
@@ -445,17 +455,36 @@
   async function init() {
     const grid = document.getElementById('matrix-grid');
     try {
-      const [yieldResponse, catalogResponse] = await Promise.all([fetch('yield_data.csv'), fetch(ASSET_CATALOG_URL)]);
+      const liveStatus = document.getElementById('live-feed-status');
+      const [yieldResponse, catalogResponse, liveResponse] = await Promise.all([
+        fetch('yield_data.csv'),
+        fetch(ASSET_CATALOG_URL),
+        fetch(LIVE_SNAPSHOT_URL)
+      ]);
       if (!yieldResponse.ok) throw new Error(`yield CSV request failed (${yieldResponse.status})`);
       if (!catalogResponse.ok) throw new Error(`asset catalog request failed (${catalogResponse.status})`);
       const assets = parseCSV(await yieldResponse.text()).filter(asset => asset.symbol && asset.name);
       const catalog = parseCSV(await catalogResponse.text()).filter(asset => asset.symbol && asset.name);
+      let liveSnapshot = null;
+      if (liveResponse.ok) {
+        try { liveSnapshot = await liveResponse.json(); } catch (error) { console.warn('live overlay JSON is invalid', error); }
+      }
+      if (liveStatus) {
+        const generatedAt = liveSnapshot && liveSnapshot.generated_at ? new Date(liveSnapshot.generated_at) : null;
+        const staleAfter = Number(liveSnapshot && liveSnapshot.freshness && liveSnapshot.freshness.stale_after_seconds || 900);
+        const fresh = generatedAt && Number.isFinite(generatedAt.getTime()) && (Date.now() - generatedAt.getTime()) <= staleAfter * 1000;
+        liveStatus.classList.toggle('stale', Boolean(liveSnapshot) && !fresh);
+        liveStatus.classList.toggle('unavailable', !liveSnapshot);
+        liveStatus.textContent = liveSnapshot
+          ? `Live overlay: ${fresh ? 'fresh' : 'stale'} · ${liveSnapshot.market && liveSnapshot.market.asset_count || 0} market observations · updated ${liveSnapshot.generated_at || 'unknown'} · historical yield source unchanged`
+          : 'Live overlay: unavailable · historical yield source unchanged';
+      }
       const focusAssets = FOCUS_SYMBOLS.map(symbol => assets.find(asset => asset.symbol === symbol)).filter(Boolean);
       if (!assets.length || focusAssets.length !== FOCUS_SYMBOLS.length) throw new Error('CSV is missing one or more focus assets');
       buildMatrix(focusAssets);
       buildLegend(focusAssets);
       buildTimeline(assets, focusAssets);
-      buildExplorer(assets, catalog);
+      buildExplorer(assets, catalog, liveSnapshot);
       document.body.classList.add('matrix-ready');
       console.info(`Loaded ${assets.length} assets into the yield matrix`);
     } catch (error) {

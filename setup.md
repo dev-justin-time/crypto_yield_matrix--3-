@@ -665,7 +665,33 @@ The smoke test uses placeholder Blocks and gateway credentials and exercises hea
 
 The gateway process is also managed by [`Restart-BlocksAgents.ps1`](Restart-BlocksAgents.ps1): it starts `node --import tsx index.ts` from this directory (state entry `gateway`, logs under `blocks-agent-logs/gateway/`). Use `-AgentName gateway` to manage only the gateway or `-SkipGateway` to leave it out of fleet restarts. The gateway reads `BLOCKS_API_KEY` from its ignored `.env` and honors `GATEWAY_PORT` from its environment or `.env`.
 
-## 20. Official references
+## 20. Live market and blockchain overlay
+
+The historical `yield_data.csv` remains the sole canonical handler source. The optional live layer is a separate, freshness-labeled overlay written by [`live_worker.py`](live_worker.py) to `live_data/live_snapshot.json`; it never rewrites historical yields or makes upstream calls during a paid Blocks task.
+
+The worker uses conservative public endpoints: Binance batch 24-hour tickers, a small Coinbase BTC/ETH/SOL comparison sample, DeFiLlama chain TVL, and Ethereum/Solana JSON-RPC health observations. Each observation carries provider, endpoint, timestamp, and the snapshot carries errors and a stale threshold. See [`live_data/README.md`](live_data/README.md) for provider links and polling policy.
+
+Run locally:
+
+```bash
+python live_worker.py
+```
+
+For an always-restarting non-root container with atomic snapshots and a healthcheck:
+
+```bash
+docker compose -f docker-compose.live.yml up -d --build
+cat live_data/worker_status.json
+```
+
+Important operating rules:
+
+- The default cycle is five minutes; do not shorten it without rechecking each provider's current terms and limits.
+- Shared public RPC endpoints are best effort. Inject dedicated/keyed RPC URLs through the deployment secret manager for sustained production traffic.
+- If every upstream fails, the worker retains the last usable snapshot and marks status `degraded`; consumers must show stale/unavailable status.
+- The dashboard labels live values separately from historical yield evidence. Live prices are not yield observations, forecasts, or investment advice.
+
+## 21. Official references
 
 - [Blocks docs home](https://blocks.ai/docs)
 - [Blocks Quickstart](https://blocks.ai/docs/quickstart)

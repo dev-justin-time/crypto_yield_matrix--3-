@@ -1,0 +1,27 @@
+{
+  "schema_version": "live-overlay-1",
+  "generated_at": "2026-08-07T00:00:00Z",
+  "canonical_source": "yield_data.csv",
+  "data_status": "live_overlay_only",
+  "freshness": {
+    "stale_after_seconds": 900,
+    "generated_at": "2026-08-07T00:00:00Z"
+  },
+  "market": {
+    "assets": {
+      "BTC": {
+        "price_usd": 0,
+        "change_24h_pct": 0,
+        "volume_24h_usd": 0,
+        "provider": "binance",
+        "endpoint": "/api/v3/ticker/24hr",
+        "observed_at": "2026-08-07T00:00:00Z"
+      }
+    },
+    "asset_count": 1
+  },
+  "defi": {"chains": [], "chain_count": 0},
+  "blockchain": {"observations": [], "observation_count": 0},
+  "provider_status": [],
+  "errors": []
+}

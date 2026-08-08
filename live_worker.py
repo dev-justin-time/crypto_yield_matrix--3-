@@ -35,6 +35,8 @@ def _write_status(status: dict[str, object], path: Path = DEFAULT_STATUS) -> Non
 def _mirror_snapshot(snapshot: dict[str, object]) -> int:
     """Mirror the same explicit overlay to native data-consuming deployments."""
     count = 0
+    if not DEPLOY_ROOT.exists():
+        return count
     for project in sorted(DEPLOY_ROOT.iterdir()):
         if not project.is_dir() or project.name == "crypto_yield_a2a_orchestrator":
             continue
