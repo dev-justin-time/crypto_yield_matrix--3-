@@ -2893,7 +2893,7 @@
     },
     {
       "source": "validate.md",
-      "sha256": "422a765b96bc733566a6554b68f893c00747a1dab9ab3d8a42b1f4554c7bf937",
+      "sha256": "659d0b3e786bb1b43f1343f7ddcf11cd07284454c2300cbf3b71eabc4c075d55",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/validate.md",
         "blocks_deploy/crypto_risk_analyst/validate.md",

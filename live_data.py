@@ -40,7 +40,7 @@ def validate_provider_url(value: str, name: str) -> str:
         raise ValueError(f"{name} must be an absolute URL without embedded credentials")
     return value.rstrip("/")
 
-BINANCE_SYMBOLS = {"BTC": "BTCUSDT", "ETH": "ETHUSDT", "SOL": "SOLUSDT", "MATIC": "MATICUSDT", "ADA": "ADAUSDT", "XRP": "XRPUSDT", "AVAX": "AVAXUSDT", "DOT": "DOTUSDT", "ATOM": "ATOMUSDT", "LINK": "LINKUSDT", "AAVE": "AAVEUSDT", "UNI": "UNIUSDT", "ARB": "ARBUSDT", "OP": "OPUSDT", "NEAR": "NEARUSDT", "SEI": "SEIUSDT", "TIA": "TIAUSDT", "INJ": "INJUSDT", "FIL": "FILUSDT", "ALGO": "ALGOUSDT", "TRX": "TRXUSDT", "XLM": "XLMUSDT", "EOS": "EOSUSDT", "NEO": "NEOUSDT", "VET": "VETUSDT", "THETA": "THETAUSDT", "FTM": "FTMUSDT", "ONE": "ONEUSDT", "KAVA": "KAVAUSDT", "ROSE": "ROSEUSDT", "FLOW": "FLOWUSDT", "MINA": "MINAUSDT", "CELO": "CELOUSDT", "GLMR": "GLMRUSDT", "PENDLE": "PENDLEUSDT", "EIGEN": "EIGENUSDT", "ETHFI": "ETHFIUSDT", "JTO": "JTOUSDT", "LDO": "LDOUSDT", "RPL": "RPLUSDT", "MNDE": "MNDEUSDT", "HYPE": "HYPEUSDT", "ONDO": "ONDOUSDT", "ICP": "ICPUSDT", "GRT": "GRTUSDT", "CRO": "CROUSDT", "MKR": "MKRUSDT", "CRV": "CRVUSDT", "SNX": "SNXUSDT", "COMP": "COMPUSDT", "BAL": "BALUSDT", "YFI": "YFIUSDT", "WLD": "WLDUSDT", "LUNC": "LUNCUSDT"}
+BINANCE_SYMBOLS = {"BTC": "BTCUSDT", "ETH": "ETHUSDT", "SOL": "SOLUSDT", "MATIC": "MATICUSDT", "ADA": "ADAUSDT", "XRP": "XRPUSDT", "AVAX": "AVAXUSDT", "DOT": "DOTUSDT", "ATOM": "ATOMUSDT", "LINK": "LINKUSDT", "AAVE": "AAVEUSDT", "UNI": "UNIUSDT", "ARB": "ARBUSDT", "OP": "OPUSDT", "NEAR": "NEARUSDT", "SEI": "SEIUSDT", "TIA": "TIAUSDT", "INJ": "INJUSDT", "FIL": "FILUSDT", "ALGO": "ALGOUSDT", "TRX": "TRXUSDT", "XLM": "XLMUSDT", "EOS": "EOSUSDT", "NEO": "NEOUSDT", "VET": "VETUSDT", "THETA": "THETAUSDT", "FTM": "FTMUSDT", "ONE": "ONEUSDT", "KAVA": "KAVAUSDT", "ROSE": "ROSEUSDT", "FLOW": "FLOWUSDT", "MINA": "MINAUSDT", "CELO": "CELOUSDT", "GLMR": "GLMRUSDT", "PENDLE": "PENDLEUSDT", "EIGEN": "EIGENUSDT", "ETHFI": "ETHFIUSDT", "JTO": "JTOUSDT",    "LDO": "LDOUSDT", "RPL": "RPLUSDT", "MNDE": "MNDEUSDT", "HYPE": "HYPEUSDT", "ONDO": "ONDOUSDT", "ICP": "ICPUSDT", "GRT": "GRTUSDT", "CRO": "CROUSDT", "MKR": "MKRUSDT", "CRV": "CRVUSDT", "SNX": "SNXUSDT", "COMP": "COMPUSDT", "BAL": "BALUSDT", "YFI": "YFIUSDT", "WLD": "WLDUSDT", "LUNC": "LUNCUSDT", "SUI": "SUIUSDT", "APT": "APTUSDT", "RENDER": "RENDERUSDT", "TAO": "TAOUSDT", "XTZ": "XTZUSDT"}
 COINBASE_PRODUCTS = {"BTC": "BTC-USD", "ETH": "ETH-USD", "SOL": "SOL-USD", "MATIC": "MATIC-USD", "ADA": "ADA-USD", "XRP": "XRP-USD"}
 
 def iso_now() -> str:
@@ -219,12 +219,6 @@ class LiveDataCollector:
                     result.append({"chain": chain, "block_height": height, "provider": client.state.name, "endpoint": client.base_url, "observed_at": iso_now()})
                 client.state.last_error = None
                 client.state.last_success = iso_now()
-            except HTTPError as error:
-                client.state.last_http_status = int(error.code)
-                client.state.last_headers = _safe_rate_headers(error.headers)
-                client.state.failures += 1
-                client.state.last_error = f"HTTP {error.code}"
-                errors.append({"provider": client.state.name, "error": f"HTTP {error.code}"})
             except HTTPError as error:
                 client.state.last_http_status = int(error.code)
                 client.state.last_headers = _safe_rate_headers(error.headers)
