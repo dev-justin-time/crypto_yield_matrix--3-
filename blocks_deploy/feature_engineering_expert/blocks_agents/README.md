@@ -22,7 +22,9 @@ The primary evidence files are:
 - `validate.md` — audit findings, provenance conflicts, research use cases, and modeling guardrails.
 - `DATA_DICTIONARY.md` — field definitions and modeling notes.
 - `yield_data.csv` — the single canonical 118-row dataset; its `source_file` and `source_row` columns preserve row-level provenance.
-- `table-*.csv` — source snapshots, metadata tables, and compact summaries with heterogeneous schemas.
+- `asset_catalog.csv` — generated one-row-per-symbol evidence-first enrichment with explicit snapshot coverage.
+- `csv/assets/<SYMBOL>.csv` — generated focused asset views for all 59 canonical symbols.
+- `table-*.csv` — supplied source snapshots, metadata tables, and compact summaries with heterogeneous schemas; only the nine one-row asset tables are joined by the catalog builder.
 - `index.html`, `matrix.js`, `styles.css` — current user-facing matrix behavior and labels.
 
 ## Agents
@@ -48,7 +50,8 @@ The primary evidence files are:
 - Eight quarters and 118 provenance-labeled rows are suitable for prototyping and research triage, not validated production forecasting.
 - Forecast cards must use chronological splits, out-of-time evaluation, simple baselines, calibrated probabilities where relevant, and uncertainty intervals.
 - Agents should return `PASS`, `WARNING`, or `FAIL` status plus exact file/row/column references whenever possible.
-- The feature-engineering formulas are recomputed from source fields: `yield_momentum = yield_trend_slope * yield_volatility`, `mcap_to_tvl = mcap_end_current_usd / tvl_usd`, `risk_score = beta_vs_btc * volatility_annualized_current / sharpe_ratio_current`, and `yield_premium = agg_current - yield_vs_category_avg`.
+- The feature-engineering formulas are recomputed from source fields: `yield_momentum = yield_trend_slope * yield_volatility`, `mcap_to_tvl = mcap_end_current_usd / tvl_usd`, `risk_score = beta_vs_btc * volatility_annualized_current / sharpe_ratio_current`, and `yield_premium = agg_current - yield_vs_category_avg`. The same four fields are materialized in the generated asset catalog for dashboard/export use.
+- Asset snapshot coverage is explicit: nine assets have supplied market snapshot rows and 50 are `canonical_only`; blank snapshot fields never mean zero.
 - Every local research artifact includes `user_value.decision_use`, `user_value.review_next`, and `user_value.do_not_infer` so a user receives interpretation guidance rather than an unexplained metric dump.
 - A zero `tvl_usd` or `sharpe_ratio_current` produces an undefined (`null`) ratio with a warning; it is never silently replaced with zero.
 - Outputs are research and decision-support artifacts, not financial advice or guaranteed return predictions.

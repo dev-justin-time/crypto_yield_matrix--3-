@@ -3,10 +3,12 @@ from __future__ import annotations
 import csv
 import json
 import math
+from functools import lru_cache
 from pathlib import Path
 from typing import Any, Iterable
 
 ROOT = Path(__file__).resolve().parents[2]
+ASSET_CATALOG = ROOT / "asset_catalog.csv"
 CONTEXT_ALLOWLIST = {
     "validate.md",
     "DATA_DICTIONARY.md",
@@ -14,6 +16,7 @@ CONTEXT_ALLOWLIST = {
     "index.html",
     "matrix.js",
     "styles.css",
+    "asset_catalog.csv",
 }
 YIELD_SOURCES = {"yield_data.csv"}
 
@@ -119,6 +122,37 @@ def load_source(filename: str = "yield_data.csv") -> list[dict[str, str]]:
     return load_csv(filename)
 
 
+@lru_cache(maxsize=1)
+def load_asset_catalog() -> tuple[dict[str, str], ...]:
+    """Load generated evidence-first asset enrichment without changing source policy."""
+    if not ASSET_CATALOG.exists():
+        return ()
+    with ASSET_CATALOG.open("r", encoding="utf-8-sig", newline="") as handle:
+        return tuple(csv.DictReader(handle))
+
+
+def catalog_by_symbol() -> dict[str, dict[str, str]]:
+    return {row.get("symbol", "").upper(): row for row in load_asset_catalog() if row.get("symbol")}
+
+
+def asset_enrichment(symbol: str) -> dict[str, Any]:
+    row = catalog_by_symbol().get(str(symbol).upper(), {})
+    return {
+        "coverage_status": row.get("snapshot_status", "unavailable"),
+        "snapshot_source_file": row.get("snapshot_source_file") or None,
+        "snapshot_price_usd": numeric_value(row, "snapshot_price_usd"),
+        "snapshot_change_pct": numeric_value(row, "snapshot_change_pct"),
+        "snapshot_market_cap_usd": numeric_value(row, "snapshot_market_cap_usd"),
+        "snapshot_volume_usd": numeric_value(row, "snapshot_volume_usd"),
+        "snapshot_52w_high_usd": numeric_value(row, "snapshot_52w_high_usd"),
+        "snapshot_52w_low_usd": numeric_value(row, "snapshot_52w_low_usd"),
+        "yield_momentum": numeric_value(row, "yield_momentum"),
+        "mcap_to_tvl": numeric_value(row, "mcap_to_tvl"),
+        "risk_score": numeric_value(row, "risk_score"),
+        "yield_premium": numeric_value(row, "yield_premium"),
+    }
+
+
 def value(row: dict[str, str], field: str, default: float = 0.0) -> float:
     try:
         return float(row.get(field, default))
@@ -171,7 +205,20 @@ def derived_features(row: dict[str, str]) -> dict[str, float | None]:
 
 def evidence(row: dict[str, str], filename: str, line: int | None = None) -> dict[str, Any]:
     resolved_line = line if line is not None else row.get("source_row")
-    return {"source_file": filename, "source_row": resolved_line, "symbol": row.get("symbol")}
+    catalog = catalog_by_symbol().get(row.get("symbol", "").upper(), {})
+    return {
+        "source_file": filename,
+        "source_row": resolved_line,
+        "symbol": row.get("symbol"),
+        "asset_catalog": {
+            "status": catalog.get("snapshot_status", "unavailable"),
+            "snapshot_source_file": catalog.get("snapshot_source_file") or None,
+            "generated_fields": list(DERIVED_CATALOG_FIELDS),
+        },
+    }
+
+
+DERIVED_CATALOG_FIELDS = ("yield_momentum", "mcap_to_tvl", "risk_score", "yield_premium")
 
 
 def report(agent: str, status: str, summary: str, findings: list[dict[str, Any]],
@@ -190,6 +237,13 @@ def report(agent: str, status: str, summary: str, findings: list[dict[str, Any]]
         "assumptions": assumptions or [],
         "limitations": limitations or [],
         "user_value": USER_VALUE_GUIDANCE.get(agent, DEFAULT_USER_VALUE),
+        "asset_catalog": {
+            "available": bool(ASSET_CATALOG.exists()),
+            "rows": len(load_asset_catalog()),
+            "source_snapshot_rows": sum(row.get("snapshot_status") == "source_snapshot" for row in load_asset_catalog()),
+            "canonical_only_rows": sum(row.get("snapshot_status") == "canonical_only" for row in load_asset_catalog()),
+            "policy": "Generated enrichment only; canonical yield_data.csv remains the sole handler source.",
+        },
         "provenance": {
             "mode": "repository_read_only",
             "sources": "Project context files only; no live network data was requested.",
@@ -197,7 +251,7 @@ def report(agent: str, status: str, summary: str, findings: list[dict[str, Any]]
             "context_files": accessed,
         },
     }
-    required = {"agent", "status", "summary", "findings", "assumptions", "limitations", "user_value", "provenance"}
+    required = {"agent", "status", "summary", "findings", "assumptions", "limitations", "user_value", "asset_catalog", "provenance"}
     if set(payload) != required:
         raise RuntimeError("common artifact envelope failed validation")
     return {"artifacts": [{"data": json.dumps(payload, indent=2), "mimeType": "application/json"}]}

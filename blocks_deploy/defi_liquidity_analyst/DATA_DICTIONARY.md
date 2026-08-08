@@ -7,7 +7,19 @@
 
 The root and deployment copies of `yield_data.csv` are the single current dataset. It contains **118 data rows**, **59 unique symbols**, and **61 columns**: **59 analytical columns** plus the two provenance columns `source_file` and `source_row`. The repeated symbols are provenance-labeled rows and must not be treated as independent time observations without an explicit row-selection policy.
 
-The eight sections below document the 59 analytical columns currently present in the CSV. The later `Planned/derived` sections are design definitions only; they are **not columns in the current canonical CSV** and must not be passed to a model as observed features until materialized and validated.
+The eight sections below document the 59 analytical columns currently present in the canonical CSV. Generated evidence-first enrichment is materialized separately in `asset_catalog.csv` and one file per asset under `csv/assets/`; those outputs never replace the canonical source and keep unavailable market fields blank. The later `Planned/derived` sections remain design definitions for future work; they are not columns in the canonical CSV or promises of live data.
+
+## Generated asset enrichment
+
+`build_asset_catalog.py` joins the first canonical `yield_data.csv` evidence row for each of the 59 symbols with the nine supplied one-row market snapshot tables under `csv/`. It produces:
+
+- `asset_catalog.csv` — one normalized row for each canonical symbol;
+- `csv/assets/<SYMBOL>.csv` — one focused file for each of the 59 assets;
+- per-asset derived fields: `yield_momentum`, `mcap_to_tvl`, `risk_score`, and `yield_premium`;
+- snapshot fields such as price, market cap, volume, 52-week range, supply, website, exchange, and snapshot time when a supplied table exists;
+- `snapshot_status=source_snapshot` for the nine source-backed assets and `snapshot_status=canonical_only` for the remaining assets.
+
+Blank snapshot fields mean that no supplied source table covered that asset. They are not zeros, estimates, or live values. The generated catalog is safe for research exploration and user-facing coverage indicators, but it must not be treated as an independent time series or validated forecast.
 
 ### Provenance columns (2 columns)
 | Column | Type | Description |
@@ -212,7 +224,7 @@ The eight sections below document the 59 analytical columns currently present in
 
 ## Model Training Suggestions
 
-The following suggestions reference planned/derived fields. They are design guidance only and are not evidence that those fields exist in `yield_data.csv`. Do not train or publish a forecast using them until the fields are materialized, dated, and independently validated.
+The following suggestions reference planned/derived fields. They are design guidance only and are not evidence that those fields exist in `yield_data.csv`. The four transparent fields materialized in the generated asset catalog are enrichment outputs, not canonical source columns. Do not train or publish a forecast using any target or derived field until it is dated, independently validated, and covered by an explicit data-quality policy.
 
 ### Regression Tasks
 - **Predict `q3_26_forward_yield`** from: yield history + price momentum + volatility + yield_trend_slope + yield_consistency

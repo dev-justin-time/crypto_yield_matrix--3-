@@ -7,6 +7,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent
 CANONICAL_NAME = "yield_data.csv"
 DEPLOY_ROOT = ROOT / "blocks_deploy"
+ASSET_CATALOG = ROOT / "asset_catalog.csv"
+ASSET_DIR = ROOT / "csv" / "assets"
 ALTERNATE_NAMES = {"yield_data1.csv", "consolidated_yield_data.csv"}
 
 
@@ -98,6 +100,20 @@ for path in deployment_files:
 for path in noncanonical_csvs:
     issues.append(f"removed dataset still exists: {path.relative_to(ROOT)}")
 
+catalog_rows = read_rows(ASSET_CATALOG) if ASSET_CATALOG.exists() else []
+if len(catalog_rows) != len(symbols):
+    issues.append(f"asset catalog has {len(catalog_rows)} rows, expected {len(symbols)} unique canonical symbols")
+asset_files = sorted(ASSET_DIR.glob("*.csv")) if ASSET_DIR.exists() else []
+if len(asset_files) != len(symbols):
+    issues.append(f"per-asset catalog file count is {len(asset_files)}, expected {len(symbols)}")
+catalog_symbols = {row.get("symbol", "") for row in catalog_rows}
+if catalog_symbols != set(symbols):
+    issues.append("asset catalog symbols do not match canonical unique symbols")
+if catalog_rows:
+    coverage = Counter(row.get("snapshot_status", "") for row in catalog_rows)
+else:
+    coverage = Counter()
+
 report = [
     "# Canonical CSV validation report",
     "",
@@ -112,6 +128,8 @@ report = [
     f"- SHA-256: `{hashlib.sha256(canonical.read_bytes()).hexdigest()}`",
     f"- Deployment copies checked: **{len(deployment_files)}**",
     f"- Duplicate symbol count: **{sum(count > 1 for count in symbols.values())}** symbols; these are retained because the supplied canonical file contains all provenance rows.",
+    f"- Generated asset catalog: **{len(catalog_rows)}** rows and **{len(asset_files)}** per-asset files.",
+    f"- Asset snapshot coverage: **{coverage.get('source_snapshot', 0)}** source-backed, **{coverage.get('canonical_only', 0)}** canonical-only.",
     "- Alternate dataset files checked: **0** (only embedded provenance labels remain in the canonical file).",
     "",
     "## Embedded provenance labels",
@@ -127,10 +145,11 @@ report += [
     f"- Deployment copies byte-identical to root: **{'PASS' if all(path.read_bytes() == canonical.read_bytes() for path in deployment_files) else 'FAIL'}**",
     f"- Alternate dataset files absent: **{'PASS' if not noncanonical_csvs else 'FAIL'}**",
     f"- Dictionary contains every canonical CSV field: **{'PASS' if not missing_dictionary_fields else 'FAIL'}**",
+    f"- Generated asset catalog coverage: **{'PASS' if len(catalog_rows) == len(symbols) and len(asset_files) == len(symbols) and catalog_symbols == set(symbols) else 'FAIL'}**",
     "",
     "## Agent rule",
     "",
-    "All handlers accept only `source_file: \"yield_data.csv\"` (or omit it to use that default). They must not attempt to open or treat the embedded provenance labels as separate datasets. Because the canonical file contains repeated symbols, model-training workflows must preserve the provenance fields and must not treat repeated provenance rows as independent time observations without a documented row-selection policy.",
+    "All handlers accept only `source_file: \"yield_data.csv\"` (or omit it to use that default). The generated `asset_catalog.csv` and `csv/assets/*.csv` files are evidence-first enrichments: source-backed fields are labeled, unavailable fields remain blank, and they must not replace the canonical source or be treated as live data. Because the canonical file contains repeated symbols, model-training workflows must preserve the provenance fields and must not treat repeated provenance rows as independent time observations without a documented row-selection policy.",
     "",
 ]
 if issues:

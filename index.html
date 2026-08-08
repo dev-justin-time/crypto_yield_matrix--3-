@@ -33,6 +33,23 @@
 
     <div class="scroll-hint">← scroll horizontally to view full matrix →</div>
 
+    <section class="explorer-panel" aria-labelledby="explorer-title">
+      <div class="explorer-heading">
+        <div>
+          <span class="eyebrow">research explorer</span>
+          <h2 id="explorer-title">evidence-backed asset opportunities</h2>
+          <p>Use the catalog to compare yield, risk context, and source coverage. Blank market fields mean no supplied snapshot—not a zero.</p>
+        </div>
+        <div class="explorer-controls">
+          <label>Search <input id="asset-search" type="search" placeholder="BTC, solana…" autocomplete="off"></label>
+          <label>Category <select id="category-filter"><option value="">All categories</option></select></label>
+          <label>Coverage <select id="coverage-filter"><option value="">All coverage</option><option value="source_snapshot">Source snapshot</option><option value="canonical_only">Canonical yield only</option></select></label>
+        </div>
+      </div>
+      <div id="asset-insights" class="asset-insights" aria-live="polite"></div>
+      <div id="asset-catalog-grid" class="asset-catalog-grid"></div>
+    </section>
+
     <div class="matrix-grid" id="matrix-grid">
       <!-- Rendered dynamically by matrix.js from yield_data.csv -->
       <div style="grid-column:1/-1;padding:40px;text-align:center;color:#9ca3af;">
@@ -59,6 +76,10 @@
       <div class="note-chip">
         sorting rules
         <div class="note-popup">Within each quarter, assets are stacked in descending order of annualized yield. Ties broken by market-cap weight. Aggregate columns show arithmetic mean of quarterly yields across the 12-month window.</div>
+      </div>
+      <div class="note-chip">
+        source coverage
+        <div class="note-popup">Source snapshot means this asset has a matching one-row market table under csv/. Canonical yield only means the catalog preserves the canonical matrix row and transparent derived features, but no supplied market snapshot was available. Missing values are intentionally blank.</div>
       </div>
       <div class="note-chip">
         asterisk meanings

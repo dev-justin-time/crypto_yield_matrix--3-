@@ -17,6 +17,8 @@
 
   const LIGHT_BLOCKS = new Set(['SOL', 'SUI', 'APT', 'CELO', 'FLOW', 'GLMR', 'MINA', 'MNDE', 'PENDLE', 'HYPE', 'ONDO']);
   const FOCUS_SYMBOLS = ['BTC', 'ETH', 'SOL', 'MATIC', 'ADA', 'XRP'];
+  const ASSET_CATALOG_URL = 'asset_catalog.csv';
+  const SOURCE_COVERAGE_LABELS = { source_snapshot: 'source snapshot', canonical_only: 'canonical yield only' };
   let tooltipId = 0;
   const CATEGORY_LABELS = {
     ai: 'AI',
@@ -128,6 +130,57 @@
     return 'change-flat';
   }
 
+  function coverageLabel(asset) {
+    return SOURCE_COVERAGE_LABELS[asset.snapshot_status] || 'coverage unavailable';
+  }
+
+  function buildExplorer(assets, catalog) {
+    const grid = document.getElementById('asset-catalog-grid');
+    const insights = document.getElementById('asset-insights');
+    const search = document.getElementById('asset-search');
+    const category = document.getElementById('category-filter');
+    const coverage = document.getElementById('coverage-filter');
+    if (!grid || !insights || !search || !category || !coverage) return;
+
+    const categories = [...new Set(catalog.map(asset => asset.category).filter(Boolean))].sort();
+    categories.forEach(value => {
+      const option = element('option', '', CATEGORY_LABELS[value] || value);
+      option.value = value;
+      category.append(option);
+    });
+    const render = () => {
+      const query = search.value.trim().toLowerCase();
+      const filtered = catalog.filter(asset => {
+        const matchesQuery = !query || `${asset.symbol} ${asset.name} ${asset.category}`.toLowerCase().includes(query);
+        return matchesQuery && (!category.value || asset.category === category.value) && (!coverage.value || asset.snapshot_status === coverage.value);
+      });
+      grid.replaceChildren();
+      filtered.slice(0, 60).forEach(asset => {
+        const card = element('article', 'catalog-card');
+        const title = element('div', 'catalog-card-title');
+        title.append(element('span', 'catalog-symbol', asset.symbol), element('span', 'coverage-badge', coverageLabel(asset)));
+        card.append(title);
+        card.append(element('div', 'catalog-name', asset.name));
+        const values = element('div', 'catalog-values');
+        values.append(
+          element('span', '', `${formatNumber(asset.agg_current)}% yield`),
+          element('span', '', `${signed(asset.change_pp)}pp change`),
+          element('span', '', asset.snapshot_price_usd ? `${formatUsd(asset.snapshot_market_cap_usd)} mcap` : 'market snapshot unavailable')
+        );
+        card.append(values);
+        const note = asset.snapshot_price_usd
+          ? `Snapshot ${formatUsd(asset.snapshot_price_usd)} · ${signed(asset.snapshot_change_pct)}% latest change`
+          : 'Use the canonical yield and risk fields; obtain a current market snapshot before acting.';
+        card.append(element('p', 'catalog-note', note));
+        grid.append(card);
+      });
+      const sourceCount = catalog.filter(asset => asset.snapshot_status === 'source_snapshot').length;
+      insights.textContent = `${filtered.length} assets shown · ${sourceCount} source-backed snapshots · ${catalog.length - sourceCount} canonical-only rows · derived features are reproducible research aids, not forecasts.`;
+    };
+    [search, category, coverage].forEach(control => control.addEventListener('input', render));
+    render();
+  }
+
   function createAssetTooltip(asset, yieldValue, quarterLabel) {
     const tooltip = element('div', 'asset-tooltip');
     tooltip.setAttribute('role', 'tooltip');
@@ -141,7 +194,9 @@
       ['current 12-mo', `${formatNumber(asset.agg_current)}%`],
       ['current market cap', formatUsd(asset.mcap_end_current_usd)],
       ['risk-adjusted yield', `${formatNumber(asset.risk_adjusted_yield)}%`],
-      ['investment score', `${formatNumber(asset.investment_score, 0)}/100`]
+      ['investment score', `${formatNumber(asset.investment_score, 0)}/100`],
+      ['source coverage', coverageLabel(asset)],
+      ['snapshot price', asset.snapshot_price_usd ? formatUsd(asset.snapshot_price_usd) : 'not supplied']
     ].forEach(([label, value]) => {
       const line = element('div', 'tooltip-detail');
       line.append(text(element('span', 'tooltip-label'), label));
@@ -342,14 +397,17 @@
   async function init() {
     const grid = document.getElementById('matrix-grid');
     try {
-      const response = await fetch('yield_data.csv');
-      if (!response.ok) throw new Error(`CSV request failed (${response.status})`);
-      const assets = parseCSV(await response.text()).filter(asset => asset.symbol && asset.name);
+      const [yieldResponse, catalogResponse] = await Promise.all([fetch('yield_data.csv'), fetch(ASSET_CATALOG_URL)]);
+      if (!yieldResponse.ok) throw new Error(`yield CSV request failed (${yieldResponse.status})`);
+      if (!catalogResponse.ok) throw new Error(`asset catalog request failed (${catalogResponse.status})`);
+      const assets = parseCSV(await yieldResponse.text()).filter(asset => asset.symbol && asset.name);
+      const catalog = parseCSV(await catalogResponse.text()).filter(asset => asset.symbol && asset.name);
       const focusAssets = FOCUS_SYMBOLS.map(symbol => assets.find(asset => asset.symbol === symbol)).filter(Boolean);
       if (!assets.length || focusAssets.length !== FOCUS_SYMBOLS.length) throw new Error('CSV is missing one or more focus assets');
       buildMatrix(focusAssets);
       buildLegend(focusAssets);
       buildTimeline(assets, focusAssets);
+      buildExplorer(assets, catalog);
       document.body.classList.add('matrix-ready');
       console.info(`Loaded ${assets.length} assets into the yield matrix`);
     } catch (error) {

@@ -25,5 +25,6 @@ if __name__ == "__main__":
         assert artifact["mimeType"] == "application/json"
         payload = json.loads(artifact["data"])
         assert {"decision_use", "review_next", "do_not_infer"} <= set(payload["user_value"])
+        assert {"available", "rows", "source_snapshot_rows", "canonical_only_rows", "policy"} <= set(payload["asset_catalog"])
         assert payload["provenance"]["source_file"] in {None, "yield_data.csv"}
         print(f"{card}: ok")
