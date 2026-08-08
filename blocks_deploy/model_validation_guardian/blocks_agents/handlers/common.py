@@ -256,7 +256,10 @@ def snapshot_research(symbol: str) -> dict[str, Any]:
         "quote_time": row.get("regularMarketTime") or None,
         "website": row.get("website") or None,
         "exchange": row.get("exchange") or None,
-        "research_use": "Use as supplied snapshot context; verify timestamp and current market conditions before acting.",
+        "contract_address": row.get("contract_address") or None,
+        "blockchain": row.get("blockchain") or None,
+        "contract_type": row.get("contract_type") or None,
+        "research_use": "Use as supplied snapshot context; verify timestamp, contract address, and current market conditions before acting.",
     }
 
 
@@ -272,6 +275,9 @@ def asset_enrichment(symbol: str) -> dict[str, Any]:
         "snapshot_volume_usd": numeric_value(row, "snapshot_volume_usd"),
         "snapshot_52w_high_usd": numeric_value(row, "snapshot_52w_high_usd"),
         "snapshot_52w_low_usd": numeric_value(row, "snapshot_52w_low_usd"),
+        "snapshot_contract_address": row.get("snapshot_contract_address") or None,
+        "snapshot_blockchain": row.get("snapshot_blockchain") or None,
+        "snapshot_contract_type": row.get("snapshot_contract_type") or None,
         "quote_status": row.get("quote_status", "unavailable"),
         "quote_source_file": row.get("quote_source_file") or None,
         "quote_as_of_iso": row.get("quote_as_of_iso") or None,

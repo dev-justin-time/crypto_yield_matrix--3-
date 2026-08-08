@@ -33,6 +33,7 @@ SNAPSHOT_FIELDS = (
     "snapshot_average_volume_usd", "snapshot_52w_high_usd",
     "snapshot_52w_low_usd", "snapshot_circulating_supply",
     "snapshot_website", "snapshot_exchange",
+    "snapshot_contract_address", "snapshot_blockchain", "snapshot_contract_type",
 )
 
 # Stable export columns modeled on the supplied Yahoo/CoinMarketCap-style
@@ -217,6 +218,9 @@ def build() -> tuple[list[dict[str, str]], list[Path]]:
                 "snapshot_circulating_supply": raw.get("circulatingSupply", ""),
                 "snapshot_website": raw.get("website", ""),
                 "snapshot_exchange": raw.get("exchange", ""),
+                "snapshot_contract_address": raw.get("contract_address", ""),
+                "snapshot_blockchain": raw.get("blockchain", ""),
+                "snapshot_contract_type": raw.get("contract_type", ""),
             })
         else:
             row["snapshot_status"] = "canonical_only"

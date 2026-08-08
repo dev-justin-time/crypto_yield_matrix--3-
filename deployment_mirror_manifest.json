@@ -37,7 +37,7 @@
     },
     {
       "source": "asset_catalog.csv",
-      "sha256": "661d6adff303ec7fc087288b0e9a256a990a224a0ddcdec14502266ef0f9b997",
+      "sha256": "d4875a77835c13e922fb616e0fbb0b2823e0b3c55b9c14fa01b795c3f7f80ccf",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/asset_catalog.csv",
         "blocks_deploy/crypto_risk_analyst/asset_catalog.csv",
@@ -224,7 +224,7 @@
     },
     {
       "source": "blocks_agents/handlers/common.py",
-      "sha256": "3b483b0c8688de887ed93db7a7958992d5fcc17b0a9e8646a7fb84206c9e5b16",
+      "sha256": "3b4af0a2cdd95fe617d4654500fc17fa2363b39491215af2fd1bc5231a158692",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/blocks_agents/handlers/common.py",
         "blocks_deploy/crypto_risk_analyst/blocks_agents/handlers/common.py",
@@ -547,7 +547,7 @@
     },
     {
       "source": "csv/assets/AAVE.csv",
-      "sha256": "e1e1995f06d6428af5b8ab1b6d3e953d556343fade8c8239278a6849a35804d7",
+      "sha256": "d34feae065a3b730ce706e033557a350e60a4cee6f0dbe53a027044278ddf294",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/assets/AAVE.csv",
         "blocks_deploy/crypto_risk_analyst/csv/assets/AAVE.csv",
@@ -564,7 +564,7 @@
     },
     {
       "source": "csv/assets/ADA.csv",
-      "sha256": "9df243a6c4f9e8fd8d4ed874cdb556ea1b33de9b95d949880fef37443b6eeae7",
+      "sha256": "29f9888d9eda527cd251183c7bfd1c55501c3137e10a4aaa7c974de886263dc7",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/assets/ADA.csv",
         "blocks_deploy/crypto_risk_analyst/csv/assets/ADA.csv",
@@ -581,7 +581,7 @@
     },
     {
       "source": "csv/assets/ALGO.csv",
-      "sha256": "876c7d35ef44cf26c7bbc1ac7331cbc2b9c7c99646ed73da79c8fd23ba22c505",
+      "sha256": "4c9f29552ed2739c3d80a4e52cd6b46836c8b63b746b1cb3ce8ad9384c8c7278",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/assets/ALGO.csv",
         "blocks_deploy/crypto_risk_analyst/csv/assets/ALGO.csv",
@@ -598,7 +598,7 @@
     },
     {
       "source": "csv/assets/APT.csv",
-      "sha256": "84694fd263336ed32ef0279be20be7459e01ddcb4e97d860856175efd089c420",
+      "sha256": "f90fe6d28f7964271fabb1c5aa2c722796c6f12e9eaa933871d96a9c61f5334f",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/assets/APT.csv",
         "blocks_deploy/crypto_risk_analyst/csv/assets/APT.csv",
@@ -615,7 +615,7 @@
     },
     {
       "source": "csv/assets/ARB.csv",
-      "sha256": "afa8a8929c7cc06c74226786f1a7ad447b79346a51984a2faf5f0a62fd6554ea",
+      "sha256": "bea2d7f97c65f286195746f7b85a8b31046a0eb2e4af42fd550e36a0e0f34ad1",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/assets/ARB.csv",
         "blocks_deploy/crypto_risk_analyst/csv/assets/ARB.csv",
@@ -632,7 +632,7 @@
     },
     {
       "source": "csv/assets/ATOM.csv",
-      "sha256": "8b7dcd6a8d444334ffd11ac912a427f4cc7aea87dc4d39e98517f1637846ed56",
+      "sha256": "56d12b2518da6d331d7839f8666dfde4e7a72a465daf0fd9348e3820605ec347",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/assets/ATOM.csv",
         "blocks_deploy/crypto_risk_analyst/csv/assets/ATOM.csv",
@@ -649,7 +649,7 @@
     },
     {
       "source": "csv/assets/AVAX.csv",
-      "sha256": "c4684509cdd53d50aa507245c124ed3a12395c034271965a3091313464c7697c",
+      "sha256": "26d4c595340e930adfa3d811a4e2f39f9fbf55be2233ad8ae27d3a52c4a054dd",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/assets/AVAX.csv",
         "blocks_deploy/crypto_risk_analyst/csv/assets/AVAX.csv",
@@ -666,7 +666,7 @@
     },
     {
       "source": "csv/assets/BAL.csv",
-      "sha256": "5cbcb1e24374bc4c299df842c272f3a44f236a4f1e8551f4a8e4154784a6f0b3",
+      "sha256": "5e1f07843808435f1b5449de0fbfa532d4a1670d2055e9fd80a850579bd8cb35",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/assets/BAL.csv",
         "blocks_deploy/crypto_risk_analyst/csv/assets/BAL.csv",
@@ -683,7 +683,7 @@
     },
     {
       "source": "csv/assets/BTC.csv",
-      "sha256": "47e9cb4dab2d20601eb717b2e78a6ca49f3924755e514642636d7e90575ff1c2",
+      "sha256": "f7d6c17eaadfc971d365e4311081669ffef066f6c258b612354125cb173da224",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/assets/BTC.csv",
         "blocks_deploy/crypto_risk_analyst/csv/assets/BTC.csv",
@@ -700,7 +700,7 @@
     },
     {
       "source": "csv/assets/CELO.csv",
-      "sha256": "90ab505ca28378d12922ab44696c25cba27b1ddbc0fbf1677a8a28e4d6f94fcc",
+      "sha256": "da4875f9d5aaf6f1eb14d2e549e9d8a9d342b63499edce6e4df127e0a8d090e4",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/assets/CELO.csv",
         "blocks_deploy/crypto_risk_analyst/csv/assets/CELO.csv",
@@ -717,7 +717,7 @@
     },
     {
       "source": "csv/assets/COMP.csv",
-      "sha256": "04f42ed21d5a004223e52fad772f28b5c3e62909562e15034ebdc0aa20241403",
+      "sha256": "bd36c9d6f20c44a486d4e4bbf86c13417555c809c370f47c2609c290a06be3ac",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/assets/COMP.csv",
         "blocks_deploy/crypto_risk_analyst/csv/assets/COMP.csv",
@@ -734,7 +734,7 @@
     },
     {
       "source": "csv/assets/CRO.csv",
-      "sha256": "d656628d974ed6caac3bfd28ad4c7ff19194d97b95774371888b3c7eadbca632",
+      "sha256": "7f8a80804985fede165991b7ceb201511cb3341ef5cada9c16ac077d8db815b0",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/assets/CRO.csv",
         "blocks_deploy/crypto_risk_analyst/csv/assets/CRO.csv",
@@ -751,7 +751,7 @@
     },
     {
       "source": "csv/assets/CRV.csv",
-      "sha256": "5be2bb860bed7b269dfe7e3a33a6a2073318e154b6a6b183252ec55d094f5027",
+      "sha256": "49aa6e24a1515b29f57788dee3aea6f55ffed605f9cdf6eda63cb6a60000bb27",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/assets/CRV.csv",
         "blocks_deploy/crypto_risk_analyst/csv/assets/CRV.csv",
@@ -768,7 +768,7 @@
     },
     {
       "source": "csv/assets/DOT.csv",
-      "sha256": "dbb9195fe8fa9a864bd08545a84615b73185638efe86934e580536a965295edc",
+      "sha256": "effc5461b2ccb58c90f29a54ac1700f06d304331cba55a9bb29c6a546e2e9382",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/assets/DOT.csv",
         "blocks_deploy/crypto_risk_analyst/csv/assets/DOT.csv",
@@ -785,7 +785,7 @@
     },
     {
       "source": "csv/assets/EIGEN.csv",
-      "sha256": "41f70359c81072d58ff6984ffcc79998cea4e8534dfffe136c730b3ce77f39ca",
+      "sha256": "96ce8aee34eeaf1db8c918ee21457f9ba930ca07a66b590f1d2b09abdcfb4232",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/assets/EIGEN.csv",
         "blocks_deploy/crypto_risk_analyst/csv/assets/EIGEN.csv",
@@ -802,7 +802,7 @@
     },
     {
       "source": "csv/assets/EOS.csv",
-      "sha256": "63b5d5d55a075d80e99c8e39f738d1b23cfcda65144eceb3c99afb4b8842e2c0",
+      "sha256": "db8e637d0bcec6972a3fc6ed46c3256726f6f42ef1c2af72a35c84cb5ee8531d",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/assets/EOS.csv",
         "blocks_deploy/crypto_risk_analyst/csv/assets/EOS.csv",
@@ -819,7 +819,7 @@
     },
     {
       "source": "csv/assets/ETH.csv",
-      "sha256": "6f9ad2a04f0d61b27b62ca3a68d6eea0c0b0adc1715c916f8689ffa6c574996b",
+      "sha256": "137b9e91feebbeb6d81ce50a99c6f1d69922d3c3bd1ba481e3052687f4524c85",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/assets/ETH.csv",
         "blocks_deploy/crypto_risk_analyst/csv/assets/ETH.csv",
@@ -836,7 +836,7 @@
     },
     {
       "source": "csv/assets/ETHFI.csv",
-      "sha256": "34eac67b1efc512ed12187f4ab038fc00ebef5845da32d83b3c1059dfc6c36c3",
+      "sha256": "b6041d0f4a1572275bbb544d6f2912d87cbdcf14b5e695f535bb6525f83dbf18",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/assets/ETHFI.csv",
         "blocks_deploy/crypto_risk_analyst/csv/assets/ETHFI.csv",
@@ -853,7 +853,7 @@
     },
     {
       "source": "csv/assets/FIL.csv",
-      "sha256": "82d8669a5cefad3bdf657875a5882fc97efdfbbaabde7ab34de37b53abd9b7a4",
+      "sha256": "d88058cda58508503e910c073d16648723cfd44bc6436f8c9d8f8be4c1135796",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/assets/FIL.csv",
         "blocks_deploy/crypto_risk_analyst/csv/assets/FIL.csv",
@@ -870,7 +870,7 @@
     },
     {
       "source": "csv/assets/FLOW.csv",
-      "sha256": "cc7da013bafd4af5016e6fec4981b86c02ba7503e52e1ed8a1e6e2b2b5452134",
+      "sha256": "d4fa4d5c1d14bbe126d50c6f594bbf75f453d566f7a33695fe7ca93694ecbf6e",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/assets/FLOW.csv",
         "blocks_deploy/crypto_risk_analyst/csv/assets/FLOW.csv",
@@ -887,7 +887,7 @@
     },
     {
       "source": "csv/assets/FTM.csv",
-      "sha256": "94d25c15d47cb0de4a48b23dcb93d236e48cb6f8c0589517760c6e70dc0c81ec",
+      "sha256": "c0633fef98c4b3706a831cd4c79dc2497df4f841ba196721c2e8ec6a0a65467d",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/assets/FTM.csv",
         "blocks_deploy/crypto_risk_analyst/csv/assets/FTM.csv",
@@ -904,7 +904,7 @@
     },
     {
       "source": "csv/assets/GLMR.csv",
-      "sha256": "c904928bbfed8b1ece16705dbfbcdcec3a0253e6a5f5740bbac04836ee806ba5",
+      "sha256": "7302075230b7908cd4d097e832db41f00c86598bbd102050246c635740fff79c",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/assets/GLMR.csv",
         "blocks_deploy/crypto_risk_analyst/csv/assets/GLMR.csv",
@@ -921,7 +921,7 @@
     },
     {
       "source": "csv/assets/GRT.csv",
-      "sha256": "8afda9bbf5273075492b401e7bb155582de038c88f2c35738e606e26822fe2a8",
+      "sha256": "28b2508d744aa9d65a84662141551334d3a2e0861f084eed8628c136c3e5695c",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/assets/GRT.csv",
         "blocks_deploy/crypto_risk_analyst/csv/assets/GRT.csv",
@@ -938,7 +938,7 @@
     },
     {
       "source": "csv/assets/HYPE.csv",
-      "sha256": "8087172d195477bc4cc744fdeac78fdedfc6e2025c66d41528342ef609f883fa",
+      "sha256": "6ba724f97315fa9c624225d79c2ecf2c6fe162d7309097e41b0f11e647298ba4",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/assets/HYPE.csv",
         "blocks_deploy/crypto_risk_analyst/csv/assets/HYPE.csv",
@@ -955,7 +955,7 @@
     },
     {
       "source": "csv/assets/ICP.csv",
-      "sha256": "0139d843720852d56a8326a5d308a622d7d0abf0c7ec80a0dc7757184f86ac97",
+      "sha256": "758f0fec2b3f4554c4439f83c225aee6f34b14926d4c0bd9c3bca95a8fa9b426",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/assets/ICP.csv",
         "blocks_deploy/crypto_risk_analyst/csv/assets/ICP.csv",
@@ -972,7 +972,7 @@
     },
     {
       "source": "csv/assets/INJ.csv",
-      "sha256": "f1145975ffcf22bd709e4821a6cac7b3978b9b52f65d2fbd5246485e6dcf452c",
+      "sha256": "209ff051c3137f3b17d8466f2db1c22cf13be3db744c2c4fc9875f482f787fc9",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/assets/INJ.csv",
         "blocks_deploy/crypto_risk_analyst/csv/assets/INJ.csv",
@@ -989,7 +989,7 @@
     },
     {
       "source": "csv/assets/JTO.csv",
-      "sha256": "aec1420253b91d8e2022597a39a9b0f4d16aa2a47c091a850eb2af891aee5adc",
+      "sha256": "8d3bc7ad90915bcd44b0a9eb122d3dcdf0a2d26cc2985915f2cae27822530c19",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/assets/JTO.csv",
         "blocks_deploy/crypto_risk_analyst/csv/assets/JTO.csv",
@@ -1006,7 +1006,7 @@
     },
     {
       "source": "csv/assets/KAVA.csv",
-      "sha256": "3f48d14db52597c1dc5398856aee294d8b9fdb9b932019d03d7a0f344be2511e",
+      "sha256": "f280e449c6750add12bcaf9d1220683554d0b9cb533e06828b080f196a17c5d2",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/assets/KAVA.csv",
         "blocks_deploy/crypto_risk_analyst/csv/assets/KAVA.csv",
@@ -1023,7 +1023,7 @@
     },
     {
       "source": "csv/assets/LDO.csv",
-      "sha256": "c12b8dba7ced207ff9df89d9a1c8a9d4bd98f8d1a69aff75ffe3d533a79c0a6a",
+      "sha256": "b2a2671196d1a5d8bcdca7b760544c15e397a04be26a30149ea84d7b5b488e36",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/assets/LDO.csv",
         "blocks_deploy/crypto_risk_analyst/csv/assets/LDO.csv",
@@ -1040,7 +1040,7 @@
     },
     {
       "source": "csv/assets/LINK.csv",
-      "sha256": "2081365e9dbd5c252d26b289ef6aa46b17f88519beb35521a7852f28298f2408",
+      "sha256": "ca02e4b46bcd29e619432c4cacbb1f9539b9287a201f2e2f8fe65905a58cf4bc",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/assets/LINK.csv",
         "blocks_deploy/crypto_risk_analyst/csv/assets/LINK.csv",
@@ -1057,7 +1057,7 @@
     },
     {
       "source": "csv/assets/LUNC.csv",
-      "sha256": "3203e5cdf8d95a7281d8a4af51f6ecab034ef3c8e6b60fcee008a03c736c6a2f",
+      "sha256": "5d0e13c02c7cce32ee15236a94335179404facd8ce9777e446c7c22b298ad376",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/assets/LUNC.csv",
         "blocks_deploy/crypto_risk_analyst/csv/assets/LUNC.csv",
@@ -1074,7 +1074,7 @@
     },
     {
       "source": "csv/assets/MATIC.csv",
-      "sha256": "29be2ccfadfa9546616937e60ba61fc1e66bbfd8fe7ac805dac7c73935969766",
+      "sha256": "a974f2a9148b30efddd11d04caef667f2762be19bf203baa44882bf4238d2882",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/assets/MATIC.csv",
         "blocks_deploy/crypto_risk_analyst/csv/assets/MATIC.csv",
@@ -1091,7 +1091,7 @@
     },
     {
       "source": "csv/assets/MINA.csv",
-      "sha256": "a606e332afda6b4a28436eef9388d782d4f65611a5e34d7e9cc896f0c3d613de",
+      "sha256": "bd57803dd6ede8f98c83c6b670fd90366953666fdc0cf81d70d7bfebe3d7f5a6",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/assets/MINA.csv",
         "blocks_deploy/crypto_risk_analyst/csv/assets/MINA.csv",
@@ -1108,7 +1108,7 @@
     },
     {
       "source": "csv/assets/MKR.csv",
-      "sha256": "4cd93ad59082b2d53ed8ebdd2632e15bace3f011482594794bddd9211e7bef76",
+      "sha256": "b7a25d1d00ba28bb07aa89b30c118e9e755405c1423474c51329805ae96def1a",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/assets/MKR.csv",
         "blocks_deploy/crypto_risk_analyst/csv/assets/MKR.csv",
@@ -1125,7 +1125,7 @@
     },
     {
       "source": "csv/assets/MNDE.csv",
-      "sha256": "b72c97d7ae79209f64de64e83f5083eb9bc7704aca5b33763b1e1aafccfe0db8",
+      "sha256": "d37628b431728ac4ad35de95c99924f3539f5655aeeef6c11198a3071cc64f7b",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/assets/MNDE.csv",
         "blocks_deploy/crypto_risk_analyst/csv/assets/MNDE.csv",
@@ -1142,7 +1142,7 @@
     },
     {
       "source": "csv/assets/NEAR.csv",
-      "sha256": "b8000bc9cb7bbc9181afb90154848f2bc12371e95b23e23e715b921b9ac5b6ef",
+      "sha256": "19f31ad38a3618688aff5e69b41535651216b4783c311310aeccc9bed7e7b9ff",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/assets/NEAR.csv",
         "blocks_deploy/crypto_risk_analyst/csv/assets/NEAR.csv",
@@ -1159,7 +1159,7 @@
     },
     {
       "source": "csv/assets/NEO.csv",
-      "sha256": "216fb2aff50e255bf5f429f1ff88db1f67ee8bb5efee3bcce8db7eda1c1a3cba",
+      "sha256": "6c2b447e2ac6a8e15b908a6a5a91854f245b60792078bcdebbcf1ddb6c4ad288",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/assets/NEO.csv",
         "blocks_deploy/crypto_risk_analyst/csv/assets/NEO.csv",
@@ -1176,7 +1176,7 @@
     },
     {
       "source": "csv/assets/ONDO.csv",
-      "sha256": "190f33ac84c96f5871c20afded6b8651eb05dd675afb1eaa461e7fc8cf4bc5fa",
+      "sha256": "5d8c1e28139de7b66564c02b67d1caeda8c9fc1bf61c8d8faa006983010e86d2",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/assets/ONDO.csv",
         "blocks_deploy/crypto_risk_analyst/csv/assets/ONDO.csv",
@@ -1193,7 +1193,7 @@
     },
     {
       "source": "csv/assets/ONE.csv",
-      "sha256": "ba0d9eb9527c739ff35b983ed410993574ba595a397f614f20d073690dfd31e1",
+      "sha256": "6efb9d861c651f87a448a976c14d51d0c4a5835119110ff647b8d227e371d592",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/assets/ONE.csv",
         "blocks_deploy/crypto_risk_analyst/csv/assets/ONE.csv",
@@ -1210,7 +1210,7 @@
     },
     {
       "source": "csv/assets/OP.csv",
-      "sha256": "c7be1116b84e40ef3d27c7b4e0f3c720eb2469d0150af141408c7b84d0d730e5",
+      "sha256": "79fcdc1ff6720624c444a2f2f42e62afc6730df105814174dcef4418f643b87f",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/assets/OP.csv",
         "blocks_deploy/crypto_risk_analyst/csv/assets/OP.csv",
@@ -1227,7 +1227,7 @@
     },
     {
       "source": "csv/assets/PENDLE.csv",
-      "sha256": "af5bc6613e88e23ab9ad86350f6d7c4c0aa306ea999488e9e5add2ba989f7203",
+      "sha256": "4bb372abd421af6d521f3dd01fc5be94712031135a0faa32249bc027cf154b77",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/assets/PENDLE.csv",
         "blocks_deploy/crypto_risk_analyst/csv/assets/PENDLE.csv",
@@ -1244,7 +1244,7 @@
     },
     {
       "source": "csv/assets/RENDER.csv",
-      "sha256": "e6e4ecb6bc567e9498a960c32cfe9ec42fe6967e6f7b712db77f82788a76434b",
+      "sha256": "2eb3817ab5e3a54286a09c121b1d76cf806160f8cc0fc23141d3563e3da2c621",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/assets/RENDER.csv",
         "blocks_deploy/crypto_risk_analyst/csv/assets/RENDER.csv",
@@ -1261,7 +1261,7 @@
     },
     {
       "source": "csv/assets/ROSE.csv",
-      "sha256": "c7455f55a5ddc1e3c8ac8a2a09f7f09a439712871d95e97c9c90d3ce1a1fbe25",
+      "sha256": "571c400f10df09618fec9c488e8d23bebbebefefcd8a20023e1272094c785733",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/assets/ROSE.csv",
         "blocks_deploy/crypto_risk_analyst/csv/assets/ROSE.csv",
@@ -1278,7 +1278,7 @@
     },
     {
       "source": "csv/assets/RPL.csv",
-      "sha256": "1f22c6856045fc1d73f29c1c69abaeb77b056dc7b1241823e99c11ae326fb2f0",
+      "sha256": "9252ae4bb854f6ec284729426c29fee11836fc1dbec60cb03a5e34521074b98f",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/assets/RPL.csv",
         "blocks_deploy/crypto_risk_analyst/csv/assets/RPL.csv",
@@ -1295,7 +1295,7 @@
     },
     {
       "source": "csv/assets/SEI.csv",
-      "sha256": "6439c75a8e6b93233944300658e544e60ac1e059b837672af63fb53b70af2c4c",
+      "sha256": "a9451a2ff045e2d537981f5f79a985d6f37b4edcc1bf13114096154cb994a471",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/assets/SEI.csv",
         "blocks_deploy/crypto_risk_analyst/csv/assets/SEI.csv",
@@ -1312,7 +1312,7 @@
     },
     {
       "source": "csv/assets/SNX.csv",
-      "sha256": "9279913ade87ed4b68e4cdbbcbaee1d394937e5703ec6de3a83459dedcc0da21",
+      "sha256": "603974809c120f0208fd172aabd76ec72de43b876fbaa9379e5aba853bafc715",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/assets/SNX.csv",
         "blocks_deploy/crypto_risk_analyst/csv/assets/SNX.csv",
@@ -1329,7 +1329,7 @@
     },
     {
       "source": "csv/assets/SOL.csv",
-      "sha256": "1d6158650c23d1a771ee8d7748c892a4543a57f6d1513ffb9eacfe6beb426578",
+      "sha256": "ec18249b6366f6f812cbd3acf89e512347ef0c366c99419d8caa7a6f14331fe5",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/assets/SOL.csv",
         "blocks_deploy/crypto_risk_analyst/csv/assets/SOL.csv",
@@ -1346,7 +1346,7 @@
     },
     {
       "source": "csv/assets/SUI.csv",
-      "sha256": "520baaebe1a29b21d05572797ca0f4327238d28da2668f9db71d56aefbf7f395",
+      "sha256": "dd0c95de262f8ba4e8df2e7d9397b3ce2c43eac306833b3fad46f5aec1f4729a",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/assets/SUI.csv",
         "blocks_deploy/crypto_risk_analyst/csv/assets/SUI.csv",
@@ -1363,7 +1363,7 @@
     },
     {
       "source": "csv/assets/TAO.csv",
-      "sha256": "e9632727cb591b60db2c8f86d68f22a2d810f1786094f71902453c9bce5e5a04",
+      "sha256": "39575c72c03a3576ee201eeb069fb06b28cc2fc1821b094f34ee95f452fcd57f",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/assets/TAO.csv",
         "blocks_deploy/crypto_risk_analyst/csv/assets/TAO.csv",
@@ -1380,7 +1380,7 @@
     },
     {
       "source": "csv/assets/THETA.csv",
-      "sha256": "65854ae915105ba23df8a88b8938d5ca414e4ee026c90e6680a528ffad02688a",
+      "sha256": "7e59b9dd49f984952a60c751687024b116d51b524c70c64a62da4775b0e2a5e9",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/assets/THETA.csv",
         "blocks_deploy/crypto_risk_analyst/csv/assets/THETA.csv",
@@ -1397,7 +1397,7 @@
     },
     {
       "source": "csv/assets/TIA.csv",
-      "sha256": "5e1e7dc26935a55923e90163a4cf1bfe5a5c05c30fe2baa8da3cf7fea69e2adb",
+      "sha256": "e842ad1266b84c3355a1af9c4ac154cea27ac4e3a3bf2f45ece6ba6d9f2e370d",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/assets/TIA.csv",
         "blocks_deploy/crypto_risk_analyst/csv/assets/TIA.csv",
@@ -1414,7 +1414,7 @@
     },
     {
       "source": "csv/assets/TRX.csv",
-      "sha256": "83dd27caa9cbce5787c641ef72cb8b7e3c7b3b5d01ad35d71a3335d8afbd38e6",
+      "sha256": "8ac85218bf9aab901e1b812940a5a84b02537e6b44ef0aee10755466eda83801",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/assets/TRX.csv",
         "blocks_deploy/crypto_risk_analyst/csv/assets/TRX.csv",
@@ -1431,7 +1431,7 @@
     },
     {
       "source": "csv/assets/UNI.csv",
-      "sha256": "aab7bbcb6835c450bd8afd10f7fb5538ff80d3e9cc65f933e458191d10486c81",
+      "sha256": "3863a6883605cfb1bc80f300b6c6892835b394a5e3a1827a1323f52c42b1b393",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/assets/UNI.csv",
         "blocks_deploy/crypto_risk_analyst/csv/assets/UNI.csv",
@@ -1448,7 +1448,7 @@
     },
     {
       "source": "csv/assets/VET.csv",
-      "sha256": "ca384b0aaa669455500277530aa5c9828dd44595058967417b76564c0de383d3",
+      "sha256": "f1abfb57084bb3ac52aaa7f2bd6a25bd36ac711146e355fc9dab492b68b7ac18",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/assets/VET.csv",
         "blocks_deploy/crypto_risk_analyst/csv/assets/VET.csv",
@@ -1465,7 +1465,7 @@
     },
     {
       "source": "csv/assets/WLD.csv",
-      "sha256": "f401bdf86ffd6d64211578952d5d5479394a2fdb332237a5df29136811459825",
+      "sha256": "bbb299ddda33d948180ba63c320eb1a6afe778dac4b79afa056f1b6e98fcd7df",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/assets/WLD.csv",
         "blocks_deploy/crypto_risk_analyst/csv/assets/WLD.csv",
@@ -1482,7 +1482,7 @@
     },
     {
       "source": "csv/assets/XLM.csv",
-      "sha256": "b20105fa577530b1488198bd4b424f353f67f40c030df7b06da97d5483ab1b0f",
+      "sha256": "269d842b02d1fe8441bcfd742fef61dcbf537a7ae0501879ad615949904762af",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/assets/XLM.csv",
         "blocks_deploy/crypto_risk_analyst/csv/assets/XLM.csv",
@@ -1499,7 +1499,7 @@
     },
     {
       "source": "csv/assets/XRP.csv",
-      "sha256": "459fabed1a4beeb8571e48de28f7c0084db2854f38bc62d6fbc660493437f01b",
+      "sha256": "f4f20bfd558777465ea3ad0452c251e107d14dbc3ba36a6e223bc7483941f775",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/assets/XRP.csv",
         "blocks_deploy/crypto_risk_analyst/csv/assets/XRP.csv",
@@ -1516,7 +1516,7 @@
     },
     {
       "source": "csv/assets/XTZ.csv",
-      "sha256": "712981046cb2f8840ad37580c5c26d935aaa3d80796a2612d6c3708aa65107df",
+      "sha256": "2908687ae09c8ddadd008ab88f681fe7dc67f5e99155e1bb5060b666e472b510",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/assets/XTZ.csv",
         "blocks_deploy/crypto_risk_analyst/csv/assets/XTZ.csv",
@@ -1533,7 +1533,7 @@
     },
     {
       "source": "csv/assets/YFI.csv",
-      "sha256": "0f0eba0e0109c580caa6be2bfee691d0ebe92deb922557ff05c600791cf15135",
+      "sha256": "e7d36719db1f41159b97ebd6baab0d00b3045bef011472541d57804c6bc24160",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/assets/YFI.csv",
         "blocks_deploy/crypto_risk_analyst/csv/assets/YFI.csv",
@@ -1550,7 +1550,7 @@
     },
     {
       "source": "csv/quotes/AAVE.csv",
-      "sha256": "f1fd22fbcd1f560e344611f87ac37b4d70f2b07ef00df04b23872259b251d14f",
+      "sha256": "cc88b1658626abe17a9a47381ae836bc3a11e560a43e291c6bd35f5349f729d9",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/quotes/AAVE.csv",
         "blocks_deploy/crypto_risk_analyst/csv/quotes/AAVE.csv",
@@ -1584,7 +1584,7 @@
     },
     {
       "source": "csv/quotes/ALGO.csv",
-      "sha256": "01a3819b500b8a4bce92d0bd34102e7869bd837eb86597baa11b2c8e9d1434c5",
+      "sha256": "4ae6da3410bc1d80298bb1f15e43812e2995942bfaaf133d723b85544f8c72f1",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/quotes/ALGO.csv",
         "blocks_deploy/crypto_risk_analyst/csv/quotes/ALGO.csv",
@@ -1601,7 +1601,7 @@
     },
     {
       "source": "csv/quotes/APT.csv",
-      "sha256": "a79387f179cfae257d2caaa58de92da5d5b432546b010b259da1541a29dc97f1",
+      "sha256": "69183a554f65d50c8bdf5c3c85e1d34f939eaa338f987a0a7df73e9e865cbe08",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/quotes/APT.csv",
         "blocks_deploy/crypto_risk_analyst/csv/quotes/APT.csv",
@@ -1618,7 +1618,7 @@
     },
     {
       "source": "csv/quotes/ARB.csv",
-      "sha256": "71ea2732405284c08e7ffde73d84c56691682a254eaf9c9485a26a1ecc5046d6",
+      "sha256": "f764a730f9b560b4e3843615df8b007b91e13e87302a6cf9e9aec05106315f9e",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/quotes/ARB.csv",
         "blocks_deploy/crypto_risk_analyst/csv/quotes/ARB.csv",
@@ -1669,7 +1669,7 @@
     },
     {
       "source": "csv/quotes/BAL.csv",
-      "sha256": "7ee31c88437e06cfec110d08c3074afa0f1b54dab6eb2f4cd60c6308e063dab3",
+      "sha256": "47d8dc0f38d47361a631689d54f160cb2e2ea801dc06452d0418e120b5759059",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/quotes/BAL.csv",
         "blocks_deploy/crypto_risk_analyst/csv/quotes/BAL.csv",
@@ -1703,7 +1703,7 @@
     },
     {
       "source": "csv/quotes/CELO.csv",
-      "sha256": "58447fd2b58ddcd1715d1319d372be158533592986ee69d58b358d59d0c67d23",
+      "sha256": "3852e8e5fdd7c77d5ab5d7fd3e46c28f7e2d43d05d756d099da8b299afffbb73",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/quotes/CELO.csv",
         "blocks_deploy/crypto_risk_analyst/csv/quotes/CELO.csv",
@@ -1720,7 +1720,7 @@
     },
     {
       "source": "csv/quotes/COMP.csv",
-      "sha256": "427755199f485ac7602ecb6ea799255139d2fbfbc830ae6fd783652836614f3f",
+      "sha256": "b8b52cebdba00c937da11eb8f4f21e8103de29cf9be5fe20d28e177fe036f1d2",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/quotes/COMP.csv",
         "blocks_deploy/crypto_risk_analyst/csv/quotes/COMP.csv",
@@ -1737,7 +1737,7 @@
     },
     {
       "source": "csv/quotes/CRO.csv",
-      "sha256": "7b8dfe180980d46e00ab26eb946dd94b5531be1900fa9a54beae15a91963ad37",
+      "sha256": "dca0e14f425c1dcd55b0282be1a9549de68e25d138c931d1ce50f370ebce3f78",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/quotes/CRO.csv",
         "blocks_deploy/crypto_risk_analyst/csv/quotes/CRO.csv",
@@ -1754,7 +1754,7 @@
     },
     {
       "source": "csv/quotes/CRV.csv",
-      "sha256": "48f27b0450e7e21278ca5ffdc8aadc8870984c721bda7da417f75fef4f62498e",
+      "sha256": "1e79aa945b0dc9089d93a4dfc3da048556821f76d73d1a091a291af0f21eefdd",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/quotes/CRV.csv",
         "blocks_deploy/crypto_risk_analyst/csv/quotes/CRV.csv",
@@ -1788,7 +1788,7 @@
     },
     {
       "source": "csv/quotes/EIGEN.csv",
-      "sha256": "075110ceb1d1203d323690286defd251042d38cd97d06e83bca2f9f63aaf4997",
+      "sha256": "d589039339741623ca8bbeaca7b845e936c601a44e1836fbe48f2ed53ecc47cc",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/quotes/EIGEN.csv",
         "blocks_deploy/crypto_risk_analyst/csv/quotes/EIGEN.csv",
@@ -1805,7 +1805,7 @@
     },
     {
       "source": "csv/quotes/EOS.csv",
-      "sha256": "03718015024c4a23f923983642a9ef3ac7ca37dd590d6a2be72e4a1223e2c538",
+      "sha256": "5bbf9801bc628cd2c0c2f1e34787dc8a5613e19a5fda2f743c63ce3083ac6a69",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/quotes/EOS.csv",
         "blocks_deploy/crypto_risk_analyst/csv/quotes/EOS.csv",
@@ -1839,7 +1839,7 @@
     },
     {
       "source": "csv/quotes/ETHFI.csv",
-      "sha256": "5735da61a939b24b2e54ed7a8ba5a7765b28c4b15f77f0a624e0934cf44ce4f2",
+      "sha256": "42af41b3ceece95edd0c6731f32f6414a6652c0071e9552baa390fe0b94619a3",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/quotes/ETHFI.csv",
         "blocks_deploy/crypto_risk_analyst/csv/quotes/ETHFI.csv",
@@ -1856,7 +1856,7 @@
     },
     {
       "source": "csv/quotes/FIL.csv",
-      "sha256": "88f7818cdb6ab268859a3d785b8ed67dcf9ae65fa9e073e8a46a74cd099baa24",
+      "sha256": "2ed870300d5ab4e7c3c9e919e9b2a167a2b028b5bc93c2267b420e441ea357d3",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/quotes/FIL.csv",
         "blocks_deploy/crypto_risk_analyst/csv/quotes/FIL.csv",
@@ -1873,7 +1873,7 @@
     },
     {
       "source": "csv/quotes/FLOW.csv",
-      "sha256": "728c4c91d1cf216cc7dcc38bae953830e1ca04eeb825dbdd9bc5407ac6a90679",
+      "sha256": "cd25953bb9487c578a94717a135771a68a5428e2f1e2954977f1a2521b37099c",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/quotes/FLOW.csv",
         "blocks_deploy/crypto_risk_analyst/csv/quotes/FLOW.csv",
@@ -1890,7 +1890,7 @@
     },
     {
       "source": "csv/quotes/FTM.csv",
-      "sha256": "203781b32f78e56b9e8cfdd2676b4ab086f5d4c376af6eee85714ddb069ccb1c",
+      "sha256": "8ce7b5fba4ad11a759f505fd38bd46169c163b01370f3a810e9af30fe9a074a7",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/quotes/FTM.csv",
         "blocks_deploy/crypto_risk_analyst/csv/quotes/FTM.csv",
@@ -1907,7 +1907,7 @@
     },
     {
       "source": "csv/quotes/GLMR.csv",
-      "sha256": "f974c975a0cbd08f44a6bba10eda63f3897455d971409ed3e5bd72af29adc2c7",
+      "sha256": "d6e19a59e67d5ea986ce3beaee2ef5d5c28f5594e85d9bccd67b49d6c0eb3fbb",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/quotes/GLMR.csv",
         "blocks_deploy/crypto_risk_analyst/csv/quotes/GLMR.csv",
@@ -1924,7 +1924,7 @@
     },
     {
       "source": "csv/quotes/GRT.csv",
-      "sha256": "413dfd7840c32a62c7532dcd7cdd0ea57e473f14e8dfae9e74636eabf4413e88",
+      "sha256": "f8dce02c99d90be1150034d373ec5e40e6cf2d0a324a907763656c8753e47cc8",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/quotes/GRT.csv",
         "blocks_deploy/crypto_risk_analyst/csv/quotes/GRT.csv",
@@ -1941,7 +1941,7 @@
     },
     {
       "source": "csv/quotes/HYPE.csv",
-      "sha256": "4694daddc57dc3b9c5bdcd1d25b5148a58d49ac951477e9f52ab369acc7c2cde",
+      "sha256": "589dd29723ccb6636e609b435e022680d89daa49c3180b82dc12fa65ebc9e41e",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/quotes/HYPE.csv",
         "blocks_deploy/crypto_risk_analyst/csv/quotes/HYPE.csv",
@@ -1958,7 +1958,7 @@
     },
     {
       "source": "csv/quotes/ICP.csv",
-      "sha256": "08e41f8e7279f4cc28f11d6bf092fd844bb185a3a3b6e9ebd67b9fb8e3242c35",
+      "sha256": "849441ba5fb10fc066575307d59e20c1c6e9ec4f5c7213236df7ba6a5f78c232",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/quotes/ICP.csv",
         "blocks_deploy/crypto_risk_analyst/csv/quotes/ICP.csv",
@@ -1975,7 +1975,7 @@
     },
     {
       "source": "csv/quotes/INJ.csv",
-      "sha256": "1b3b8f62c6d9980f13b82819d89c6e571400e032106bdbc6e3e4aeacb543b734",
+      "sha256": "bf6d585ab0838abc7be761af6713561deed48552e7c96d9380cbc35b86db4164",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/quotes/INJ.csv",
         "blocks_deploy/crypto_risk_analyst/csv/quotes/INJ.csv",
@@ -1992,7 +1992,7 @@
     },
     {
       "source": "csv/quotes/JTO.csv",
-      "sha256": "236522f6aae5d738eccbade19b5a7b6e45a582f2dec77ca7911e3717810f86e4",
+      "sha256": "d5987c8f31326fe9ad6b37ca0540f1cfc52f6d1f17e19962f0e4f5a96d9b76f0",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/quotes/JTO.csv",
         "blocks_deploy/crypto_risk_analyst/csv/quotes/JTO.csv",
@@ -2009,7 +2009,7 @@
     },
     {
       "source": "csv/quotes/KAVA.csv",
-      "sha256": "5c5619d3423ecb647e745cffa6e7699e0bd57e2313638ce51a8725faa84e74b2",
+      "sha256": "15233237818e9ed2637edf8d3e8e758de520a15bd4c43920a9be87045c5f558e",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/quotes/KAVA.csv",
         "blocks_deploy/crypto_risk_analyst/csv/quotes/KAVA.csv",
@@ -2026,7 +2026,7 @@
     },
     {
       "source": "csv/quotes/LDO.csv",
-      "sha256": "3dec74d2e698e4f2ca988291c2df836f5ce61da3b0dde3674b336922e6b723d5",
+      "sha256": "7198efd0c98b234bfb3329d8158772a5f6e2050f3957f29f0586bb09814274b8",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/quotes/LDO.csv",
         "blocks_deploy/crypto_risk_analyst/csv/quotes/LDO.csv",
@@ -2060,7 +2060,7 @@
     },
     {
       "source": "csv/quotes/LUNC.csv",
-      "sha256": "9b27ce3885cbd4820bbada0e07818c567c3c908951bb09c503e1843aa478ded9",
+      "sha256": "72fae6cc73a60bd7ea6be75c77b0d6db2b7f71e858051107eb1afa94c03428ac",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/quotes/LUNC.csv",
         "blocks_deploy/crypto_risk_analyst/csv/quotes/LUNC.csv",
@@ -2077,7 +2077,7 @@
     },
     {
       "source": "csv/quotes/MATIC.csv",
-      "sha256": "4091b68e453819008d864b5bb90be94a730008f7de8421d6076a8ced43906b0a",
+      "sha256": "48ebb8644235abd2bedc094983ad3a34e21be282791bb37c879445d4f50ae895",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/quotes/MATIC.csv",
         "blocks_deploy/crypto_risk_analyst/csv/quotes/MATIC.csv",
@@ -2094,7 +2094,7 @@
     },
     {
       "source": "csv/quotes/MINA.csv",
-      "sha256": "b1ce6573294995878bdd8c638286b1c1c7f28381adceb01e9e36c9d6eabcb9ad",
+      "sha256": "63c67a85dcde2b25b98566b6d4b92acbba72d0eb49e0282aa29713f6f27b9b09",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/quotes/MINA.csv",
         "blocks_deploy/crypto_risk_analyst/csv/quotes/MINA.csv",
@@ -2111,7 +2111,7 @@
     },
     {
       "source": "csv/quotes/MKR.csv",
-      "sha256": "8efb5ac49034cd2c9649e59da64545ef1e625b39ee962f38808bd49d7a96ca90",
+      "sha256": "d785c8242eb8622a3df855846dca48e5d3fe4f5a0c99c4130096c3d5735e52f0",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/quotes/MKR.csv",
         "blocks_deploy/crypto_risk_analyst/csv/quotes/MKR.csv",
@@ -2128,7 +2128,7 @@
     },
     {
       "source": "csv/quotes/MNDE.csv",
-      "sha256": "5f94b4e0359cae444c37495722c6009aa09657105fea02342a9a8524e4e8b4b6",
+      "sha256": "503eaa1da6d1c17769e41b8f2bb98c6045c9c124f60d81aabb7894dbb6d53ca0",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/quotes/MNDE.csv",
         "blocks_deploy/crypto_risk_analyst/csv/quotes/MNDE.csv",
@@ -2145,7 +2145,7 @@
     },
     {
       "source": "csv/quotes/NEAR.csv",
-      "sha256": "8fb7c96ab7affeb0ade0c414ba2d885fd93bfe4518bfd772002269dcec6bf390",
+      "sha256": "f0016bb30964e475e720591a07c1b6bdc8965888048f6c887a786067d57d67cd",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/quotes/NEAR.csv",
         "blocks_deploy/crypto_risk_analyst/csv/quotes/NEAR.csv",
@@ -2162,7 +2162,7 @@
     },
     {
       "source": "csv/quotes/NEO.csv",
-      "sha256": "a4f42d78ec2f56741d96288725c43c042281e7ce5a842b1800aa8decf0736462",
+      "sha256": "4c392a417f02907116c9ca819eec7f9f3d0ece53051b95ff9952bf81c3258bd3",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/quotes/NEO.csv",
         "blocks_deploy/crypto_risk_analyst/csv/quotes/NEO.csv",
@@ -2179,7 +2179,7 @@
     },
     {
       "source": "csv/quotes/ONDO.csv",
-      "sha256": "6ed8d8e8bae794160f2d2046d847bc43d3b961aade6b720001b38363ed22d929",
+      "sha256": "f4530de6ea4dbb1b112b9e0e3cc74f88f40147818f16275105c2c25af1384d1b",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/quotes/ONDO.csv",
         "blocks_deploy/crypto_risk_analyst/csv/quotes/ONDO.csv",
@@ -2196,7 +2196,7 @@
     },
     {
       "source": "csv/quotes/ONE.csv",
-      "sha256": "d37c0229f99809ef02ec8b6c3bfdfa7803030846684178b0b8aa6f0cb49f8f5e",
+      "sha256": "df8014570f9ea3d7017a4903d8505c0180a780eb5192084f0cbbf6e6612ee97a",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/quotes/ONE.csv",
         "blocks_deploy/crypto_risk_analyst/csv/quotes/ONE.csv",
@@ -2213,7 +2213,7 @@
     },
     {
       "source": "csv/quotes/OP.csv",
-      "sha256": "9fc0d7399fa1f3a4a55058d7c21e6eff134cdccc11e58875b867509cedfe1649",
+      "sha256": "b55af9552e950320655f937519311a33f6890b4f6a909a2914ec6c90dafec6ab",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/quotes/OP.csv",
         "blocks_deploy/crypto_risk_analyst/csv/quotes/OP.csv",
@@ -2230,7 +2230,7 @@
     },
     {
       "source": "csv/quotes/PENDLE.csv",
-      "sha256": "83cf35a44735e80e1e1f6c85af583770e23bd5654df834799eb46d0a245415f7",
+      "sha256": "f1b3321733dee066980a8432c6b5dccac1b4d894fda62311e304de6f066af95d",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/quotes/PENDLE.csv",
         "blocks_deploy/crypto_risk_analyst/csv/quotes/PENDLE.csv",
@@ -2247,7 +2247,7 @@
     },
     {
       "source": "csv/quotes/RENDER.csv",
-      "sha256": "2198d6dcf6ca57446b4ce406abe4165ced515fe342a5f5c4186eac7044ca4a61",
+      "sha256": "8f6012f49368164690b07edbf827ef3b854f935a37d774932355894483d63185",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/quotes/RENDER.csv",
         "blocks_deploy/crypto_risk_analyst/csv/quotes/RENDER.csv",
@@ -2264,7 +2264,7 @@
     },
     {
       "source": "csv/quotes/ROSE.csv",
-      "sha256": "ae7c2f8a275c83da39a2663601e7b9b805b415b2cd46792e00ad57d6fbd48b64",
+      "sha256": "c2d2a6687f8a34272da82786fa4007bd1f79d44fe102f5a6bfadd82db93e8448",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/quotes/ROSE.csv",
         "blocks_deploy/crypto_risk_analyst/csv/quotes/ROSE.csv",
@@ -2281,7 +2281,7 @@
     },
     {
       "source": "csv/quotes/RPL.csv",
-      "sha256": "158e2ce936d7c0779f4275b3a6d3779f5faaca145541a2089dabc5eef1b867a0",
+      "sha256": "12b09f3293834b4d8ca046f081fb1adbfd9d63ddd3805f800d5ea2d83c8cf200",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/quotes/RPL.csv",
         "blocks_deploy/crypto_risk_analyst/csv/quotes/RPL.csv",
@@ -2298,7 +2298,7 @@
     },
     {
       "source": "csv/quotes/SEI.csv",
-      "sha256": "1bf33fb6b483d898d69c9e7d2876fdcda4924823757e8d9e30a71c76cbf1867a",
+      "sha256": "fcc76a6d5557a4471b329e69adf6a40c94c5f39a3ba6863063fa0d7b4adff69d",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/quotes/SEI.csv",
         "blocks_deploy/crypto_risk_analyst/csv/quotes/SEI.csv",
@@ -2315,7 +2315,7 @@
     },
     {
       "source": "csv/quotes/SNX.csv",
-      "sha256": "f336d68afa76fe93e33ac15415193b8a1220c0559194cf0e471b0af61391d61c",
+      "sha256": "20552eded915840da13c0fd97c94d99b9ae31d9767a4e507115821e5d82064bf",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/quotes/SNX.csv",
         "blocks_deploy/crypto_risk_analyst/csv/quotes/SNX.csv",
@@ -2349,7 +2349,7 @@
     },
     {
       "source": "csv/quotes/SUI.csv",
-      "sha256": "9a0a8543782ab13709abdf2d5b6adbc68afd9bbacf520718a34e4d581355eeed",
+      "sha256": "b1893b8f5ed8c9922473844c6b1449be4d1b65fe3c761ecb36c33271cc964ecf",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/quotes/SUI.csv",
         "blocks_deploy/crypto_risk_analyst/csv/quotes/SUI.csv",
@@ -2366,7 +2366,7 @@
     },
     {
       "source": "csv/quotes/TAO.csv",
-      "sha256": "9830ff32bf4474337b5795bcc452db8ab826b2571fa2758f983192f1b30a85db",
+      "sha256": "0fbe3a5644af1c1ca08c0050da83950905397be5d2004fd7e61330b85f202355",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/quotes/TAO.csv",
         "blocks_deploy/crypto_risk_analyst/csv/quotes/TAO.csv",
@@ -2383,7 +2383,7 @@
     },
     {
       "source": "csv/quotes/THETA.csv",
-      "sha256": "d29c45f6c223064f9c75349e6a0b2b98765dacc7754d587cc4f663743720b538",
+      "sha256": "ac0cb6ef7a4d9563a501ac321f0afd02b8cec700df49fba5a549f74d9aec1392",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/quotes/THETA.csv",
         "blocks_deploy/crypto_risk_analyst/csv/quotes/THETA.csv",
@@ -2400,7 +2400,7 @@
     },
     {
       "source": "csv/quotes/TIA.csv",
-      "sha256": "ab0b7dd117f5c035281286bcf6ea72582d7fdd2748c235b6468d3ed1426d7a6f",
+      "sha256": "6f8451ef56cbfdc5040a207a85cc7c24d1897de7acce0289b4e61dca4c60439f",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/quotes/TIA.csv",
         "blocks_deploy/crypto_risk_analyst/csv/quotes/TIA.csv",
@@ -2417,7 +2417,7 @@
     },
     {
       "source": "csv/quotes/TRX.csv",
-      "sha256": "d81ce61c6d12c1a4dd29952c1ad41c1c456a9cd0ef1b4a9f142d7e11a154a3c0",
+      "sha256": "ffb90c85368b0022d25206f5964d3392ab1e8f3be1b76ef578e8d67238b62219",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/quotes/TRX.csv",
         "blocks_deploy/crypto_risk_analyst/csv/quotes/TRX.csv",
@@ -2434,7 +2434,7 @@
     },
     {
       "source": "csv/quotes/UNI.csv",
-      "sha256": "c7135039353f1dce8c53c4bd2b4694b1e6b032f0289cdf66474488b5fd1d7346",
+      "sha256": "7ec997425f6d17804564ca7e3d2984ef50d4965eac557e7df54814fcbeec2933",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/quotes/UNI.csv",
         "blocks_deploy/crypto_risk_analyst/csv/quotes/UNI.csv",
@@ -2451,7 +2451,7 @@
     },
     {
       "source": "csv/quotes/VET.csv",
-      "sha256": "b43c35bfcbe4ceb165191880021c1208e5fedaf3b22eeb58d4350884363a3e19",
+      "sha256": "14e143a902e5b925355900f545442d09aa528b7893784b087908cb8d212fb226",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/quotes/VET.csv",
         "blocks_deploy/crypto_risk_analyst/csv/quotes/VET.csv",
@@ -2468,7 +2468,7 @@
     },
     {
       "source": "csv/quotes/WLD.csv",
-      "sha256": "d4d8bef9dd5f5089a2fda0e95c38a3094611f367fbe21f2954a4af7016f38695",
+      "sha256": "9498978398a961317d20c0fbcd52e8a5b013c9f2eb348ac0f6d4802b676225a8",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/quotes/WLD.csv",
         "blocks_deploy/crypto_risk_analyst/csv/quotes/WLD.csv",
@@ -2485,7 +2485,7 @@
     },
     {
       "source": "csv/quotes/XLM.csv",
-      "sha256": "2e17a549f4f4b3196e9767bf8bfa3609cc8ccf04102d896bcbdc0a9e98208084",
+      "sha256": "ce5974510bf8259df2a2a4cc3bab8dd8fa2d477ce9813b3371767d23f758ce3b",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/quotes/XLM.csv",
         "blocks_deploy/crypto_risk_analyst/csv/quotes/XLM.csv",
@@ -2519,7 +2519,7 @@
     },
     {
       "source": "csv/quotes/XTZ.csv",
-      "sha256": "2cc1885dc5abb48f6157afd81bc56c127fbf6da5b4154bf6a9a236100c8843ce",
+      "sha256": "6bd038c7d6e2cbdccb92cacfcd25ded4e036cf8073118c85d16c578896f3864e",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/quotes/XTZ.csv",
         "blocks_deploy/crypto_risk_analyst/csv/quotes/XTZ.csv",
@@ -2536,7 +2536,7 @@
     },
     {
       "source": "csv/quotes/YFI.csv",
-      "sha256": "07d13182b9573eda736fca26fe8633e83cf1c393e8003390b94708df5db1319a",
+      "sha256": "4b69640e42a0595cbf4e2d35740e43070b12ea251d6cf48d940551bfe06ba2d9",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/quotes/YFI.csv",
         "blocks_deploy/crypto_risk_analyst/csv/quotes/YFI.csv",
@@ -2566,6 +2566,23 @@
         "blocks_deploy/quant_forecasting_expert/csv/reference/asset_summary.csv",
         "blocks_deploy/tokenomics_sustainability_expert/csv/reference/asset_summary.csv",
         "blocks_deploy/yield_methodology_expert/csv/reference/asset_summary.csv"
+      ]
+    },
+    {
+      "source": "csv/reference/contract_addresses.csv",
+      "sha256": "94c1e39c1b065a208531184f3c8132efb55d2f94a115eda52a9b210890cde2c1",
+      "targets": [
+        "blocks_deploy/crypto_research_communications_agent/csv/reference/contract_addresses.csv",
+        "blocks_deploy/crypto_risk_analyst/csv/reference/contract_addresses.csv",
+        "blocks_deploy/data_provenance_auditor/csv/reference/contract_addresses.csv",
+        "blocks_deploy/defi_liquidity_analyst/csv/reference/contract_addresses.csv",
+        "blocks_deploy/feature_engineering_expert/csv/reference/contract_addresses.csv",
+        "blocks_deploy/matrix_research_insights_agent/csv/reference/contract_addresses.csv",
+        "blocks_deploy/model_validation_guardian/csv/reference/contract_addresses.csv",
+        "blocks_deploy/portfolio_scenario_expert/csv/reference/contract_addresses.csv",
+        "blocks_deploy/quant_forecasting_expert/csv/reference/contract_addresses.csv",
+        "blocks_deploy/tokenomics_sustainability_expert/csv/reference/contract_addresses.csv",
+        "blocks_deploy/yield_methodology_expert/csv/reference/contract_addresses.csv"
       ]
     },
     {
@@ -2671,8 +2688,25 @@
       ]
     },
     {
+      "source": "csv/source_snapshots/AAVE.csv",
+      "sha256": "aa04eb046b73f7823262d3867c68d903d955ca473c73ca0ae14c1a5cc69a0b54",
+      "targets": [
+        "blocks_deploy/crypto_research_communications_agent/csv/source_snapshots/AAVE.csv",
+        "blocks_deploy/crypto_risk_analyst/csv/source_snapshots/AAVE.csv",
+        "blocks_deploy/data_provenance_auditor/csv/source_snapshots/AAVE.csv",
+        "blocks_deploy/defi_liquidity_analyst/csv/source_snapshots/AAVE.csv",
+        "blocks_deploy/feature_engineering_expert/csv/source_snapshots/AAVE.csv",
+        "blocks_deploy/matrix_research_insights_agent/csv/source_snapshots/AAVE.csv",
+        "blocks_deploy/model_validation_guardian/csv/source_snapshots/AAVE.csv",
+        "blocks_deploy/portfolio_scenario_expert/csv/source_snapshots/AAVE.csv",
+        "blocks_deploy/quant_forecasting_expert/csv/source_snapshots/AAVE.csv",
+        "blocks_deploy/tokenomics_sustainability_expert/csv/source_snapshots/AAVE.csv",
+        "blocks_deploy/yield_methodology_expert/csv/source_snapshots/AAVE.csv"
+      ]
+    },
+    {
       "source": "csv/source_snapshots/ADA.csv",
-      "sha256": "297532552bf341f6aed2895f34bac170a940c1d2efc3ad2d95d12df94a6e0675",
+      "sha256": "7d66f75bfa97c35f24c0bb063a3aff1637e108df5f3a344889c29caae35fb2d7",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/source_snapshots/ADA.csv",
         "blocks_deploy/crypto_risk_analyst/csv/source_snapshots/ADA.csv",
@@ -2688,8 +2722,59 @@
       ]
     },
     {
+      "source": "csv/source_snapshots/ALGO.csv",
+      "sha256": "878443c3fff4d1976c836027622a146c79e45799188e9b4d4053753bbff2c726",
+      "targets": [
+        "blocks_deploy/crypto_research_communications_agent/csv/source_snapshots/ALGO.csv",
+        "blocks_deploy/crypto_risk_analyst/csv/source_snapshots/ALGO.csv",
+        "blocks_deploy/data_provenance_auditor/csv/source_snapshots/ALGO.csv",
+        "blocks_deploy/defi_liquidity_analyst/csv/source_snapshots/ALGO.csv",
+        "blocks_deploy/feature_engineering_expert/csv/source_snapshots/ALGO.csv",
+        "blocks_deploy/matrix_research_insights_agent/csv/source_snapshots/ALGO.csv",
+        "blocks_deploy/model_validation_guardian/csv/source_snapshots/ALGO.csv",
+        "blocks_deploy/portfolio_scenario_expert/csv/source_snapshots/ALGO.csv",
+        "blocks_deploy/quant_forecasting_expert/csv/source_snapshots/ALGO.csv",
+        "blocks_deploy/tokenomics_sustainability_expert/csv/source_snapshots/ALGO.csv",
+        "blocks_deploy/yield_methodology_expert/csv/source_snapshots/ALGO.csv"
+      ]
+    },
+    {
+      "source": "csv/source_snapshots/APT.csv",
+      "sha256": "9ee1abf30ea15ec78737cd73a9178bd0434e7bec6b8e36727d107f02f5c4ee57",
+      "targets": [
+        "blocks_deploy/crypto_research_communications_agent/csv/source_snapshots/APT.csv",
+        "blocks_deploy/crypto_risk_analyst/csv/source_snapshots/APT.csv",
+        "blocks_deploy/data_provenance_auditor/csv/source_snapshots/APT.csv",
+        "blocks_deploy/defi_liquidity_analyst/csv/source_snapshots/APT.csv",
+        "blocks_deploy/feature_engineering_expert/csv/source_snapshots/APT.csv",
+        "blocks_deploy/matrix_research_insights_agent/csv/source_snapshots/APT.csv",
+        "blocks_deploy/model_validation_guardian/csv/source_snapshots/APT.csv",
+        "blocks_deploy/portfolio_scenario_expert/csv/source_snapshots/APT.csv",
+        "blocks_deploy/quant_forecasting_expert/csv/source_snapshots/APT.csv",
+        "blocks_deploy/tokenomics_sustainability_expert/csv/source_snapshots/APT.csv",
+        "blocks_deploy/yield_methodology_expert/csv/source_snapshots/APT.csv"
+      ]
+    },
+    {
+      "source": "csv/source_snapshots/ARB.csv",
+      "sha256": "fb1b144fb686bda68a672a29534acb4c5a80ca378edd81f505890acc23579292",
+      "targets": [
+        "blocks_deploy/crypto_research_communications_agent/csv/source_snapshots/ARB.csv",
+        "blocks_deploy/crypto_risk_analyst/csv/source_snapshots/ARB.csv",
+        "blocks_deploy/data_provenance_auditor/csv/source_snapshots/ARB.csv",
+        "blocks_deploy/defi_liquidity_analyst/csv/source_snapshots/ARB.csv",
+        "blocks_deploy/feature_engineering_expert/csv/source_snapshots/ARB.csv",
+        "blocks_deploy/matrix_research_insights_agent/csv/source_snapshots/ARB.csv",
+        "blocks_deploy/model_validation_guardian/csv/source_snapshots/ARB.csv",
+        "blocks_deploy/portfolio_scenario_expert/csv/source_snapshots/ARB.csv",
+        "blocks_deploy/quant_forecasting_expert/csv/source_snapshots/ARB.csv",
+        "blocks_deploy/tokenomics_sustainability_expert/csv/source_snapshots/ARB.csv",
+        "blocks_deploy/yield_methodology_expert/csv/source_snapshots/ARB.csv"
+      ]
+    },
+    {
       "source": "csv/source_snapshots/ATOM.csv",
-      "sha256": "36142b8116057f953f7f24606739e51672b6273830ee8a3b12a67bfeda6ed53e",
+      "sha256": "c28f56625f7c6f85b169f99deff3779ce76b84fd6879d1fb2822b348a8a5c917",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/source_snapshots/ATOM.csv",
         "blocks_deploy/crypto_risk_analyst/csv/source_snapshots/ATOM.csv",
@@ -2706,7 +2791,7 @@
     },
     {
       "source": "csv/source_snapshots/AVAX.csv",
-      "sha256": "3e6b3fd19cbddf473a914c612044e390fa9a22a49e314057e1bf0c4074a08e78",
+      "sha256": "4ed2e593af481afe406bdc152961534728827f5ec6367dd95ccd87935c9c1d1a",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/source_snapshots/AVAX.csv",
         "blocks_deploy/crypto_risk_analyst/csv/source_snapshots/AVAX.csv",
@@ -2722,8 +2807,25 @@
       ]
     },
     {
+      "source": "csv/source_snapshots/BAL.csv",
+      "sha256": "ad97125bc7c5072055b2220fd1eb05c50721baf4011e279f28feefaa110940c5",
+      "targets": [
+        "blocks_deploy/crypto_research_communications_agent/csv/source_snapshots/BAL.csv",
+        "blocks_deploy/crypto_risk_analyst/csv/source_snapshots/BAL.csv",
+        "blocks_deploy/data_provenance_auditor/csv/source_snapshots/BAL.csv",
+        "blocks_deploy/defi_liquidity_analyst/csv/source_snapshots/BAL.csv",
+        "blocks_deploy/feature_engineering_expert/csv/source_snapshots/BAL.csv",
+        "blocks_deploy/matrix_research_insights_agent/csv/source_snapshots/BAL.csv",
+        "blocks_deploy/model_validation_guardian/csv/source_snapshots/BAL.csv",
+        "blocks_deploy/portfolio_scenario_expert/csv/source_snapshots/BAL.csv",
+        "blocks_deploy/quant_forecasting_expert/csv/source_snapshots/BAL.csv",
+        "blocks_deploy/tokenomics_sustainability_expert/csv/source_snapshots/BAL.csv",
+        "blocks_deploy/yield_methodology_expert/csv/source_snapshots/BAL.csv"
+      ]
+    },
+    {
       "source": "csv/source_snapshots/BTC.csv",
-      "sha256": "c18c506ca600d93c25614f00d0bf7d0afc9c8d9c1e78fe954f75831fa940ba33",
+      "sha256": "21e13a6399bced186c1bc7b29c27d50b118c6f95169d8fcbdd276a41284f26ed",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/source_snapshots/BTC.csv",
         "blocks_deploy/crypto_risk_analyst/csv/source_snapshots/BTC.csv",
@@ -2739,8 +2841,76 @@
       ]
     },
     {
+      "source": "csv/source_snapshots/CELO.csv",
+      "sha256": "ba890b74cba161841fead7d0938c34781847b6b3890d9acec105d3005b8aad36",
+      "targets": [
+        "blocks_deploy/crypto_research_communications_agent/csv/source_snapshots/CELO.csv",
+        "blocks_deploy/crypto_risk_analyst/csv/source_snapshots/CELO.csv",
+        "blocks_deploy/data_provenance_auditor/csv/source_snapshots/CELO.csv",
+        "blocks_deploy/defi_liquidity_analyst/csv/source_snapshots/CELO.csv",
+        "blocks_deploy/feature_engineering_expert/csv/source_snapshots/CELO.csv",
+        "blocks_deploy/matrix_research_insights_agent/csv/source_snapshots/CELO.csv",
+        "blocks_deploy/model_validation_guardian/csv/source_snapshots/CELO.csv",
+        "blocks_deploy/portfolio_scenario_expert/csv/source_snapshots/CELO.csv",
+        "blocks_deploy/quant_forecasting_expert/csv/source_snapshots/CELO.csv",
+        "blocks_deploy/tokenomics_sustainability_expert/csv/source_snapshots/CELO.csv",
+        "blocks_deploy/yield_methodology_expert/csv/source_snapshots/CELO.csv"
+      ]
+    },
+    {
+      "source": "csv/source_snapshots/COMP.csv",
+      "sha256": "fffa2f862b8c57c7d7ba457bc0d9a169a1d5077eeeff43124d4251716322df77",
+      "targets": [
+        "blocks_deploy/crypto_research_communications_agent/csv/source_snapshots/COMP.csv",
+        "blocks_deploy/crypto_risk_analyst/csv/source_snapshots/COMP.csv",
+        "blocks_deploy/data_provenance_auditor/csv/source_snapshots/COMP.csv",
+        "blocks_deploy/defi_liquidity_analyst/csv/source_snapshots/COMP.csv",
+        "blocks_deploy/feature_engineering_expert/csv/source_snapshots/COMP.csv",
+        "blocks_deploy/matrix_research_insights_agent/csv/source_snapshots/COMP.csv",
+        "blocks_deploy/model_validation_guardian/csv/source_snapshots/COMP.csv",
+        "blocks_deploy/portfolio_scenario_expert/csv/source_snapshots/COMP.csv",
+        "blocks_deploy/quant_forecasting_expert/csv/source_snapshots/COMP.csv",
+        "blocks_deploy/tokenomics_sustainability_expert/csv/source_snapshots/COMP.csv",
+        "blocks_deploy/yield_methodology_expert/csv/source_snapshots/COMP.csv"
+      ]
+    },
+    {
+      "source": "csv/source_snapshots/CRO.csv",
+      "sha256": "500597db1652b871fd10a18357ed957c2b2496242a3a8efa2cf7b1fdd625b731",
+      "targets": [
+        "blocks_deploy/crypto_research_communications_agent/csv/source_snapshots/CRO.csv",
+        "blocks_deploy/crypto_risk_analyst/csv/source_snapshots/CRO.csv",
+        "blocks_deploy/data_provenance_auditor/csv/source_snapshots/CRO.csv",
+        "blocks_deploy/defi_liquidity_analyst/csv/source_snapshots/CRO.csv",
+        "blocks_deploy/feature_engineering_expert/csv/source_snapshots/CRO.csv",
+        "blocks_deploy/matrix_research_insights_agent/csv/source_snapshots/CRO.csv",
+        "blocks_deploy/model_validation_guardian/csv/source_snapshots/CRO.csv",
+        "blocks_deploy/portfolio_scenario_expert/csv/source_snapshots/CRO.csv",
+        "blocks_deploy/quant_forecasting_expert/csv/source_snapshots/CRO.csv",
+        "blocks_deploy/tokenomics_sustainability_expert/csv/source_snapshots/CRO.csv",
+        "blocks_deploy/yield_methodology_expert/csv/source_snapshots/CRO.csv"
+      ]
+    },
+    {
+      "source": "csv/source_snapshots/CRV.csv",
+      "sha256": "8ad390d519ef72e0bea961733a4044b970f917e5af37d83efcd58e4213fe856a",
+      "targets": [
+        "blocks_deploy/crypto_research_communications_agent/csv/source_snapshots/CRV.csv",
+        "blocks_deploy/crypto_risk_analyst/csv/source_snapshots/CRV.csv",
+        "blocks_deploy/data_provenance_auditor/csv/source_snapshots/CRV.csv",
+        "blocks_deploy/defi_liquidity_analyst/csv/source_snapshots/CRV.csv",
+        "blocks_deploy/feature_engineering_expert/csv/source_snapshots/CRV.csv",
+        "blocks_deploy/matrix_research_insights_agent/csv/source_snapshots/CRV.csv",
+        "blocks_deploy/model_validation_guardian/csv/source_snapshots/CRV.csv",
+        "blocks_deploy/portfolio_scenario_expert/csv/source_snapshots/CRV.csv",
+        "blocks_deploy/quant_forecasting_expert/csv/source_snapshots/CRV.csv",
+        "blocks_deploy/tokenomics_sustainability_expert/csv/source_snapshots/CRV.csv",
+        "blocks_deploy/yield_methodology_expert/csv/source_snapshots/CRV.csv"
+      ]
+    },
+    {
       "source": "csv/source_snapshots/DOT.csv",
-      "sha256": "bcee03a262e295f5ce88a3d1143d3661a41098d92c776e21fa36e89bb458518c",
+      "sha256": "edf2576749ad139538afb4532f76284f62e73a2b2754c80d5814d29b597c232d",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/source_snapshots/DOT.csv",
         "blocks_deploy/crypto_risk_analyst/csv/source_snapshots/DOT.csv",
@@ -2756,8 +2926,42 @@
       ]
     },
     {
+      "source": "csv/source_snapshots/EIGEN.csv",
+      "sha256": "60f83a1a37798c62a742fa93a61b7e8c8b24bfba64202446e0f8fa131a85852e",
+      "targets": [
+        "blocks_deploy/crypto_research_communications_agent/csv/source_snapshots/EIGEN.csv",
+        "blocks_deploy/crypto_risk_analyst/csv/source_snapshots/EIGEN.csv",
+        "blocks_deploy/data_provenance_auditor/csv/source_snapshots/EIGEN.csv",
+        "blocks_deploy/defi_liquidity_analyst/csv/source_snapshots/EIGEN.csv",
+        "blocks_deploy/feature_engineering_expert/csv/source_snapshots/EIGEN.csv",
+        "blocks_deploy/matrix_research_insights_agent/csv/source_snapshots/EIGEN.csv",
+        "blocks_deploy/model_validation_guardian/csv/source_snapshots/EIGEN.csv",
+        "blocks_deploy/portfolio_scenario_expert/csv/source_snapshots/EIGEN.csv",
+        "blocks_deploy/quant_forecasting_expert/csv/source_snapshots/EIGEN.csv",
+        "blocks_deploy/tokenomics_sustainability_expert/csv/source_snapshots/EIGEN.csv",
+        "blocks_deploy/yield_methodology_expert/csv/source_snapshots/EIGEN.csv"
+      ]
+    },
+    {
+      "source": "csv/source_snapshots/EOS.csv",
+      "sha256": "bcd7ba9e8840c1ade7de6047f0f6f27fff405d650b1d1eb15eec9808732a5cae",
+      "targets": [
+        "blocks_deploy/crypto_research_communications_agent/csv/source_snapshots/EOS.csv",
+        "blocks_deploy/crypto_risk_analyst/csv/source_snapshots/EOS.csv",
+        "blocks_deploy/data_provenance_auditor/csv/source_snapshots/EOS.csv",
+        "blocks_deploy/defi_liquidity_analyst/csv/source_snapshots/EOS.csv",
+        "blocks_deploy/feature_engineering_expert/csv/source_snapshots/EOS.csv",
+        "blocks_deploy/matrix_research_insights_agent/csv/source_snapshots/EOS.csv",
+        "blocks_deploy/model_validation_guardian/csv/source_snapshots/EOS.csv",
+        "blocks_deploy/portfolio_scenario_expert/csv/source_snapshots/EOS.csv",
+        "blocks_deploy/quant_forecasting_expert/csv/source_snapshots/EOS.csv",
+        "blocks_deploy/tokenomics_sustainability_expert/csv/source_snapshots/EOS.csv",
+        "blocks_deploy/yield_methodology_expert/csv/source_snapshots/EOS.csv"
+      ]
+    },
+    {
       "source": "csv/source_snapshots/ETH.csv",
-      "sha256": "7db5e1b92445ab00d6a0fa94c36caf84ea045597003943f2ec72e941c2c45baf",
+      "sha256": "97167fb3cd5379886cd867e13703912b6a472a0f0e908a7fb437788e9152db0a",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/source_snapshots/ETH.csv",
         "blocks_deploy/crypto_risk_analyst/csv/source_snapshots/ETH.csv",
@@ -2773,8 +2977,212 @@
       ]
     },
     {
+      "source": "csv/source_snapshots/ETHFI.csv",
+      "sha256": "b0b01f12f3defa166e32048b1f5776011ce3b6dc2b835bd15de811084d1c50dc",
+      "targets": [
+        "blocks_deploy/crypto_research_communications_agent/csv/source_snapshots/ETHFI.csv",
+        "blocks_deploy/crypto_risk_analyst/csv/source_snapshots/ETHFI.csv",
+        "blocks_deploy/data_provenance_auditor/csv/source_snapshots/ETHFI.csv",
+        "blocks_deploy/defi_liquidity_analyst/csv/source_snapshots/ETHFI.csv",
+        "blocks_deploy/feature_engineering_expert/csv/source_snapshots/ETHFI.csv",
+        "blocks_deploy/matrix_research_insights_agent/csv/source_snapshots/ETHFI.csv",
+        "blocks_deploy/model_validation_guardian/csv/source_snapshots/ETHFI.csv",
+        "blocks_deploy/portfolio_scenario_expert/csv/source_snapshots/ETHFI.csv",
+        "blocks_deploy/quant_forecasting_expert/csv/source_snapshots/ETHFI.csv",
+        "blocks_deploy/tokenomics_sustainability_expert/csv/source_snapshots/ETHFI.csv",
+        "blocks_deploy/yield_methodology_expert/csv/source_snapshots/ETHFI.csv"
+      ]
+    },
+    {
+      "source": "csv/source_snapshots/FIL.csv",
+      "sha256": "010d61e82fa62c704bc6210b73bb53263ab5906981dec6f097298349af3af28b",
+      "targets": [
+        "blocks_deploy/crypto_research_communications_agent/csv/source_snapshots/FIL.csv",
+        "blocks_deploy/crypto_risk_analyst/csv/source_snapshots/FIL.csv",
+        "blocks_deploy/data_provenance_auditor/csv/source_snapshots/FIL.csv",
+        "blocks_deploy/defi_liquidity_analyst/csv/source_snapshots/FIL.csv",
+        "blocks_deploy/feature_engineering_expert/csv/source_snapshots/FIL.csv",
+        "blocks_deploy/matrix_research_insights_agent/csv/source_snapshots/FIL.csv",
+        "blocks_deploy/model_validation_guardian/csv/source_snapshots/FIL.csv",
+        "blocks_deploy/portfolio_scenario_expert/csv/source_snapshots/FIL.csv",
+        "blocks_deploy/quant_forecasting_expert/csv/source_snapshots/FIL.csv",
+        "blocks_deploy/tokenomics_sustainability_expert/csv/source_snapshots/FIL.csv",
+        "blocks_deploy/yield_methodology_expert/csv/source_snapshots/FIL.csv"
+      ]
+    },
+    {
+      "source": "csv/source_snapshots/FLOW.csv",
+      "sha256": "92a86d93ac707ef8582e59fc337a17cc25df85725f80131e39277bf9db5980cd",
+      "targets": [
+        "blocks_deploy/crypto_research_communications_agent/csv/source_snapshots/FLOW.csv",
+        "blocks_deploy/crypto_risk_analyst/csv/source_snapshots/FLOW.csv",
+        "blocks_deploy/data_provenance_auditor/csv/source_snapshots/FLOW.csv",
+        "blocks_deploy/defi_liquidity_analyst/csv/source_snapshots/FLOW.csv",
+        "blocks_deploy/feature_engineering_expert/csv/source_snapshots/FLOW.csv",
+        "blocks_deploy/matrix_research_insights_agent/csv/source_snapshots/FLOW.csv",
+        "blocks_deploy/model_validation_guardian/csv/source_snapshots/FLOW.csv",
+        "blocks_deploy/portfolio_scenario_expert/csv/source_snapshots/FLOW.csv",
+        "blocks_deploy/quant_forecasting_expert/csv/source_snapshots/FLOW.csv",
+        "blocks_deploy/tokenomics_sustainability_expert/csv/source_snapshots/FLOW.csv",
+        "blocks_deploy/yield_methodology_expert/csv/source_snapshots/FLOW.csv"
+      ]
+    },
+    {
+      "source": "csv/source_snapshots/FTM.csv",
+      "sha256": "854ac9c996c981533067e6a261aae9d218ec2927d2f8bf4a84dd293ed1b8093d",
+      "targets": [
+        "blocks_deploy/crypto_research_communications_agent/csv/source_snapshots/FTM.csv",
+        "blocks_deploy/crypto_risk_analyst/csv/source_snapshots/FTM.csv",
+        "blocks_deploy/data_provenance_auditor/csv/source_snapshots/FTM.csv",
+        "blocks_deploy/defi_liquidity_analyst/csv/source_snapshots/FTM.csv",
+        "blocks_deploy/feature_engineering_expert/csv/source_snapshots/FTM.csv",
+        "blocks_deploy/matrix_research_insights_agent/csv/source_snapshots/FTM.csv",
+        "blocks_deploy/model_validation_guardian/csv/source_snapshots/FTM.csv",
+        "blocks_deploy/portfolio_scenario_expert/csv/source_snapshots/FTM.csv",
+        "blocks_deploy/quant_forecasting_expert/csv/source_snapshots/FTM.csv",
+        "blocks_deploy/tokenomics_sustainability_expert/csv/source_snapshots/FTM.csv",
+        "blocks_deploy/yield_methodology_expert/csv/source_snapshots/FTM.csv"
+      ]
+    },
+    {
+      "source": "csv/source_snapshots/GLMR.csv",
+      "sha256": "c91958472e29bae1ba60b19f7190fc04da74ecc15bf27edc340af5fff004fe60",
+      "targets": [
+        "blocks_deploy/crypto_research_communications_agent/csv/source_snapshots/GLMR.csv",
+        "blocks_deploy/crypto_risk_analyst/csv/source_snapshots/GLMR.csv",
+        "blocks_deploy/data_provenance_auditor/csv/source_snapshots/GLMR.csv",
+        "blocks_deploy/defi_liquidity_analyst/csv/source_snapshots/GLMR.csv",
+        "blocks_deploy/feature_engineering_expert/csv/source_snapshots/GLMR.csv",
+        "blocks_deploy/matrix_research_insights_agent/csv/source_snapshots/GLMR.csv",
+        "blocks_deploy/model_validation_guardian/csv/source_snapshots/GLMR.csv",
+        "blocks_deploy/portfolio_scenario_expert/csv/source_snapshots/GLMR.csv",
+        "blocks_deploy/quant_forecasting_expert/csv/source_snapshots/GLMR.csv",
+        "blocks_deploy/tokenomics_sustainability_expert/csv/source_snapshots/GLMR.csv",
+        "blocks_deploy/yield_methodology_expert/csv/source_snapshots/GLMR.csv"
+      ]
+    },
+    {
+      "source": "csv/source_snapshots/GRT.csv",
+      "sha256": "1ae6b507e809b8e15b418e2594491f5e2afda90d5362d1903768600c45a24552",
+      "targets": [
+        "blocks_deploy/crypto_research_communications_agent/csv/source_snapshots/GRT.csv",
+        "blocks_deploy/crypto_risk_analyst/csv/source_snapshots/GRT.csv",
+        "blocks_deploy/data_provenance_auditor/csv/source_snapshots/GRT.csv",
+        "blocks_deploy/defi_liquidity_analyst/csv/source_snapshots/GRT.csv",
+        "blocks_deploy/feature_engineering_expert/csv/source_snapshots/GRT.csv",
+        "blocks_deploy/matrix_research_insights_agent/csv/source_snapshots/GRT.csv",
+        "blocks_deploy/model_validation_guardian/csv/source_snapshots/GRT.csv",
+        "blocks_deploy/portfolio_scenario_expert/csv/source_snapshots/GRT.csv",
+        "blocks_deploy/quant_forecasting_expert/csv/source_snapshots/GRT.csv",
+        "blocks_deploy/tokenomics_sustainability_expert/csv/source_snapshots/GRT.csv",
+        "blocks_deploy/yield_methodology_expert/csv/source_snapshots/GRT.csv"
+      ]
+    },
+    {
+      "source": "csv/source_snapshots/HYPE.csv",
+      "sha256": "3821c3ac8191d88f40ab5bea6c4e70c188a78968534a27c98409bca70c06dd31",
+      "targets": [
+        "blocks_deploy/crypto_research_communications_agent/csv/source_snapshots/HYPE.csv",
+        "blocks_deploy/crypto_risk_analyst/csv/source_snapshots/HYPE.csv",
+        "blocks_deploy/data_provenance_auditor/csv/source_snapshots/HYPE.csv",
+        "blocks_deploy/defi_liquidity_analyst/csv/source_snapshots/HYPE.csv",
+        "blocks_deploy/feature_engineering_expert/csv/source_snapshots/HYPE.csv",
+        "blocks_deploy/matrix_research_insights_agent/csv/source_snapshots/HYPE.csv",
+        "blocks_deploy/model_validation_guardian/csv/source_snapshots/HYPE.csv",
+        "blocks_deploy/portfolio_scenario_expert/csv/source_snapshots/HYPE.csv",
+        "blocks_deploy/quant_forecasting_expert/csv/source_snapshots/HYPE.csv",
+        "blocks_deploy/tokenomics_sustainability_expert/csv/source_snapshots/HYPE.csv",
+        "blocks_deploy/yield_methodology_expert/csv/source_snapshots/HYPE.csv"
+      ]
+    },
+    {
+      "source": "csv/source_snapshots/ICP.csv",
+      "sha256": "972bee929537e5d25678240506910ce29f3819f512ab58e861ac7175d078d262",
+      "targets": [
+        "blocks_deploy/crypto_research_communications_agent/csv/source_snapshots/ICP.csv",
+        "blocks_deploy/crypto_risk_analyst/csv/source_snapshots/ICP.csv",
+        "blocks_deploy/data_provenance_auditor/csv/source_snapshots/ICP.csv",
+        "blocks_deploy/defi_liquidity_analyst/csv/source_snapshots/ICP.csv",
+        "blocks_deploy/feature_engineering_expert/csv/source_snapshots/ICP.csv",
+        "blocks_deploy/matrix_research_insights_agent/csv/source_snapshots/ICP.csv",
+        "blocks_deploy/model_validation_guardian/csv/source_snapshots/ICP.csv",
+        "blocks_deploy/portfolio_scenario_expert/csv/source_snapshots/ICP.csv",
+        "blocks_deploy/quant_forecasting_expert/csv/source_snapshots/ICP.csv",
+        "blocks_deploy/tokenomics_sustainability_expert/csv/source_snapshots/ICP.csv",
+        "blocks_deploy/yield_methodology_expert/csv/source_snapshots/ICP.csv"
+      ]
+    },
+    {
+      "source": "csv/source_snapshots/INJ.csv",
+      "sha256": "b71d7fda1c6f7bd51f4b39814611452d27c7c31b60fb96ea189a90313eba995e",
+      "targets": [
+        "blocks_deploy/crypto_research_communications_agent/csv/source_snapshots/INJ.csv",
+        "blocks_deploy/crypto_risk_analyst/csv/source_snapshots/INJ.csv",
+        "blocks_deploy/data_provenance_auditor/csv/source_snapshots/INJ.csv",
+        "blocks_deploy/defi_liquidity_analyst/csv/source_snapshots/INJ.csv",
+        "blocks_deploy/feature_engineering_expert/csv/source_snapshots/INJ.csv",
+        "blocks_deploy/matrix_research_insights_agent/csv/source_snapshots/INJ.csv",
+        "blocks_deploy/model_validation_guardian/csv/source_snapshots/INJ.csv",
+        "blocks_deploy/portfolio_scenario_expert/csv/source_snapshots/INJ.csv",
+        "blocks_deploy/quant_forecasting_expert/csv/source_snapshots/INJ.csv",
+        "blocks_deploy/tokenomics_sustainability_expert/csv/source_snapshots/INJ.csv",
+        "blocks_deploy/yield_methodology_expert/csv/source_snapshots/INJ.csv"
+      ]
+    },
+    {
+      "source": "csv/source_snapshots/JTO.csv",
+      "sha256": "f115260d9609c7344cb7dd17c65f507074d76370c6373dfff12e530538b171c7",
+      "targets": [
+        "blocks_deploy/crypto_research_communications_agent/csv/source_snapshots/JTO.csv",
+        "blocks_deploy/crypto_risk_analyst/csv/source_snapshots/JTO.csv",
+        "blocks_deploy/data_provenance_auditor/csv/source_snapshots/JTO.csv",
+        "blocks_deploy/defi_liquidity_analyst/csv/source_snapshots/JTO.csv",
+        "blocks_deploy/feature_engineering_expert/csv/source_snapshots/JTO.csv",
+        "blocks_deploy/matrix_research_insights_agent/csv/source_snapshots/JTO.csv",
+        "blocks_deploy/model_validation_guardian/csv/source_snapshots/JTO.csv",
+        "blocks_deploy/portfolio_scenario_expert/csv/source_snapshots/JTO.csv",
+        "blocks_deploy/quant_forecasting_expert/csv/source_snapshots/JTO.csv",
+        "blocks_deploy/tokenomics_sustainability_expert/csv/source_snapshots/JTO.csv",
+        "blocks_deploy/yield_methodology_expert/csv/source_snapshots/JTO.csv"
+      ]
+    },
+    {
+      "source": "csv/source_snapshots/KAVA.csv",
+      "sha256": "82a7801e653db4a9de48d44e185522c26c7b9b1ac60cdfb7f4d674a2eab4f230",
+      "targets": [
+        "blocks_deploy/crypto_research_communications_agent/csv/source_snapshots/KAVA.csv",
+        "blocks_deploy/crypto_risk_analyst/csv/source_snapshots/KAVA.csv",
+        "blocks_deploy/data_provenance_auditor/csv/source_snapshots/KAVA.csv",
+        "blocks_deploy/defi_liquidity_analyst/csv/source_snapshots/KAVA.csv",
+        "blocks_deploy/feature_engineering_expert/csv/source_snapshots/KAVA.csv",
+        "blocks_deploy/matrix_research_insights_agent/csv/source_snapshots/KAVA.csv",
+        "blocks_deploy/model_validation_guardian/csv/source_snapshots/KAVA.csv",
+        "blocks_deploy/portfolio_scenario_expert/csv/source_snapshots/KAVA.csv",
+        "blocks_deploy/quant_forecasting_expert/csv/source_snapshots/KAVA.csv",
+        "blocks_deploy/tokenomics_sustainability_expert/csv/source_snapshots/KAVA.csv",
+        "blocks_deploy/yield_methodology_expert/csv/source_snapshots/KAVA.csv"
+      ]
+    },
+    {
+      "source": "csv/source_snapshots/LDO.csv",
+      "sha256": "d6b1ff43b424632684ebbca770bd221286d484c98191fed81f1a813d8c08c06f",
+      "targets": [
+        "blocks_deploy/crypto_research_communications_agent/csv/source_snapshots/LDO.csv",
+        "blocks_deploy/crypto_risk_analyst/csv/source_snapshots/LDO.csv",
+        "blocks_deploy/data_provenance_auditor/csv/source_snapshots/LDO.csv",
+        "blocks_deploy/defi_liquidity_analyst/csv/source_snapshots/LDO.csv",
+        "blocks_deploy/feature_engineering_expert/csv/source_snapshots/LDO.csv",
+        "blocks_deploy/matrix_research_insights_agent/csv/source_snapshots/LDO.csv",
+        "blocks_deploy/model_validation_guardian/csv/source_snapshots/LDO.csv",
+        "blocks_deploy/portfolio_scenario_expert/csv/source_snapshots/LDO.csv",
+        "blocks_deploy/quant_forecasting_expert/csv/source_snapshots/LDO.csv",
+        "blocks_deploy/tokenomics_sustainability_expert/csv/source_snapshots/LDO.csv",
+        "blocks_deploy/yield_methodology_expert/csv/source_snapshots/LDO.csv"
+      ]
+    },
+    {
       "source": "csv/source_snapshots/LINK.csv",
-      "sha256": "31938ea4d6f3aae09da2cba9dc7428e4f050e0862c95be116ddc10edd55aaf3f",
+      "sha256": "9603ae56ea4ab8cd428b6d83bc6dbc8a1163e9f471a96fbc918589d3238da666",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/source_snapshots/LINK.csv",
         "blocks_deploy/crypto_risk_analyst/csv/source_snapshots/LINK.csv",
@@ -2790,8 +3198,280 @@
       ]
     },
     {
+      "source": "csv/source_snapshots/LUNC.csv",
+      "sha256": "080c6eb2d65dec43932b2929c0055c54c9d82b4ad561cf2f8e73fc7d49baded9",
+      "targets": [
+        "blocks_deploy/crypto_research_communications_agent/csv/source_snapshots/LUNC.csv",
+        "blocks_deploy/crypto_risk_analyst/csv/source_snapshots/LUNC.csv",
+        "blocks_deploy/data_provenance_auditor/csv/source_snapshots/LUNC.csv",
+        "blocks_deploy/defi_liquidity_analyst/csv/source_snapshots/LUNC.csv",
+        "blocks_deploy/feature_engineering_expert/csv/source_snapshots/LUNC.csv",
+        "blocks_deploy/matrix_research_insights_agent/csv/source_snapshots/LUNC.csv",
+        "blocks_deploy/model_validation_guardian/csv/source_snapshots/LUNC.csv",
+        "blocks_deploy/portfolio_scenario_expert/csv/source_snapshots/LUNC.csv",
+        "blocks_deploy/quant_forecasting_expert/csv/source_snapshots/LUNC.csv",
+        "blocks_deploy/tokenomics_sustainability_expert/csv/source_snapshots/LUNC.csv",
+        "blocks_deploy/yield_methodology_expert/csv/source_snapshots/LUNC.csv"
+      ]
+    },
+    {
+      "source": "csv/source_snapshots/MATIC.csv",
+      "sha256": "e86516f72d8ec7b19ff1e3ea93974c3fe77011c07b13115ecdc83c5d02ee7721",
+      "targets": [
+        "blocks_deploy/crypto_research_communications_agent/csv/source_snapshots/MATIC.csv",
+        "blocks_deploy/crypto_risk_analyst/csv/source_snapshots/MATIC.csv",
+        "blocks_deploy/data_provenance_auditor/csv/source_snapshots/MATIC.csv",
+        "blocks_deploy/defi_liquidity_analyst/csv/source_snapshots/MATIC.csv",
+        "blocks_deploy/feature_engineering_expert/csv/source_snapshots/MATIC.csv",
+        "blocks_deploy/matrix_research_insights_agent/csv/source_snapshots/MATIC.csv",
+        "blocks_deploy/model_validation_guardian/csv/source_snapshots/MATIC.csv",
+        "blocks_deploy/portfolio_scenario_expert/csv/source_snapshots/MATIC.csv",
+        "blocks_deploy/quant_forecasting_expert/csv/source_snapshots/MATIC.csv",
+        "blocks_deploy/tokenomics_sustainability_expert/csv/source_snapshots/MATIC.csv",
+        "blocks_deploy/yield_methodology_expert/csv/source_snapshots/MATIC.csv"
+      ]
+    },
+    {
+      "source": "csv/source_snapshots/MINA.csv",
+      "sha256": "6a3fe68e09f9233dc1de5caa1c274898ea7a702dca8fea7f78ddcc44e85a16f0",
+      "targets": [
+        "blocks_deploy/crypto_research_communications_agent/csv/source_snapshots/MINA.csv",
+        "blocks_deploy/crypto_risk_analyst/csv/source_snapshots/MINA.csv",
+        "blocks_deploy/data_provenance_auditor/csv/source_snapshots/MINA.csv",
+        "blocks_deploy/defi_liquidity_analyst/csv/source_snapshots/MINA.csv",
+        "blocks_deploy/feature_engineering_expert/csv/source_snapshots/MINA.csv",
+        "blocks_deploy/matrix_research_insights_agent/csv/source_snapshots/MINA.csv",
+        "blocks_deploy/model_validation_guardian/csv/source_snapshots/MINA.csv",
+        "blocks_deploy/portfolio_scenario_expert/csv/source_snapshots/MINA.csv",
+        "blocks_deploy/quant_forecasting_expert/csv/source_snapshots/MINA.csv",
+        "blocks_deploy/tokenomics_sustainability_expert/csv/source_snapshots/MINA.csv",
+        "blocks_deploy/yield_methodology_expert/csv/source_snapshots/MINA.csv"
+      ]
+    },
+    {
+      "source": "csv/source_snapshots/MKR.csv",
+      "sha256": "15be586fec486d8d60918a977864dbeb7c9f5adf264ffecc993335bafb6ee962",
+      "targets": [
+        "blocks_deploy/crypto_research_communications_agent/csv/source_snapshots/MKR.csv",
+        "blocks_deploy/crypto_risk_analyst/csv/source_snapshots/MKR.csv",
+        "blocks_deploy/data_provenance_auditor/csv/source_snapshots/MKR.csv",
+        "blocks_deploy/defi_liquidity_analyst/csv/source_snapshots/MKR.csv",
+        "blocks_deploy/feature_engineering_expert/csv/source_snapshots/MKR.csv",
+        "blocks_deploy/matrix_research_insights_agent/csv/source_snapshots/MKR.csv",
+        "blocks_deploy/model_validation_guardian/csv/source_snapshots/MKR.csv",
+        "blocks_deploy/portfolio_scenario_expert/csv/source_snapshots/MKR.csv",
+        "blocks_deploy/quant_forecasting_expert/csv/source_snapshots/MKR.csv",
+        "blocks_deploy/tokenomics_sustainability_expert/csv/source_snapshots/MKR.csv",
+        "blocks_deploy/yield_methodology_expert/csv/source_snapshots/MKR.csv"
+      ]
+    },
+    {
+      "source": "csv/source_snapshots/MNDE.csv",
+      "sha256": "0859a1771ab6bf52fb1a06e2c460b0e65cc1f0005e13a0b5d4922f0123dd4a7c",
+      "targets": [
+        "blocks_deploy/crypto_research_communications_agent/csv/source_snapshots/MNDE.csv",
+        "blocks_deploy/crypto_risk_analyst/csv/source_snapshots/MNDE.csv",
+        "blocks_deploy/data_provenance_auditor/csv/source_snapshots/MNDE.csv",
+        "blocks_deploy/defi_liquidity_analyst/csv/source_snapshots/MNDE.csv",
+        "blocks_deploy/feature_engineering_expert/csv/source_snapshots/MNDE.csv",
+        "blocks_deploy/matrix_research_insights_agent/csv/source_snapshots/MNDE.csv",
+        "blocks_deploy/model_validation_guardian/csv/source_snapshots/MNDE.csv",
+        "blocks_deploy/portfolio_scenario_expert/csv/source_snapshots/MNDE.csv",
+        "blocks_deploy/quant_forecasting_expert/csv/source_snapshots/MNDE.csv",
+        "blocks_deploy/tokenomics_sustainability_expert/csv/source_snapshots/MNDE.csv",
+        "blocks_deploy/yield_methodology_expert/csv/source_snapshots/MNDE.csv"
+      ]
+    },
+    {
+      "source": "csv/source_snapshots/NEAR.csv",
+      "sha256": "f4f27631505dc4ca36cf7f7cefa0e9f4a455b68c7ffc19823bdb6dd3ffb426e8",
+      "targets": [
+        "blocks_deploy/crypto_research_communications_agent/csv/source_snapshots/NEAR.csv",
+        "blocks_deploy/crypto_risk_analyst/csv/source_snapshots/NEAR.csv",
+        "blocks_deploy/data_provenance_auditor/csv/source_snapshots/NEAR.csv",
+        "blocks_deploy/defi_liquidity_analyst/csv/source_snapshots/NEAR.csv",
+        "blocks_deploy/feature_engineering_expert/csv/source_snapshots/NEAR.csv",
+        "blocks_deploy/matrix_research_insights_agent/csv/source_snapshots/NEAR.csv",
+        "blocks_deploy/model_validation_guardian/csv/source_snapshots/NEAR.csv",
+        "blocks_deploy/portfolio_scenario_expert/csv/source_snapshots/NEAR.csv",
+        "blocks_deploy/quant_forecasting_expert/csv/source_snapshots/NEAR.csv",
+        "blocks_deploy/tokenomics_sustainability_expert/csv/source_snapshots/NEAR.csv",
+        "blocks_deploy/yield_methodology_expert/csv/source_snapshots/NEAR.csv"
+      ]
+    },
+    {
+      "source": "csv/source_snapshots/NEO.csv",
+      "sha256": "8accc407f630c855e511ba27ee46296eae94fc4b15deb728a4b810401fa3bac3",
+      "targets": [
+        "blocks_deploy/crypto_research_communications_agent/csv/source_snapshots/NEO.csv",
+        "blocks_deploy/crypto_risk_analyst/csv/source_snapshots/NEO.csv",
+        "blocks_deploy/data_provenance_auditor/csv/source_snapshots/NEO.csv",
+        "blocks_deploy/defi_liquidity_analyst/csv/source_snapshots/NEO.csv",
+        "blocks_deploy/feature_engineering_expert/csv/source_snapshots/NEO.csv",
+        "blocks_deploy/matrix_research_insights_agent/csv/source_snapshots/NEO.csv",
+        "blocks_deploy/model_validation_guardian/csv/source_snapshots/NEO.csv",
+        "blocks_deploy/portfolio_scenario_expert/csv/source_snapshots/NEO.csv",
+        "blocks_deploy/quant_forecasting_expert/csv/source_snapshots/NEO.csv",
+        "blocks_deploy/tokenomics_sustainability_expert/csv/source_snapshots/NEO.csv",
+        "blocks_deploy/yield_methodology_expert/csv/source_snapshots/NEO.csv"
+      ]
+    },
+    {
+      "source": "csv/source_snapshots/ONDO.csv",
+      "sha256": "38373a00a7dc0d4e03832b0d0c273705637638e8af281e63ac95e2ead039bd2a",
+      "targets": [
+        "blocks_deploy/crypto_research_communications_agent/csv/source_snapshots/ONDO.csv",
+        "blocks_deploy/crypto_risk_analyst/csv/source_snapshots/ONDO.csv",
+        "blocks_deploy/data_provenance_auditor/csv/source_snapshots/ONDO.csv",
+        "blocks_deploy/defi_liquidity_analyst/csv/source_snapshots/ONDO.csv",
+        "blocks_deploy/feature_engineering_expert/csv/source_snapshots/ONDO.csv",
+        "blocks_deploy/matrix_research_insights_agent/csv/source_snapshots/ONDO.csv",
+        "blocks_deploy/model_validation_guardian/csv/source_snapshots/ONDO.csv",
+        "blocks_deploy/portfolio_scenario_expert/csv/source_snapshots/ONDO.csv",
+        "blocks_deploy/quant_forecasting_expert/csv/source_snapshots/ONDO.csv",
+        "blocks_deploy/tokenomics_sustainability_expert/csv/source_snapshots/ONDO.csv",
+        "blocks_deploy/yield_methodology_expert/csv/source_snapshots/ONDO.csv"
+      ]
+    },
+    {
+      "source": "csv/source_snapshots/ONE.csv",
+      "sha256": "1894df073d3a743de8923f4eb0d28ea694b0e1821e0d2a85cebeb846e163a6f9",
+      "targets": [
+        "blocks_deploy/crypto_research_communications_agent/csv/source_snapshots/ONE.csv",
+        "blocks_deploy/crypto_risk_analyst/csv/source_snapshots/ONE.csv",
+        "blocks_deploy/data_provenance_auditor/csv/source_snapshots/ONE.csv",
+        "blocks_deploy/defi_liquidity_analyst/csv/source_snapshots/ONE.csv",
+        "blocks_deploy/feature_engineering_expert/csv/source_snapshots/ONE.csv",
+        "blocks_deploy/matrix_research_insights_agent/csv/source_snapshots/ONE.csv",
+        "blocks_deploy/model_validation_guardian/csv/source_snapshots/ONE.csv",
+        "blocks_deploy/portfolio_scenario_expert/csv/source_snapshots/ONE.csv",
+        "blocks_deploy/quant_forecasting_expert/csv/source_snapshots/ONE.csv",
+        "blocks_deploy/tokenomics_sustainability_expert/csv/source_snapshots/ONE.csv",
+        "blocks_deploy/yield_methodology_expert/csv/source_snapshots/ONE.csv"
+      ]
+    },
+    {
+      "source": "csv/source_snapshots/OP.csv",
+      "sha256": "805538a9a2df6a446ff8906e97bebf2617b4162ba445feb43dc0d896d925312f",
+      "targets": [
+        "blocks_deploy/crypto_research_communications_agent/csv/source_snapshots/OP.csv",
+        "blocks_deploy/crypto_risk_analyst/csv/source_snapshots/OP.csv",
+        "blocks_deploy/data_provenance_auditor/csv/source_snapshots/OP.csv",
+        "blocks_deploy/defi_liquidity_analyst/csv/source_snapshots/OP.csv",
+        "blocks_deploy/feature_engineering_expert/csv/source_snapshots/OP.csv",
+        "blocks_deploy/matrix_research_insights_agent/csv/source_snapshots/OP.csv",
+        "blocks_deploy/model_validation_guardian/csv/source_snapshots/OP.csv",
+        "blocks_deploy/portfolio_scenario_expert/csv/source_snapshots/OP.csv",
+        "blocks_deploy/quant_forecasting_expert/csv/source_snapshots/OP.csv",
+        "blocks_deploy/tokenomics_sustainability_expert/csv/source_snapshots/OP.csv",
+        "blocks_deploy/yield_methodology_expert/csv/source_snapshots/OP.csv"
+      ]
+    },
+    {
+      "source": "csv/source_snapshots/PENDLE.csv",
+      "sha256": "743e49ab5b26f2885cdc65bebdf21a2c5d77dbb7aae7b2e15f994346a8728a8c",
+      "targets": [
+        "blocks_deploy/crypto_research_communications_agent/csv/source_snapshots/PENDLE.csv",
+        "blocks_deploy/crypto_risk_analyst/csv/source_snapshots/PENDLE.csv",
+        "blocks_deploy/data_provenance_auditor/csv/source_snapshots/PENDLE.csv",
+        "blocks_deploy/defi_liquidity_analyst/csv/source_snapshots/PENDLE.csv",
+        "blocks_deploy/feature_engineering_expert/csv/source_snapshots/PENDLE.csv",
+        "blocks_deploy/matrix_research_insights_agent/csv/source_snapshots/PENDLE.csv",
+        "blocks_deploy/model_validation_guardian/csv/source_snapshots/PENDLE.csv",
+        "blocks_deploy/portfolio_scenario_expert/csv/source_snapshots/PENDLE.csv",
+        "blocks_deploy/quant_forecasting_expert/csv/source_snapshots/PENDLE.csv",
+        "blocks_deploy/tokenomics_sustainability_expert/csv/source_snapshots/PENDLE.csv",
+        "blocks_deploy/yield_methodology_expert/csv/source_snapshots/PENDLE.csv"
+      ]
+    },
+    {
+      "source": "csv/source_snapshots/RENDER.csv",
+      "sha256": "a235da7028e006f4c96ef14e68c4dfe2060429ab82d489045169192d6c66988f",
+      "targets": [
+        "blocks_deploy/crypto_research_communications_agent/csv/source_snapshots/RENDER.csv",
+        "blocks_deploy/crypto_risk_analyst/csv/source_snapshots/RENDER.csv",
+        "blocks_deploy/data_provenance_auditor/csv/source_snapshots/RENDER.csv",
+        "blocks_deploy/defi_liquidity_analyst/csv/source_snapshots/RENDER.csv",
+        "blocks_deploy/feature_engineering_expert/csv/source_snapshots/RENDER.csv",
+        "blocks_deploy/matrix_research_insights_agent/csv/source_snapshots/RENDER.csv",
+        "blocks_deploy/model_validation_guardian/csv/source_snapshots/RENDER.csv",
+        "blocks_deploy/portfolio_scenario_expert/csv/source_snapshots/RENDER.csv",
+        "blocks_deploy/quant_forecasting_expert/csv/source_snapshots/RENDER.csv",
+        "blocks_deploy/tokenomics_sustainability_expert/csv/source_snapshots/RENDER.csv",
+        "blocks_deploy/yield_methodology_expert/csv/source_snapshots/RENDER.csv"
+      ]
+    },
+    {
+      "source": "csv/source_snapshots/ROSE.csv",
+      "sha256": "af91d0e13e599258e8522d77fba21197f50d48614e81453752160c359f605f26",
+      "targets": [
+        "blocks_deploy/crypto_research_communications_agent/csv/source_snapshots/ROSE.csv",
+        "blocks_deploy/crypto_risk_analyst/csv/source_snapshots/ROSE.csv",
+        "blocks_deploy/data_provenance_auditor/csv/source_snapshots/ROSE.csv",
+        "blocks_deploy/defi_liquidity_analyst/csv/source_snapshots/ROSE.csv",
+        "blocks_deploy/feature_engineering_expert/csv/source_snapshots/ROSE.csv",
+        "blocks_deploy/matrix_research_insights_agent/csv/source_snapshots/ROSE.csv",
+        "blocks_deploy/model_validation_guardian/csv/source_snapshots/ROSE.csv",
+        "blocks_deploy/portfolio_scenario_expert/csv/source_snapshots/ROSE.csv",
+        "blocks_deploy/quant_forecasting_expert/csv/source_snapshots/ROSE.csv",
+        "blocks_deploy/tokenomics_sustainability_expert/csv/source_snapshots/ROSE.csv",
+        "blocks_deploy/yield_methodology_expert/csv/source_snapshots/ROSE.csv"
+      ]
+    },
+    {
+      "source": "csv/source_snapshots/RPL.csv",
+      "sha256": "e510a29b966a12831016aab4a89e3efea2ab339e2558b0ce49ca6a633248ec9f",
+      "targets": [
+        "blocks_deploy/crypto_research_communications_agent/csv/source_snapshots/RPL.csv",
+        "blocks_deploy/crypto_risk_analyst/csv/source_snapshots/RPL.csv",
+        "blocks_deploy/data_provenance_auditor/csv/source_snapshots/RPL.csv",
+        "blocks_deploy/defi_liquidity_analyst/csv/source_snapshots/RPL.csv",
+        "blocks_deploy/feature_engineering_expert/csv/source_snapshots/RPL.csv",
+        "blocks_deploy/matrix_research_insights_agent/csv/source_snapshots/RPL.csv",
+        "blocks_deploy/model_validation_guardian/csv/source_snapshots/RPL.csv",
+        "blocks_deploy/portfolio_scenario_expert/csv/source_snapshots/RPL.csv",
+        "blocks_deploy/quant_forecasting_expert/csv/source_snapshots/RPL.csv",
+        "blocks_deploy/tokenomics_sustainability_expert/csv/source_snapshots/RPL.csv",
+        "blocks_deploy/yield_methodology_expert/csv/source_snapshots/RPL.csv"
+      ]
+    },
+    {
+      "source": "csv/source_snapshots/SEI.csv",
+      "sha256": "ff9248e2c8bc6ce1023c76e20454b997f85152cc5d3317fc32cce48d16361d14",
+      "targets": [
+        "blocks_deploy/crypto_research_communications_agent/csv/source_snapshots/SEI.csv",
+        "blocks_deploy/crypto_risk_analyst/csv/source_snapshots/SEI.csv",
+        "blocks_deploy/data_provenance_auditor/csv/source_snapshots/SEI.csv",
+        "blocks_deploy/defi_liquidity_analyst/csv/source_snapshots/SEI.csv",
+        "blocks_deploy/feature_engineering_expert/csv/source_snapshots/SEI.csv",
+        "blocks_deploy/matrix_research_insights_agent/csv/source_snapshots/SEI.csv",
+        "blocks_deploy/model_validation_guardian/csv/source_snapshots/SEI.csv",
+        "blocks_deploy/portfolio_scenario_expert/csv/source_snapshots/SEI.csv",
+        "blocks_deploy/quant_forecasting_expert/csv/source_snapshots/SEI.csv",
+        "blocks_deploy/tokenomics_sustainability_expert/csv/source_snapshots/SEI.csv",
+        "blocks_deploy/yield_methodology_expert/csv/source_snapshots/SEI.csv"
+      ]
+    },
+    {
+      "source": "csv/source_snapshots/SNX.csv",
+      "sha256": "86a5546f377b67fa0b6ac8a4cb1db780c80a81fa93444d882eb8c657eed9fd40",
+      "targets": [
+        "blocks_deploy/crypto_research_communications_agent/csv/source_snapshots/SNX.csv",
+        "blocks_deploy/crypto_risk_analyst/csv/source_snapshots/SNX.csv",
+        "blocks_deploy/data_provenance_auditor/csv/source_snapshots/SNX.csv",
+        "blocks_deploy/defi_liquidity_analyst/csv/source_snapshots/SNX.csv",
+        "blocks_deploy/feature_engineering_expert/csv/source_snapshots/SNX.csv",
+        "blocks_deploy/matrix_research_insights_agent/csv/source_snapshots/SNX.csv",
+        "blocks_deploy/model_validation_guardian/csv/source_snapshots/SNX.csv",
+        "blocks_deploy/portfolio_scenario_expert/csv/source_snapshots/SNX.csv",
+        "blocks_deploy/quant_forecasting_expert/csv/source_snapshots/SNX.csv",
+        "blocks_deploy/tokenomics_sustainability_expert/csv/source_snapshots/SNX.csv",
+        "blocks_deploy/yield_methodology_expert/csv/source_snapshots/SNX.csv"
+      ]
+    },
+    {
       "source": "csv/source_snapshots/SOL.csv",
-      "sha256": "718d4514c7f0341cebb84f6f9ccc78ebc7fc9b17c8240c7f04108eb1013345eb",
+      "sha256": "b78be7a0d0be95e8b5e16145aafe36746d4d9faca5faf1b581832cbc14703434",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/source_snapshots/SOL.csv",
         "blocks_deploy/crypto_risk_analyst/csv/source_snapshots/SOL.csv",
@@ -2807,8 +3487,161 @@
       ]
     },
     {
+      "source": "csv/source_snapshots/SUI.csv",
+      "sha256": "ee412073c460cff1cbde013691b5d10c520f249e2b5eb129a351593884b75637",
+      "targets": [
+        "blocks_deploy/crypto_research_communications_agent/csv/source_snapshots/SUI.csv",
+        "blocks_deploy/crypto_risk_analyst/csv/source_snapshots/SUI.csv",
+        "blocks_deploy/data_provenance_auditor/csv/source_snapshots/SUI.csv",
+        "blocks_deploy/defi_liquidity_analyst/csv/source_snapshots/SUI.csv",
+        "blocks_deploy/feature_engineering_expert/csv/source_snapshots/SUI.csv",
+        "blocks_deploy/matrix_research_insights_agent/csv/source_snapshots/SUI.csv",
+        "blocks_deploy/model_validation_guardian/csv/source_snapshots/SUI.csv",
+        "blocks_deploy/portfolio_scenario_expert/csv/source_snapshots/SUI.csv",
+        "blocks_deploy/quant_forecasting_expert/csv/source_snapshots/SUI.csv",
+        "blocks_deploy/tokenomics_sustainability_expert/csv/source_snapshots/SUI.csv",
+        "blocks_deploy/yield_methodology_expert/csv/source_snapshots/SUI.csv"
+      ]
+    },
+    {
+      "source": "csv/source_snapshots/TAO.csv",
+      "sha256": "f54e791cceb812dcefc28af8a5bbe3631ba065d315e06c2a724c2d55fe471b2b",
+      "targets": [
+        "blocks_deploy/crypto_research_communications_agent/csv/source_snapshots/TAO.csv",
+        "blocks_deploy/crypto_risk_analyst/csv/source_snapshots/TAO.csv",
+        "blocks_deploy/data_provenance_auditor/csv/source_snapshots/TAO.csv",
+        "blocks_deploy/defi_liquidity_analyst/csv/source_snapshots/TAO.csv",
+        "blocks_deploy/feature_engineering_expert/csv/source_snapshots/TAO.csv",
+        "blocks_deploy/matrix_research_insights_agent/csv/source_snapshots/TAO.csv",
+        "blocks_deploy/model_validation_guardian/csv/source_snapshots/TAO.csv",
+        "blocks_deploy/portfolio_scenario_expert/csv/source_snapshots/TAO.csv",
+        "blocks_deploy/quant_forecasting_expert/csv/source_snapshots/TAO.csv",
+        "blocks_deploy/tokenomics_sustainability_expert/csv/source_snapshots/TAO.csv",
+        "blocks_deploy/yield_methodology_expert/csv/source_snapshots/TAO.csv"
+      ]
+    },
+    {
+      "source": "csv/source_snapshots/THETA.csv",
+      "sha256": "69e63d29b109bf87092a539bec44ba2e7fd3e3aebaabe0b0b3aba009b84bb3b2",
+      "targets": [
+        "blocks_deploy/crypto_research_communications_agent/csv/source_snapshots/THETA.csv",
+        "blocks_deploy/crypto_risk_analyst/csv/source_snapshots/THETA.csv",
+        "blocks_deploy/data_provenance_auditor/csv/source_snapshots/THETA.csv",
+        "blocks_deploy/defi_liquidity_analyst/csv/source_snapshots/THETA.csv",
+        "blocks_deploy/feature_engineering_expert/csv/source_snapshots/THETA.csv",
+        "blocks_deploy/matrix_research_insights_agent/csv/source_snapshots/THETA.csv",
+        "blocks_deploy/model_validation_guardian/csv/source_snapshots/THETA.csv",
+        "blocks_deploy/portfolio_scenario_expert/csv/source_snapshots/THETA.csv",
+        "blocks_deploy/quant_forecasting_expert/csv/source_snapshots/THETA.csv",
+        "blocks_deploy/tokenomics_sustainability_expert/csv/source_snapshots/THETA.csv",
+        "blocks_deploy/yield_methodology_expert/csv/source_snapshots/THETA.csv"
+      ]
+    },
+    {
+      "source": "csv/source_snapshots/TIA.csv",
+      "sha256": "4abed2e90c29315a717b448b33c55974e4e83037de397cbf46bc661723ad51c0",
+      "targets": [
+        "blocks_deploy/crypto_research_communications_agent/csv/source_snapshots/TIA.csv",
+        "blocks_deploy/crypto_risk_analyst/csv/source_snapshots/TIA.csv",
+        "blocks_deploy/data_provenance_auditor/csv/source_snapshots/TIA.csv",
+        "blocks_deploy/defi_liquidity_analyst/csv/source_snapshots/TIA.csv",
+        "blocks_deploy/feature_engineering_expert/csv/source_snapshots/TIA.csv",
+        "blocks_deploy/matrix_research_insights_agent/csv/source_snapshots/TIA.csv",
+        "blocks_deploy/model_validation_guardian/csv/source_snapshots/TIA.csv",
+        "blocks_deploy/portfolio_scenario_expert/csv/source_snapshots/TIA.csv",
+        "blocks_deploy/quant_forecasting_expert/csv/source_snapshots/TIA.csv",
+        "blocks_deploy/tokenomics_sustainability_expert/csv/source_snapshots/TIA.csv",
+        "blocks_deploy/yield_methodology_expert/csv/source_snapshots/TIA.csv"
+      ]
+    },
+    {
+      "source": "csv/source_snapshots/TRX.csv",
+      "sha256": "c4ce9876cb63ef3afe5e4c0192962097c384ef022d0d961f9eab7cca8b4f6546",
+      "targets": [
+        "blocks_deploy/crypto_research_communications_agent/csv/source_snapshots/TRX.csv",
+        "blocks_deploy/crypto_risk_analyst/csv/source_snapshots/TRX.csv",
+        "blocks_deploy/data_provenance_auditor/csv/source_snapshots/TRX.csv",
+        "blocks_deploy/defi_liquidity_analyst/csv/source_snapshots/TRX.csv",
+        "blocks_deploy/feature_engineering_expert/csv/source_snapshots/TRX.csv",
+        "blocks_deploy/matrix_research_insights_agent/csv/source_snapshots/TRX.csv",
+        "blocks_deploy/model_validation_guardian/csv/source_snapshots/TRX.csv",
+        "blocks_deploy/portfolio_scenario_expert/csv/source_snapshots/TRX.csv",
+        "blocks_deploy/quant_forecasting_expert/csv/source_snapshots/TRX.csv",
+        "blocks_deploy/tokenomics_sustainability_expert/csv/source_snapshots/TRX.csv",
+        "blocks_deploy/yield_methodology_expert/csv/source_snapshots/TRX.csv"
+      ]
+    },
+    {
+      "source": "csv/source_snapshots/UNI.csv",
+      "sha256": "c46215d8868b262a4e7612c03ac707b5f04bde184b4880d20c6d39640c2300ad",
+      "targets": [
+        "blocks_deploy/crypto_research_communications_agent/csv/source_snapshots/UNI.csv",
+        "blocks_deploy/crypto_risk_analyst/csv/source_snapshots/UNI.csv",
+        "blocks_deploy/data_provenance_auditor/csv/source_snapshots/UNI.csv",
+        "blocks_deploy/defi_liquidity_analyst/csv/source_snapshots/UNI.csv",
+        "blocks_deploy/feature_engineering_expert/csv/source_snapshots/UNI.csv",
+        "blocks_deploy/matrix_research_insights_agent/csv/source_snapshots/UNI.csv",
+        "blocks_deploy/model_validation_guardian/csv/source_snapshots/UNI.csv",
+        "blocks_deploy/portfolio_scenario_expert/csv/source_snapshots/UNI.csv",
+        "blocks_deploy/quant_forecasting_expert/csv/source_snapshots/UNI.csv",
+        "blocks_deploy/tokenomics_sustainability_expert/csv/source_snapshots/UNI.csv",
+        "blocks_deploy/yield_methodology_expert/csv/source_snapshots/UNI.csv"
+      ]
+    },
+    {
+      "source": "csv/source_snapshots/VET.csv",
+      "sha256": "5afba6f60887ae161f649f163fa396ed46a5701f1d38a1ce6577c94792832851",
+      "targets": [
+        "blocks_deploy/crypto_research_communications_agent/csv/source_snapshots/VET.csv",
+        "blocks_deploy/crypto_risk_analyst/csv/source_snapshots/VET.csv",
+        "blocks_deploy/data_provenance_auditor/csv/source_snapshots/VET.csv",
+        "blocks_deploy/defi_liquidity_analyst/csv/source_snapshots/VET.csv",
+        "blocks_deploy/feature_engineering_expert/csv/source_snapshots/VET.csv",
+        "blocks_deploy/matrix_research_insights_agent/csv/source_snapshots/VET.csv",
+        "blocks_deploy/model_validation_guardian/csv/source_snapshots/VET.csv",
+        "blocks_deploy/portfolio_scenario_expert/csv/source_snapshots/VET.csv",
+        "blocks_deploy/quant_forecasting_expert/csv/source_snapshots/VET.csv",
+        "blocks_deploy/tokenomics_sustainability_expert/csv/source_snapshots/VET.csv",
+        "blocks_deploy/yield_methodology_expert/csv/source_snapshots/VET.csv"
+      ]
+    },
+    {
+      "source": "csv/source_snapshots/WLD.csv",
+      "sha256": "23b4ab790e6119c877ce50d8b5a83ee0f2140df86006aba39eda716cf41f56b0",
+      "targets": [
+        "blocks_deploy/crypto_research_communications_agent/csv/source_snapshots/WLD.csv",
+        "blocks_deploy/crypto_risk_analyst/csv/source_snapshots/WLD.csv",
+        "blocks_deploy/data_provenance_auditor/csv/source_snapshots/WLD.csv",
+        "blocks_deploy/defi_liquidity_analyst/csv/source_snapshots/WLD.csv",
+        "blocks_deploy/feature_engineering_expert/csv/source_snapshots/WLD.csv",
+        "blocks_deploy/matrix_research_insights_agent/csv/source_snapshots/WLD.csv",
+        "blocks_deploy/model_validation_guardian/csv/source_snapshots/WLD.csv",
+        "blocks_deploy/portfolio_scenario_expert/csv/source_snapshots/WLD.csv",
+        "blocks_deploy/quant_forecasting_expert/csv/source_snapshots/WLD.csv",
+        "blocks_deploy/tokenomics_sustainability_expert/csv/source_snapshots/WLD.csv",
+        "blocks_deploy/yield_methodology_expert/csv/source_snapshots/WLD.csv"
+      ]
+    },
+    {
+      "source": "csv/source_snapshots/XLM.csv",
+      "sha256": "f4dd8951175d6f2f96c39f8bb9f4b9e70c11b6101c1a95f070642ad0b87c5ab9",
+      "targets": [
+        "blocks_deploy/crypto_research_communications_agent/csv/source_snapshots/XLM.csv",
+        "blocks_deploy/crypto_risk_analyst/csv/source_snapshots/XLM.csv",
+        "blocks_deploy/data_provenance_auditor/csv/source_snapshots/XLM.csv",
+        "blocks_deploy/defi_liquidity_analyst/csv/source_snapshots/XLM.csv",
+        "blocks_deploy/feature_engineering_expert/csv/source_snapshots/XLM.csv",
+        "blocks_deploy/matrix_research_insights_agent/csv/source_snapshots/XLM.csv",
+        "blocks_deploy/model_validation_guardian/csv/source_snapshots/XLM.csv",
+        "blocks_deploy/portfolio_scenario_expert/csv/source_snapshots/XLM.csv",
+        "blocks_deploy/quant_forecasting_expert/csv/source_snapshots/XLM.csv",
+        "blocks_deploy/tokenomics_sustainability_expert/csv/source_snapshots/XLM.csv",
+        "blocks_deploy/yield_methodology_expert/csv/source_snapshots/XLM.csv"
+      ]
+    },
+    {
       "source": "csv/source_snapshots/XRP.csv",
-      "sha256": "8595ad05f020f7a05b48da9788f144ffa221a40aba70ad4893913d5924f8f99f",
+      "sha256": "c760c7f97e0b06c19b554d6cd3f779ff330ecd21ce680fe575b74916cdb5888c",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/csv/source_snapshots/XRP.csv",
         "blocks_deploy/crypto_risk_analyst/csv/source_snapshots/XRP.csv",
@@ -2821,6 +3654,40 @@
         "blocks_deploy/quant_forecasting_expert/csv/source_snapshots/XRP.csv",
         "blocks_deploy/tokenomics_sustainability_expert/csv/source_snapshots/XRP.csv",
         "blocks_deploy/yield_methodology_expert/csv/source_snapshots/XRP.csv"
+      ]
+    },
+    {
+      "source": "csv/source_snapshots/XTZ.csv",
+      "sha256": "b23aad2f417b7ad1c723cec4dfa1931bb95f20339661d6d77790f22eb6701a30",
+      "targets": [
+        "blocks_deploy/crypto_research_communications_agent/csv/source_snapshots/XTZ.csv",
+        "blocks_deploy/crypto_risk_analyst/csv/source_snapshots/XTZ.csv",
+        "blocks_deploy/data_provenance_auditor/csv/source_snapshots/XTZ.csv",
+        "blocks_deploy/defi_liquidity_analyst/csv/source_snapshots/XTZ.csv",
+        "blocks_deploy/feature_engineering_expert/csv/source_snapshots/XTZ.csv",
+        "blocks_deploy/matrix_research_insights_agent/csv/source_snapshots/XTZ.csv",
+        "blocks_deploy/model_validation_guardian/csv/source_snapshots/XTZ.csv",
+        "blocks_deploy/portfolio_scenario_expert/csv/source_snapshots/XTZ.csv",
+        "blocks_deploy/quant_forecasting_expert/csv/source_snapshots/XTZ.csv",
+        "blocks_deploy/tokenomics_sustainability_expert/csv/source_snapshots/XTZ.csv",
+        "blocks_deploy/yield_methodology_expert/csv/source_snapshots/XTZ.csv"
+      ]
+    },
+    {
+      "source": "csv/source_snapshots/YFI.csv",
+      "sha256": "37bf21aae6bc682be3f46693d0b99573c3cfef9984a2fd8cc153d3a65d4d3e09",
+      "targets": [
+        "blocks_deploy/crypto_research_communications_agent/csv/source_snapshots/YFI.csv",
+        "blocks_deploy/crypto_risk_analyst/csv/source_snapshots/YFI.csv",
+        "blocks_deploy/data_provenance_auditor/csv/source_snapshots/YFI.csv",
+        "blocks_deploy/defi_liquidity_analyst/csv/source_snapshots/YFI.csv",
+        "blocks_deploy/feature_engineering_expert/csv/source_snapshots/YFI.csv",
+        "blocks_deploy/matrix_research_insights_agent/csv/source_snapshots/YFI.csv",
+        "blocks_deploy/model_validation_guardian/csv/source_snapshots/YFI.csv",
+        "blocks_deploy/portfolio_scenario_expert/csv/source_snapshots/YFI.csv",
+        "blocks_deploy/quant_forecasting_expert/csv/source_snapshots/YFI.csv",
+        "blocks_deploy/tokenomics_sustainability_expert/csv/source_snapshots/YFI.csv",
+        "blocks_deploy/yield_methodology_expert/csv/source_snapshots/YFI.csv"
       ]
     },
     {
@@ -2893,7 +3760,7 @@
     },
     {
       "source": "validate.md",
-      "sha256": "659d0b3e786bb1b43f1343f7ddcf11cd07284454c2300cbf3b71eabc4c075d55",
+      "sha256": "65688ee948b2125f8451366cbaf18205da66b12c37063916cc8e276f4847b543",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/validate.md",
         "blocks_deploy/crypto_risk_analyst/validate.md",
