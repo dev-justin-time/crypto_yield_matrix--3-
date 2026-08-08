@@ -126,7 +126,8 @@ def derived_features(row: dict[str, str]) -> dict[str, float | None]:
 
 
 def evidence(row: dict[str, str], filename: str, line: int | None = None) -> dict[str, Any]:
-    return {"source_file": filename, "source_row": line, "symbol": row.get("symbol")}
+    resolved_line = line if line is not None else row.get("source_row")
+    return {"source_file": filename, "source_row": resolved_line, "symbol": row.get("symbol")}
 
 
 def report(agent: str, status: str, summary: str, findings: list[dict[str, Any]],

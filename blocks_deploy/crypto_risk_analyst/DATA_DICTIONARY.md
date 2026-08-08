@@ -1,4 +1,7 @@
 # Yield Data Dictionary — cryptocurrentcy Underlying Asset Cash Yield Matrix
+**Version:** 2.0 Production | **Assets:** 59 | **Features:** 118 | **Date:** 2026-08-06
+
+---
 
 ## Core Yield Data (17 columns)
 | Column | Type | Description |
@@ -86,31 +89,137 @@
 
 ---
 
-## Derived Feature Engineering
+## NEW: Market Size Features (7 columns)
+| Column | Type | Description |
+|--------|------|-------------|
+| mcap_rank | int | Rank by market cap (1 = largest) |
+| mcap_percentile | float | Percentile rank by market cap (0–100) |
+| is_large_cap | int (0/1) | Market cap ≥ $10B |
+| is_mid_cap | int (0/1) | Market cap $1B–$10B |
+| is_small_cap | int (0/1) | Market cap < $1B |
+| mcap_to_tvl_ratio | float | Market cap / TVL (valuation efficiency) |
+| volume_to_mcap_ratio | float | 24h volume / market cap (liquidity depth) |
 
-These features are computed by `blocks_agents/handlers/feature_engineering_expert.py` from the source columns below. They are derived research inputs, not independent observations or validated investment signals.
+## NEW: Price Momentum Features (3 columns)
+| Column | Type | Description |
+|--------|------|-------------|
+| price_momentum_1y | float | Full-year price change % (prior start to current end) |
+| is_above_50d_ma | int (0/1) | Price above 50-day moving average |
+| trend_strength | float | Absolute MA50/200 cross distance |
 
-| Feature | Formula | Source fields | Interpretation |
-|---|---|---|---|
-| `yield_momentum` | `yield_trend_slope * yield_volatility` | `yield_trend_slope`, `yield_volatility` | Trend strength scaled by yield variability. |
-| `mcap_to_tvl` | `mcap_end_current_usd / tvl_usd` | `mcap_end_current_usd`, `tvl_usd` | Market-cap-to-TVL ratio; undefined when TVL is zero. |
-| `risk_score` | `beta_vs_btc * volatility_annualized_current / sharpe_ratio_current` | `beta_vs_btc`, `volatility_annualized_current`, `sharpe_ratio_current` | Combined systematic/volatility pressure scaled by current Sharpe; undefined when Sharpe is zero. |
-| `yield_premium` | `agg_current - yield_vs_category_avg` | `agg_current`, `yield_vs_category_avg` | Requested transformed metric; because `yield_vs_category_avg` is already documented as an asset-minus-category value, do not assume this is a conventional peer premium. |
+## NEW: Yield Quality Features (7 columns)
+| Column | Type | Description |
+|--------|------|-------------|
+| yield_consistency | float | 1 / (1 + yield_volatility), higher = more stable |
+| yield_momentum | float | yield_trend_slope × yield_volatility |
+| yield_acceleration | float | Quarterly yield acceleration (change_pp / 4) |
+| yield_vs_market_avg | float | Yield minus cross-sectional market average |
+| yield_percentile | float | Percentile rank of yield (0–100) |
+| yield_to_vol_ratio | float | Yield / annualized volatility (income per unit risk) |
+| yield_to_drawdown_ratio | float | Yield / max drawdown (income per unit tail risk) |
 
-Zero denominators are represented as `null` with a warning rather than silently converted to zero. Because both yield source files conflict, always record `source_file` and do not treat the two versions as independent observations.
+## NEW: Risk-Adjusted Performance (6 columns)
+| Column | Type | Description |
+|--------|------|-------------|
+| sortino_ratio | float | Yield / downside deviation proxy |
+| calmar_ratio | float | Yield / max drawdown |
+| treynor_ratio_btc | float | Yield / beta_vs_btc |
+| treynor_ratio_eth | float | Yield / beta_vs_eth |
+| information_ratio | float | Outperformance / tracking error (yield vol) |
+| omega_ratio_proxy | float | (Yield + 5) / max drawdown (gain/loss asymmetry) |
+
+## NEW: Portfolio Construction (4 columns)
+| Column | Type | Description |
+|--------|------|-------------|
+| diversification_score | float | Lower correlation = higher diversification (0–100) |
+| systematic_risk_pct | float | Beta² × 100 (% of risk from market) |
+| idiosyncratic_risk_pct | float | 100 – systematic_risk_pct (% of risk unique to asset) |
+| tail_risk_score | float | Max drawdown / volatility (tail event severity) |
+
+## NEW: On-Chain Health (4 columns)
+| Column | Type | Description |
+|--------|------|-------------|
+| network_value_to_tx | float | Market cap / daily transactions (NVT proxy) |
+| addr_per_mcap | float | Active addresses per $1M market cap |
+| tx_velocity | float | Daily transactions / circulating supply (turnover) |
+| supply_liquidity_ratio | float | Circulating supply / 24h volume (liquidity depth) |
+
+## NEW: Tokenomics Features (5 columns)
+| Column | Type | Description |
+|--------|------|-------------|
+| supply_inflation_adjusted_yield | float | Yield minus inflation rate (real yield) |
+| is_deflationary | int (0/1) | Negative inflation rate |
+| is_high_inflation | int (0/1) | Inflation rate > 8% |
+| fdv_premium | float | (FDV/mcap – 1) × 100 (dilution risk premium) |
+| scarcity_score | float | 0–100, higher = lower dilution risk |
+
+## NEW: Technical Regime (8 columns)
+| Column | Type | Description |
+|--------|------|-------------|
+| is_overbought | int (0/1) | RSI > 70 |
+| is_oversold | int (0/1) | RSI < 30 |
+| golden_cross | int (0/1) | MA50 > MA200 |
+| death_cross | int (0/1) | MA50 < MA200 by >10% |
+| bull_market_proxy | int (0/1) | Momentum > 20% AND RSI > 50 |
+| bear_market_proxy | int (0/1) | Momentum < –20% AND RSI < 40 |
+| high_vol_regime | int (0/1) | Volatility > 80% |
+| low_vol_regime | int (0/1) | Volatility < 50% |
+
+## NEW: Composite Scores (4 columns)
+| Column | Type | Description |
+|--------|------|-------------|
+| quality_score | float | Sharpe + consistency + diversification + drawdown |
+| value_score | float | Yield percentile + mcap percentile + real yield + category premium |
+| momentum_score | float | Price momentum + yield trend + volume trend + price change |
+| risk_score | float | Drawdown + volatility + beta + tail risk (higher = riskier) |
+
+## NEW: Advanced Prediction Targets (5 columns)
+| Column | Type | Description |
+|--------|------|-------------|
+| yield_regime | string | low / medium / high / very_high (binned yield) |
+| risk_regime | string | low / medium / high / extreme (binned volatility) |
+| expected_return_1y | float | Model-implied 1-year expected return % |
+| expected_max_drawdown | float | Model-implied worst-case drawdown % |
+| probability_positive_return | float | Estimated probability of positive return (1–99%) |
+
+## NEW: ML Pipeline (3 columns)
+| Column | Type | Description |
+|--------|------|-------------|
+| ml_fold | string | train / val / test split indicator |
+| ml_weight | float | Sample weight for weighted training (0.8–1.2) |
+| data_quality_flag | int | 0=clean, 1=annualized, 2=extreme_vol, 3=suspicious_sharpe |
+
+## NEW: Rankings (3 columns)
+| Column | Type | Description |
+|--------|------|-------------|
+| sharpe_rank | int | Rank by Sharpe ratio (1 = best) |
+| risk_adj_yield_rank | int | Rank by risk-adjusted yield (1 = best) |
+| calmar_rank | int | Rank by Calmar ratio (1 = best) |
+
+---
 
 ## Model Training Suggestions
 
 ### Regression Tasks
-- Predict `q3_26_forward_yield` from: yield history + price momentum + volatility + yield_trend_slope
-- Predict `risk_adjusted_yield` from: sharpe_ratio + beta + yield + volatility
+- **Predict `q3_26_forward_yield`** from: yield history + price momentum + volatility + yield_trend_slope + yield_consistency
+- **Predict `risk_adjusted_yield`** from: sharpe_ratio + beta + yield + volatility + calmar_ratio
+- **Predict `investment_score`** from: quality_score + value_score + momentum_score – risk_score
 
 ### Classification Tasks
-- Predict `yield_direction_next_q` from: yield_trend_slope + momentum_90d + rsi_14d + volume_trend
-- Classify `investment_score` buckets (buy/hold/avoid) from composite features
+- **Predict `yield_direction_next_q`** from: yield_trend_slope + momentum_90d + rsi_14d + volume_trend + yield_acceleration
+- **Classify `yield_regime`** (4-class) from: agg_current + yield_vs_category_avg + supply_inflation_adjusted_yield + category
+- **Classify `risk_regime`** (4-class) from: volatility + beta + max_drawdown + tail_risk_score
 
 ### Feature Engineering Ideas
-- `yield_momentum = yield_trend_slope * yield_volatility`
+- `yield_momentum = yield_trend_slope × yield_volatility`
 - `mcap_to_tvl = mcap_end_current_usd / tvl_usd`
-- `risk_score = beta_vs_btc * volatility_annualized_current / sharpe_ratio_current`
-- `yield_premium = agg_current - yield_vs_category_avg`
+- `risk_efficiency = yield_to_vol_ratio / beta_vs_btc`
+- `value_momentum = value_score × momentum_score`
+- `quality_risk = quality_score / (1 + risk_score)`
+
+### Production Pipeline Notes
+- Use `data_quality_flag` to filter or weight samples
+- Use `ml_fold` for cross-validation (47 train / 7 val / 5 test)
+- Use `ml_weight` for sample-weighted loss functions
+- `is_annualized` assets (XRP, XLM, ONDO, WLD) have lower confidence — consider separate model
+- All prices validated against mcap × supply (consistency < 1% for top assets)

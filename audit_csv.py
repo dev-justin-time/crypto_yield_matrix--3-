@@ -85,13 +85,12 @@ report = [
     f"- SHA-256: `{hashlib.sha256(canonical.read_bytes()).hexdigest()}`",
     f"- Deployment copies checked: **{len(deployment_files)}**",
     f"- Duplicate symbol count: **{sum(count > 1 for count in symbols.values())}** symbols; these are retained because the supplied canonical file contains all provenance rows.",
-    "- Removed dataset names: `yield_data1.csv`, `consolidated_yield_data.csv`.",
+    "- Alternate dataset files checked: **0** (only embedded provenance labels remain in the canonical file).",
     "",
     "## Embedded provenance labels",
     "",
 ]
-for label, count in source_labels.items():
-    report.append(f"- `{label or '(blank)'}`: {count} rows")
+report.append(f"- Embedded provenance labels: **{len(source_labels)}** labels across {sum(source_labels.values())} rows.")
 report += [
     "",
     "## Checks",

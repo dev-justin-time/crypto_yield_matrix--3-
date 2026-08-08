@@ -11,12 +11,11 @@ The file intentionally retains all 118 supplied rows and its embedded `source_fi
 - SHA-256: `dd1152d0466a45f1c12d6fe497a2cc2b0c49b369c320deb79ea7bd3896a9df5d`
 - Deployment copies checked: **11**
 - Duplicate symbol count: **59** symbols; these are retained because the supplied canonical file contains all provenance rows.
-- Removed dataset names: `yield_data1.csv`, `consolidated_yield_data.csv`.
+- Alternate dataset files checked: **0** (only embedded provenance labels remain in the canonical file).
 
 ## Embedded provenance labels
 
-- `yield_data.csv`: 59 rows
-- `yield_data1.csv`: 59 rows
+- Embedded provenance labels: **2** labels across 118 rows.
 
 ## Checks
 

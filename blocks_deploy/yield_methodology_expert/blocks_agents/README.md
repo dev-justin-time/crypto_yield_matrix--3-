@@ -21,8 +21,7 @@ The primary evidence files are:
 
 - `validate.md` — audit findings, provenance conflicts, research use cases, and modeling guardrails.
 - `DATA_DICTIONARY.md` — field definitions and modeling notes.
-- `yield_data.csv` and `yield_data.csv` — embedded provenance rows with the same schema.
-- `yield_data.csv` — both source versions appended with `source_file` and `source_row` provenance.
+- `yield_data.csv` — the single canonical 118-row dataset; its `source_file` and `source_row` columns preserve row-level provenance.
 - `table-*.csv` — source snapshots, metadata tables, and compact summaries with heterogeneous schemas.
 - `index.html`, `matrix.js`, `styles.css` — current user-facing matrix behavior and labels.
 
@@ -44,9 +43,9 @@ The primary evidence files are:
 
 ## Safety and data limitations
 
-- The two yield source files disagree for every asset row. Never treat them as independent training observations.
+- The canonical file retains repeated provenance-labeled rows per symbol; do not treat those rows as independent time observations.
 - The repository contains estimated, derived, and supplied target fields. Cards must label these statuses in outputs.
-- Eight quarters and 59 assets per source are suitable for prototyping and research triage, not validated production forecasting.
+- Eight quarters and 118 provenance-labeled rows are suitable for prototyping and research triage, not validated production forecasting.
 - Forecast cards must use chronological splits, out-of-time evaluation, simple baselines, calibrated probabilities where relevant, and uncertainty intervals.
 - Agents should return `PASS`, `WARNING`, or `FAIL` status plus exact file/row/column references whenever possible.
 - The feature-engineering formulas are recomputed from source fields: `yield_momentum = yield_trend_slope * yield_volatility`, `mcap_to_tvl = mcap_end_current_usd / tvl_usd`, `risk_score = beta_vs_btc * volatility_annualized_current / sharpe_ratio_current`, and `yield_premium = agg_current - yield_vs_category_avg`.
