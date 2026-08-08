@@ -167,9 +167,8 @@ class LiveDataCollector:
             errors.append({"provider": "binance", "error": str(error)[:240]})
         # A small independent secondary sample makes provider drift visible and
         # provides fallback prices without making one request per asset.
-        for asset in ("BTC", "ETH", "SOL"):
-            if asset not in self.symbols:
-                continue
+        secondary_assets = [a for a in COINBASE_PRODUCTS if a in self.symbols]
+        for asset in secondary_assets:
             try:
                 row = self.coinbase.get_json(f"/products/{quote(COINBASE_PRODUCTS[asset])}/stats")
                 if asset not in observations and row.get("last") is not None:
@@ -201,8 +200,6 @@ class LiveDataCollector:
         calls = {"ethereum": {"jsonrpc": "2.0", "method": "eth_blockNumber", "params": [], "id": 1}, "solana": {"jsonrpc": "2.0", "method": "getEpochInfo", "params": [], "id": 1}}
         for chain, client in self.rpc.items():
             try:
-                # JSON-RPC providers require POST; use the same guarded opener
-                # and provider limiter, with no retries on malformed results.
                 client.state.wait()
                 request = Request(client.base_url, data=json.dumps(calls[chain]).encode(), headers={"User-Agent": USER_AGENT, "Content-Type": "application/json"}, method="POST")
                 with client.opener(request, timeout=client.timeout) as response:
@@ -217,6 +214,7 @@ class LiveDataCollector:
                 height = value.get("absoluteSlot") if chain == "solana" and isinstance(value, dict) else value
                 if height is not None:
                     result.append({"chain": chain, "block_height": height, "provider": client.state.name, "endpoint": client.base_url, "observed_at": iso_now()})
+                client.state.failures = 0
                 client.state.last_error = None
                 client.state.last_success = iso_now()
             except HTTPError as error:
@@ -225,6 +223,30 @@ class LiveDataCollector:
                 client.state.failures += 1
                 client.state.last_error = f"HTTP {error.code}"
                 errors.append({"provider": client.state.name, "error": f"HTTP {error.code}"})
+                # Retry once on transient RPC errors with a small backoff
+                if error.code in (408, 425, 429, 500, 502, 503, 504):
+                    try:
+                        retry_after = float(error.headers.get("Retry-After", "1"))
+                    except (TypeError, ValueError):
+                        retry_after = 1.0
+                    time.sleep(min(10.0, retry_after))
+                    try:
+                        client.state.wait()
+                        retry_req = Request(client.base_url, data=json.dumps(calls[chain]).encode(), headers={"User-Agent": USER_AGENT, "Content-Type": "application/json"}, method="POST")
+                        with client.opener(retry_req, timeout=client.timeout) as resp:
+                            payload2 = json.loads(resp.read().decode())
+                        if isinstance(payload2, dict) and payload2.get("error") is None:
+                            v2 = payload2.get("result")
+                            if chain == "ethereum" and isinstance(v2, str):
+                                v2 = int(v2, 16)
+                            h2 = v2.get("absoluteSlot") if chain == "solana" and isinstance(v2, dict) else v2
+                            if h2 is not None:
+                                result.append({"chain": chain, "block_height": h2, "provider": client.state.name, "endpoint": client.base_url, "observed_at": iso_now()})
+                            client.state.failures = 0
+                            client.state.last_error = None
+                            client.state.last_success = iso_now()
+                    except Exception:
+                        pass
             except Exception as error:
                 client.state.failures += 1
                 client.state.last_error = str(error)[:240]

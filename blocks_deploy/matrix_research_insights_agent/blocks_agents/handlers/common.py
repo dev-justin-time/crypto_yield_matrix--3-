@@ -3,6 +3,7 @@ from __future__ import annotations
 import csv
 import json
 import math
+from datetime import datetime, timezone
 from functools import lru_cache
 from pathlib import Path
 from typing import Any, Iterable
@@ -32,6 +33,7 @@ _PATH_MAP = {
     "index.html": ROOT / "web" / "index.html",
     "matrix.js": ROOT / "web" / "matrix.js",
     "styles.css": ROOT / "web" / "styles.css",
+    "live_data/live_snapshot.json": ROOT / "live_data" / "live_snapshot.json",
 }
 
 def _resolve_path(filename: str) -> Path:
@@ -195,7 +197,6 @@ def _observation_is_fresh(observation: dict[str, Any], snapshot: dict[str, Any])
     if not observed_at:
         return False
     try:
-        from datetime import datetime, timezone
         observed = datetime.fromisoformat(str(observed_at).replace("Z", "+00:00"))
         age = (datetime.now(timezone.utc) - observed).total_seconds()
         freshness = snapshot.get("freshness") if isinstance(snapshot.get("freshness"), dict) else {}
@@ -209,7 +210,6 @@ def _snapshot_is_fresh(snapshot: dict[str, Any]) -> bool:
     if not snapshot or not snapshot.get("generated_at"):
         return False
     try:
-        from datetime import datetime, timezone
         generated = datetime.fromisoformat(str(snapshot["generated_at"]).replace("Z", "+00:00"))
         age = (datetime.now(timezone.utc) - generated).total_seconds()
         freshness = snapshot.get("freshness") if isinstance(snapshot.get("freshness"), dict) else {}
