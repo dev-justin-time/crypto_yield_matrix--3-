@@ -37,11 +37,15 @@ async function main(): Promise<void> {
   if (!parseClientAgents('smoke=crypto_risk_analyst').smoke?.has('crypto_risk_analyst')) {
     throw new Error('client agent parser failed');
   }
+  if (parseClientAgents('unknown=crypto_risk_analyst').unknown === undefined) {
+    throw new Error('client agent parser should parse names before startup cross-check');
+  }
   const gateway = createGateway({
     apiKey: DUMMY_KEY,
     clientKeys: { smoke: CLIENT_SECRET },
     clientAgents: { smoke: new Set(['crypto_risk_analyst']) },
     taskTimeoutMs: 5_000,
+    budgetStateFile: '',
     maxRequestsPerMinute: 2,
     maxDailyTasks: 1,
     maxDailySpendUsd: 0.10,

@@ -423,6 +423,10 @@ export function createGateway(options: GatewayOptions): Gateway {
   if (Object.values(options.clientKeys).some((secret) => equalSecret(secret, options.apiKey))) {
     throw new Error('gateway client secrets must not equal the Blocks API key');
   }
+  const unknownAllowlistClients = Object.keys(options.clientAgents ?? {}).filter((id) => !options.clientKeys[id]);
+  if (unknownAllowlistClients.length > 0) {
+    throw new Error(`client agent allowlist references unknown client ids: ${unknownAllowlistClients.join(', ')}`);
+  }
   nonnegativeNumber(maxDailySpendUsd, 'maxDailySpendUsd');
   nonnegativeNumber(taskCostUsd, 'taskCostUsd');
   if (taskCostUsd <= 0) throw new Error('taskCostUsd must be greater than zero');
@@ -437,7 +441,7 @@ export function createGateway(options: GatewayOptions): Gateway {
       const parsed = JSON.parse(readFileSync(options.budgetStateFile, 'utf8')) as Partial<BudgetState>;
       const tasks = parsed.tasks;
       const spendUsd = parsed.spendUsd;
-      if (typeof parsed.day === 'string' && Number.isInteger(tasks) && tasks >= 0 && typeof spendUsd === 'number' && Number.isFinite(spendUsd) && spendUsd >= 0) {
+      if (typeof parsed.day === 'string' && typeof tasks === 'number' && Number.isInteger(tasks) && tasks >= 0 && typeof spendUsd === 'number' && Number.isFinite(spendUsd) && spendUsd >= 0) {
         budget = { day: parsed.day, tasks, spendUsd };
       }
     } catch {
@@ -536,7 +540,7 @@ export function createGateway(options: GatewayOptions): Gateway {
 
         if (req.method === 'GET' && pathname === '/ready') {
           try {
-            await getClient();
+            await withDeadline(getClient(), Math.min(taskTimeoutMs, 10_000), 'Blocks client readiness timed out');
           } catch {
             throw new HttpError(503, 'Blocks client is not ready; no task was dispatched');
           }

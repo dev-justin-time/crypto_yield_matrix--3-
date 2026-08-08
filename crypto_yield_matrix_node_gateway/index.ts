@@ -71,6 +71,11 @@ try {
   console.error(`[gateway] invalid GATEWAY_CLIENT_KEYS: ${error instanceof Error ? error.message : String(error)}`);
   process.exit(1);
 }
+const unknownAllowlistClients = Object.keys(clientAgents).filter((id) => !clientKeys[id]);
+if (unknownAllowlistClients.length > 0) {
+  console.error(`[gateway] GATEWAY_CLIENT_AGENTS references unknown client ids: ${unknownAllowlistClients.join(', ')}`);
+  process.exit(1);
+}
 
 const gateway = createGateway({
   apiKey,

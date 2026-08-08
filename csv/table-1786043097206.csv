@@ -1,8 +1,0 @@
-﻿Feature Group,Columns,Use Case
-**Market data**,"category, mcap start/end, price start/end, price change %","Feature: size, growth trajectory"
-**Liquidity & on-chain**,"volatility, 24h volume, volume trend, active addresses, daily tx count, TVL","Feature: market depth, adoption, DeFi engagement"
-**Supply & tokenomics**,"circulating supply, inflation rate, FDV/mcap ratio","Feature: dilution risk, scarcity"
-**Risk metrics**,"max drawdown, Sharpe ratio (prior + current), beta vs BTC/ETH","Feature: risk-adjusted quality, systematic exposure"
-**Correlation & technical**,"correlation BTC/ETH, RSI, MA50/200 cross, 90d momentum","Feature: market regime, mean-reversion signals"
-**Yield analytics**,"yield volatility, yield trend slope, yield vs category avg","Feature: yield stability, relative value"
-**Prediction targets**,"forward Q3 '26 yield, yield direction (0/1), risk-adjusted yield, outperformance pp, investment score",**Labels for supervised learning**

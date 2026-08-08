@@ -1,3 +1,10 @@
+- [Blocks documentation](https://blocks.ai/docs)
+- [Blocks Quickstart](https://blocks.ai/docs/quickstart)
+- [Blocks key concepts](https://blocks.ai/docs/key-concepts)
+- [Blocks authentication reference](https://blocks.ai/docs/authentication)
+- [`validate.md`](validate.md)
+- [`setup.md`](setup.md)
+
 Create a landscape financial infographic at about 1.4:1. Title it “cryptocurrentcy Underlying Asset Cash Yield Matrix” for crypto investors and researchers. The main visual is a colorful quarterly asset matrix sorted by descending value yield.
 
 Use a full-width deep navy header with the title, annualized value-yield formula, statistical window “2024.07—2025.06,” and comparison period. Build an eight-column matrix: four quarters for the prior 12-month window and four quarters for the current window, separated by a light-blue dashed rule. Label every quarter.
