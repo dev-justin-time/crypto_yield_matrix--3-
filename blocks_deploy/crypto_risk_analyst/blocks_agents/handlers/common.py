@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Any, Iterable
 
 ROOT = Path(__file__).resolve().parents[2]
-ASSET_CATALOG = ROOT / "asset_catalog.csv"
+ASSET_CATALOG = ROOT / "data" / "asset_catalog.csv"
 SOURCE_SNAPSHOT_DIR = ROOT / "csv" / "source_snapshots"
 LIVE_SNAPSHOT = ROOT / "live_data" / "live_snapshot.json"
 CONTEXT_ALLOWLIST = {
@@ -22,6 +22,21 @@ CONTEXT_ALLOWLIST = {
     "live_data/live_snapshot.json",
 }
 YIELD_SOURCES = {"yield_data.csv"}
+
+# Map logical filenames to actual filesystem paths after reorganization
+_PATH_MAP = {
+    "yield_data.csv": ROOT / "data" / "yield_data.csv",
+    "asset_catalog.csv": ROOT / "data" / "asset_catalog.csv",
+    "DATA_DICTIONARY.md": ROOT / "data" / "DATA_DICTIONARY.md",
+    "validate.md": ROOT / "docs" / "validate.md",
+    "index.html": ROOT / "web" / "index.html",
+    "matrix.js": ROOT / "web" / "matrix.js",
+    "styles.css": ROOT / "web" / "styles.css",
+}
+
+def _resolve_path(filename: str) -> Path:
+    """Resolve a logical filename to its actual filesystem path."""
+    return _PATH_MAP.get(filename, ROOT / filename)
 
 USER_VALUE_GUIDANCE: dict[str, dict[str, str]] = {
     "crypto_risk_analyst": {
@@ -109,12 +124,12 @@ def validate_context_files(filenames: Any) -> list[str]:
 
 def read_context(filename: str) -> str:
     validate_context_files([filename])
-    return (ROOT / filename).read_text(encoding="utf-8")
+    return _resolve_path(filename).read_text(encoding="utf-8")
 
 
 def load_csv(filename: str) -> list[dict[str, str]]:
     validate_context_files([filename])
-    path = ROOT / filename
+    path = _resolve_path(filename)
     with path.open("r", encoding="utf-8-sig", newline="") as handle:
         return list(csv.DictReader(handle))
 

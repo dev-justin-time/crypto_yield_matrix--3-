@@ -1,0 +1,40 @@
+services:
+  live-data-worker:
+    build:
+      context: .
+      dockerfile: deploy/live_worker.Dockerfile
+    restart: unless-stopped
+    init: true
+    environment:
+      LIVE_WORKER_CYCLE_SECONDS: "300"
+      LIVE_WORKER_TIMEOUT_SECONDS: "15"
+      # Local mode can mirror into blocks_deploy/*/live_data. In this isolated
+      # container, mount the same named volume into provider runtimes before
+      # enabling mirroring; default off prevents a false sense of propagation.
+      LIVE_WORKER_MIRROR_DEPLOYMENTS: "0"
+      # Optional keyed provider/RPC URLs can be injected by the host secret manager.
+      # BINANCE_API_URL: https://api.binance.com
+      # COINBASE_API_URL: https://api.exchange.coinbase.com
+      # DEFILLAMA_API_URL: https://api.llama.fi
+      # ETHEREUM_RPC_URL: https://cloudflare-eth.com
+      # SOLANA_RPC_URL: https://api.mainnet-beta.solana.com
+    volumes:
+      - live-data:/app/live_data
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - >-
+          import json, pathlib, sys, time, datetime;
+          p=pathlib.Path('/app/live_data/worker_status.json');
+          d=json.loads(p.read_text()) if p.exists() else {};
+          t=datetime.datetime.fromisoformat(d.get('last_cycle_at','1970-01-01T00:00:00+00:00').replace('Z','+00:00'));
+          sys.exit(0 if d.get('liveness') == 'running' and time.time()-t.timestamp() < 1200 else 1)
+      interval: 60s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+volumes:
+  live-data:

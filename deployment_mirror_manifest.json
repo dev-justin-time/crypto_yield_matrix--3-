@@ -19,40 +19,6 @@
   ],
   "files": [
     {
-      "source": "DATA_DICTIONARY.md",
-      "sha256": "49df0debe4fb08bef96c0d3d834845839a204442cadd6c4c189b4b0d23d6784a",
-      "targets": [
-        "blocks_deploy/crypto_research_communications_agent/DATA_DICTIONARY.md",
-        "blocks_deploy/crypto_risk_analyst/DATA_DICTIONARY.md",
-        "blocks_deploy/data_provenance_auditor/DATA_DICTIONARY.md",
-        "blocks_deploy/defi_liquidity_analyst/DATA_DICTIONARY.md",
-        "blocks_deploy/feature_engineering_expert/DATA_DICTIONARY.md",
-        "blocks_deploy/matrix_research_insights_agent/DATA_DICTIONARY.md",
-        "blocks_deploy/model_validation_guardian/DATA_DICTIONARY.md",
-        "blocks_deploy/portfolio_scenario_expert/DATA_DICTIONARY.md",
-        "blocks_deploy/quant_forecasting_expert/DATA_DICTIONARY.md",
-        "blocks_deploy/tokenomics_sustainability_expert/DATA_DICTIONARY.md",
-        "blocks_deploy/yield_methodology_expert/DATA_DICTIONARY.md"
-      ]
-    },
-    {
-      "source": "asset_catalog.csv",
-      "sha256": "d4875a77835c13e922fb616e0fbb0b2823e0b3c55b9c14fa01b795c3f7f80ccf",
-      "targets": [
-        "blocks_deploy/crypto_research_communications_agent/asset_catalog.csv",
-        "blocks_deploy/crypto_risk_analyst/asset_catalog.csv",
-        "blocks_deploy/data_provenance_auditor/asset_catalog.csv",
-        "blocks_deploy/defi_liquidity_analyst/asset_catalog.csv",
-        "blocks_deploy/feature_engineering_expert/asset_catalog.csv",
-        "blocks_deploy/matrix_research_insights_agent/asset_catalog.csv",
-        "blocks_deploy/model_validation_guardian/asset_catalog.csv",
-        "blocks_deploy/portfolio_scenario_expert/asset_catalog.csv",
-        "blocks_deploy/quant_forecasting_expert/asset_catalog.csv",
-        "blocks_deploy/tokenomics_sustainability_expert/asset_catalog.csv",
-        "blocks_deploy/yield_methodology_expert/asset_catalog.csv"
-      ]
-    },
-    {
       "source": "blocks_agents/README.md",
       "sha256": "d228a6fc21300c3b4ad52afb4f8c6f52ea5283cf1d37a3928a656a508dfcbdce",
       "targets": [
@@ -224,7 +190,7 @@
     },
     {
       "source": "blocks_agents/handlers/common.py",
-      "sha256": "3b4af0a2cdd95fe617d4654500fc17fa2363b39491215af2fd1bc5231a158692",
+      "sha256": "cf073202dac0195c2dc8938c64d3ec1ef8862844b6e2ea75a8966a3db023b98e",
       "targets": [
         "blocks_deploy/crypto_research_communications_agent/blocks_agents/handlers/common.py",
         "blocks_deploy/crypto_risk_analyst/blocks_agents/handlers/common.py",
@@ -3691,6 +3657,74 @@
       ]
     },
     {
+      "source": "data/DATA_DICTIONARY.md",
+      "sha256": "49df0debe4fb08bef96c0d3d834845839a204442cadd6c4c189b4b0d23d6784a",
+      "targets": [
+        "blocks_deploy/crypto_research_communications_agent/data/DATA_DICTIONARY.md",
+        "blocks_deploy/crypto_risk_analyst/data/DATA_DICTIONARY.md",
+        "blocks_deploy/data_provenance_auditor/data/DATA_DICTIONARY.md",
+        "blocks_deploy/defi_liquidity_analyst/data/DATA_DICTIONARY.md",
+        "blocks_deploy/feature_engineering_expert/data/DATA_DICTIONARY.md",
+        "blocks_deploy/matrix_research_insights_agent/data/DATA_DICTIONARY.md",
+        "blocks_deploy/model_validation_guardian/data/DATA_DICTIONARY.md",
+        "blocks_deploy/portfolio_scenario_expert/data/DATA_DICTIONARY.md",
+        "blocks_deploy/quant_forecasting_expert/data/DATA_DICTIONARY.md",
+        "blocks_deploy/tokenomics_sustainability_expert/data/DATA_DICTIONARY.md",
+        "blocks_deploy/yield_methodology_expert/data/DATA_DICTIONARY.md"
+      ]
+    },
+    {
+      "source": "data/asset_catalog.csv",
+      "sha256": "d4875a77835c13e922fb616e0fbb0b2823e0b3c55b9c14fa01b795c3f7f80ccf",
+      "targets": [
+        "blocks_deploy/crypto_research_communications_agent/data/asset_catalog.csv",
+        "blocks_deploy/crypto_risk_analyst/data/asset_catalog.csv",
+        "blocks_deploy/data_provenance_auditor/data/asset_catalog.csv",
+        "blocks_deploy/defi_liquidity_analyst/data/asset_catalog.csv",
+        "blocks_deploy/feature_engineering_expert/data/asset_catalog.csv",
+        "blocks_deploy/matrix_research_insights_agent/data/asset_catalog.csv",
+        "blocks_deploy/model_validation_guardian/data/asset_catalog.csv",
+        "blocks_deploy/portfolio_scenario_expert/data/asset_catalog.csv",
+        "blocks_deploy/quant_forecasting_expert/data/asset_catalog.csv",
+        "blocks_deploy/tokenomics_sustainability_expert/data/asset_catalog.csv",
+        "blocks_deploy/yield_methodology_expert/data/asset_catalog.csv"
+      ]
+    },
+    {
+      "source": "data/yield_data.csv",
+      "sha256": "dd1152d0466a45f1c12d6fe497a2cc2b0c49b369c320deb79ea7bd3896a9df5d",
+      "targets": [
+        "blocks_deploy/crypto_research_communications_agent/data/yield_data.csv",
+        "blocks_deploy/crypto_risk_analyst/data/yield_data.csv",
+        "blocks_deploy/data_provenance_auditor/data/yield_data.csv",
+        "blocks_deploy/defi_liquidity_analyst/data/yield_data.csv",
+        "blocks_deploy/feature_engineering_expert/data/yield_data.csv",
+        "blocks_deploy/matrix_research_insights_agent/data/yield_data.csv",
+        "blocks_deploy/model_validation_guardian/data/yield_data.csv",
+        "blocks_deploy/portfolio_scenario_expert/data/yield_data.csv",
+        "blocks_deploy/quant_forecasting_expert/data/yield_data.csv",
+        "blocks_deploy/tokenomics_sustainability_expert/data/yield_data.csv",
+        "blocks_deploy/yield_methodology_expert/data/yield_data.csv"
+      ]
+    },
+    {
+      "source": "docs/validate.md",
+      "sha256": "77dc301aa6654a2fb42d3f67c0be02a6ddd0ec09fa75b84c05a22236974e3dcb",
+      "targets": [
+        "blocks_deploy/crypto_research_communications_agent/docs/validate.md",
+        "blocks_deploy/crypto_risk_analyst/docs/validate.md",
+        "blocks_deploy/data_provenance_auditor/docs/validate.md",
+        "blocks_deploy/defi_liquidity_analyst/docs/validate.md",
+        "blocks_deploy/feature_engineering_expert/docs/validate.md",
+        "blocks_deploy/matrix_research_insights_agent/docs/validate.md",
+        "blocks_deploy/model_validation_guardian/docs/validate.md",
+        "blocks_deploy/portfolio_scenario_expert/docs/validate.md",
+        "blocks_deploy/quant_forecasting_expert/docs/validate.md",
+        "blocks_deploy/tokenomics_sustainability_expert/docs/validate.md",
+        "blocks_deploy/yield_methodology_expert/docs/validate.md"
+      ]
+    },
+    {
       "source": "live_data/README.md",
       "sha256": "e9ebd2022f34b9b861349445d79b094299be9f934cc9a17a95dd88d7b97cb4df",
       "targets": [
@@ -3756,40 +3790,6 @@
         "blocks_deploy/quant_forecasting_expert/live_data/worker_status.example.json",
         "blocks_deploy/tokenomics_sustainability_expert/live_data/worker_status.example.json",
         "blocks_deploy/yield_methodology_expert/live_data/worker_status.example.json"
-      ]
-    },
-    {
-      "source": "validate.md",
-      "sha256": "65688ee948b2125f8451366cbaf18205da66b12c37063916cc8e276f4847b543",
-      "targets": [
-        "blocks_deploy/crypto_research_communications_agent/validate.md",
-        "blocks_deploy/crypto_risk_analyst/validate.md",
-        "blocks_deploy/data_provenance_auditor/validate.md",
-        "blocks_deploy/defi_liquidity_analyst/validate.md",
-        "blocks_deploy/feature_engineering_expert/validate.md",
-        "blocks_deploy/matrix_research_insights_agent/validate.md",
-        "blocks_deploy/model_validation_guardian/validate.md",
-        "blocks_deploy/portfolio_scenario_expert/validate.md",
-        "blocks_deploy/quant_forecasting_expert/validate.md",
-        "blocks_deploy/tokenomics_sustainability_expert/validate.md",
-        "blocks_deploy/yield_methodology_expert/validate.md"
-      ]
-    },
-    {
-      "source": "yield_data.csv",
-      "sha256": "dd1152d0466a45f1c12d6fe497a2cc2b0c49b369c320deb79ea7bd3896a9df5d",
-      "targets": [
-        "blocks_deploy/crypto_research_communications_agent/yield_data.csv",
-        "blocks_deploy/crypto_risk_analyst/yield_data.csv",
-        "blocks_deploy/data_provenance_auditor/yield_data.csv",
-        "blocks_deploy/defi_liquidity_analyst/yield_data.csv",
-        "blocks_deploy/feature_engineering_expert/yield_data.csv",
-        "blocks_deploy/matrix_research_insights_agent/yield_data.csv",
-        "blocks_deploy/model_validation_guardian/yield_data.csv",
-        "blocks_deploy/portfolio_scenario_expert/yield_data.csv",
-        "blocks_deploy/quant_forecasting_expert/yield_data.csv",
-        "blocks_deploy/tokenomics_sustainability_expert/yield_data.csv",
-        "blocks_deploy/yield_methodology_expert/yield_data.csv"
       ]
     }
   ]
