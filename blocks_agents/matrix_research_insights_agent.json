@@ -2,82 +2,50 @@
   "identity": {
     "agentName": "matrix_research_insights_agent",
     "displayName": "Matrix Research Insights Agent",
-    "description": "Turns the existing crypto yield matrix, timeline, legend, and tooltip metrics into traceable research insights for users.",
-    "version": "1.0.0",
-    "provider": {
-      "organization": "Crypto Yield Matrix"
-    }
+    "description": "Converts the interactive yield matrix dashboard into traceable research insights. Explains quarter-by-quarter yield rankings, prior/current aggregate comparisons, yield bands, and timeline metrics with exact source references. Ideal for generating research notes directly from dashboard exploration.",
+    "version": "1.1.0",
+    "provider": {"organization": "Crypto Yield Matrix"}
   },
   "capabilities": {
-    "taskKinds": [
-      "request"
-    ]
+    "taskKinds": ["request"],
+    "expertise": ["dashboard research", "yield ranking analysis", "quarterly comparison", "aggregate trend interpretation", "matrix data extraction"],
+    "dataCoverage": "8 quarters, 59 assets, 6 focus assets, 4 yield bands, investment score breakdown"
   },
   "tags": [
-    {
-      "id": "dashboard",
-      "name": "Dashboard research insights"
-    }
+    {"id": "domain:crypto", "name": "Cryptocurrency"},
+    {"id": "task:insights", "name": "Dashboard research insights"},
+    {"id": "task:ranking", "name": "Yield ranking and comparison"},
+    {"id": "skill:interpretation", "name": "Data interpretation"},
+    {"id": "format:json", "name": "Structured JSON output"}
   ],
-  "runtime": {
-    "handler": "./handlers/matrix_research_insights_agent.py"
-  },
-  "contextFiles": [
-    "index.html",
-    "matrix.js",
-    "styles.css",
-    "validate.md",
-    "DATA_DICTIONARY.md",
-    "yield_data.csv"
-  ],
+  "runtime": {"handler": "./handlers/matrix_research_insights_agent.py"},
+  "contextFiles": ["index.html", "matrix.js", "styles.css", "validate.md", "DATA_DICTIONARY.md", "yield_data.csv"],
   "io": {
-    "inputs": [
-      {
-        "id": "request",
-        "description": "User question about the matrix, quarter, asset, aggregate, legend, or timeline.",
-        "contentType": "application/json",
-        "required": true,
-        "schema": {
-          "type": "object",
-          "properties": {
-            "question": {
-              "type": "string"
-            },
-            "symbol": {
-              "type": "string"
-            },
-            "quarter": {
-              "type": "string"
-            },
-            "view": {
-              "type": "string"
-            }
-          }
+    "inputs": [{
+      "id": "request",
+      "description": "Question about the matrix, quarter, asset, aggregate, legend, or timeline.",
+      "contentType": "application/json",
+      "required": true,
+      "schema": {
+        "type": "object",
+        "properties": {
+          "question": {"type": "string"},
+          "symbol": {"type": "string"},
+          "quarter": {"type": "string"},
+          "view": {"type": "string"}
         }
       }
-    ],
-    "outputs": [
-      {
-        "id": "insight_report",
-        "description": "Plain-language insight with exact field and source references.",
-        "contentType": "application/json",
-        "guaranteed": true
-      }
-    ]
+    }],
+    "outputs": [{
+      "id": "insight_report",
+      "description": "Plain-language insight with exact field and source references.",
+      "contentType": "application/json",
+      "guaranteed": true
+    }]
   },
   "skill": {
-    "uiContracts": [
-      "quarter sorting",
-      "prior/current aggregates",
-      "percentage-point changes",
-      "yield bands",
-      "timeline metrics",
-      "hover methodology notes"
-    ],
-    "mustReport": [
-      "source row",
-      "calculation basis",
-      "scope limitations"
-    ]
+    "uiContracts": ["quarter sorting", "prior/current aggregates", "percentage-point changes", "yield bands", "timeline metrics", "hover methodology notes"],
+    "mustReport": ["source row", "calculation basis", "scope limitations"],
+    "userValue": "Use the matrix to prioritize assets and questions for deeper risk, liquidity, methodology, and provenance review. Open the cited source rows and compare supplied target labels with independently observed data."
   }
 }

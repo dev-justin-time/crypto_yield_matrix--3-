@@ -41,6 +41,15 @@ This runbook is for the accountable operator of the Crypto Yield Matrix gateway 
 - Return partial/failed research clearly; do not convert missing specialist evidence into a successful conclusion.
 - Resume only after an accountable operator approves the evidence and canary plan.
 
+## Rollback procedure
+
+1. Identify the last known-good release: check `release_record.json` and the deployed image digest in the container platform.
+2. Stop new paid dispatches: create the kill-switch file or scale the gateway to zero.
+3. Verify the budget ledger (`gateway-budget` volume) is preserved before rollback.
+4. Deploy the previous approved image digest and confirm `/ready` returns 200.
+5. Remove the kill-switch file and verify a controlled test request completes.
+6. Record the rollback reason, UTC timestamps, before/after image digests, and approver.
+
 ## Required evidence after recovery
 
 - Incident timeline and owner.

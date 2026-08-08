@@ -15,7 +15,9 @@
     "check": "tsc --noEmit",
     "smoke": "tsx smoke.ts",
     "resilience": "tsx resilience.ts",
-    "llm-smoke": "tsx llm_smoke.ts"
+    "llm-smoke": "tsx llm_smoke.ts",
+    "audit": "npm audit --production",
+    "audit:fix": "npm audit fix"
   },
   "type": "module",
   "version": "1.0.0"

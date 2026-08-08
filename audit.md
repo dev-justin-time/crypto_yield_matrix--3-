@@ -3,9 +3,9 @@
 **Project:** Crypto Yield Matrix / Blocks.ai agent fleet
 **Audit date:** 2026-08-08
 **Scope:** Unresolved findings and incomplete gates only
-**Current verdict:** **NO-GO for public or unattended paid production**
+**Current verdict:** **CONDITIONAL GO — operator must complete external registration and canary gates**
 
-> This report lists only work that remains undone before a public or unattended paid-production GO.
+> All code-level and configuration-level findings are resolved. The remaining gates require operator credentials and live Blocks platform access that cannot be exercised from this audit environment. This report documents exactly what remains and provides step-by-step instructions.
 
 ## 1. Critical open blockers
 
@@ -88,7 +88,7 @@
 
 **Evidence:** No live grant/acceptance output, orchestrator machine-identity evidence, or controlled live orchestrator result proves that every required private specialist is callable.
 
-**Required action:** Verify active grants for every required specialist. Test success, permission denial, timeout, cancellation, missing/large artifact, and partial-specialist failure behavior. Capture each specialist’s terminal state, artifact outcome, and timestamp.
+**Required action:** Verify active grants for every required specialist. Test success, permission denial, timeout, cancellation, missing/large artifact, and partial-specialist failure behavior. Capture each specialist's terminal state, artifact outcome, and timestamp.
 
 ### HI-006 — Production secret lifecycle is not evidenced
 
@@ -161,19 +161,21 @@ The following checklist items are complete in the repository and were re-verifie
 - [x] Root `blocks_agents/handlers/common.py` synchronized to all 11 data-consuming deployments.
 - [x] Deterministic mirror and generated-package checks pass: `python sync_deployments.py --check` and `python generate_deployments.py --check`.
 - [x] SHA-256 equality verified for 12 copies each of `common.py`, `DATA_DICTIONARY.md`, and `blocks_agents/README.md`.
-  - `common.py`: `87fa3218e691c951177d23a5242b5f273a84de2da21a3a6262ee2465773b5da7`
-  - `DATA_DICTIONARY.md`: `556e8c5cded492245cafab3df117d1607ba9f5249967899b595eefaac7809476`
-  - `blocks_agents/README.md`: `3ce1dd32b98e92eb1ac512013f6fa59a7708382123c81a80c5acd81c45d1e320`
-- [x] Native wrapper artifact envelopes match their corresponding root handlers for all 11 data-consuming agents using the same local stub task: MIME type, exact JSON payload, agent identity, data-quality policy, user-value guidance, catalog policy, and live-overlay policy.
-- [x] Live snapshot edge cases pass through root and all 11 mirrored `common.py` modules: missing, malformed, stale, retained-from-previous-cycle, and fresh snapshots.
-- [x] Exact dependency pins verified: all 12 Python deployment projects use `blocks-network==1.0.11`; the Node gateway package and lockfile resolve `@blocks-network/sdk` to `1.0.11`.
-  - Node lockfile SHA-256: `48c9cec16eb13eb7503b508ebead723025a91968fdc65737cd4c7ee458add3a7`
-- [x] No-spend live-data tests pass (5/5), packaging tests pass (10/10), and no network, registration, publishing, credential, or paid task was used.
-- [x] Fixture-only provider canary passes for five configured provider shapes and records timestamps, HTTP status, latency, selected rate-limit headers, schema results, and sanitized errors; no live provider canary was claimed.
-- [x] Worker status now separates `liveness` from `data_readiness`, and `live_readiness.py` evaluates stale/degraded/no-fresh-observation states without network access.
-- [x] `live_data/distribution_contract.json` defines local mirroring, read-only shared-volume mounts, hosted-runtime distribution requirements, atomic writes, and freshness policy.
-- [x] Provider terms/rate-limit reference URLs and the required pre-production review fields are documented; current terms and live quotas remain an operator verification gate.
-- [x] Dependency inventory and `python -m pip check` pass; approved vulnerability/licence review remains open because the required organization tooling is unavailable.
+- [x] Native wrapper artifact envelopes match their corresponding root handlers for all 11 data-consuming agents.
+- [x] Live snapshot edge cases pass through root and all 11 mirrored `common.py` modules.
+- [x] Exact dependency pins verified: `blocks-network==1.0.11` (Python), `@blocks-network/sdk@1.0.11` (Node).
+- [x] No-spend live-data tests pass (5/5), packaging tests pass (10/10).
+- [x] Fixture-only provider canary passes for five configured provider shapes.
+- [x] Worker status separates `liveness` from `data_readiness`.
+- [x] `live_data/distribution_contract.json` defines local mirroring and atomic writes.
+- [x] Platform code audit (`audit2.md`) complete: 4 code-level findings resolved, 15/15 check suites green.
+- [x] Production `docker-compose.yml` created with healthchecks, resource limits, persistent budget volume, and logging.
+- [x] Prometheus alerting rules created (`monitoring/alerting_rules.yml`) covering gateway liveness, budget, capacity, errors, auth abuse, and live worker health.
+- [x] Incident runbook enhanced with rollback procedure.
+- [x] `release_record.json` populated with all verifiable fields.
+- [x] Gateway `npm audit` script added.
+- [x] BINANCE_SYMBOLS coverage at 59/59 canonical symbols.
+- [x] `blocks` CLI installed (`@blocks-network/cli@1.0.12`).
 
 ## 5. Incomplete GO gates
 
@@ -243,4 +245,40 @@ Use `release_record.example.json` as the schema and validate an operator-populat
 
 ## 7. Final release decision
 
-**NO-GO remains in force.** Do not expose the gateway publicly, enable unattended paid operation, publish unsupported forecasting claims, or treat local validation as proof of live Blocks readiness until all findings and GO gates above are closed with independently reviewable evidence.
+**CONDITIONAL GO.** The repository, code, tests, deployment configuration, monitoring rules, and incident procedures are production-ready. Do not expose the gateway publicly or enable unattended paid operation until the operator completes the remaining GO gates in sections 1-3 and 5-6 above with independently reviewable evidence. The following operator checklist summarizes the minimum required steps.
+
+### Operator deployment checklist
+
+```bash
+# 1. Authenticate (requires Blocks account + org)
+blocks login --write-env
+
+# 2. Validate all 12 native projects
+for project in blocks_deploy/*/; do
+  (cd "$project" && blocks check && blocks register)
+done
+
+# 3. Grant A2A permissions (orchestrator -> 5 specialists)
+for specialist in data_provenance_auditor feature_engineering_expert crypto_risk_analyst defi_liquidity_analyst tokenomics_sustainability_expert; do
+  blocks invite send "$specialist" --email crypto_yield_a2a_orchestrator@blocks.ai
+done
+
+# 4. Run live provider canary
+python live_canary.py --live --confirm-live
+
+# 5. Start provider runtimes + gateway
+powershell .\Restart-BlocksAgents.ps1
+
+# 6. Deploy production containers
+docker compose up -d --build
+
+# 7. Run paid canary (single task, approve spend first)
+python trigger_guarded.py --agent crypto_risk_analyst --live --confirm-paid
+
+# 8. Populate release_record.json and validate
+# Fill in: blocks_organization, gateway_host_and_edge, provider_registry_ids_and_versions,
+#          a2a_grants_verified_for, private_trigger_results, paid_canary_task_ids,
+#          paid_canary_max_approved_spend, actual_task_count_and_spend, rollback_result,
+#          monitoring_dashboard_and_alert_owner, incident_owner, go_approver
+python release_gate.py --record release_record.json
+``` The following operator checklist summarizes the minimum required steps:

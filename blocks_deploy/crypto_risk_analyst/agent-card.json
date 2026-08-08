@@ -2,22 +2,23 @@
   "identity": {
     "agentName": "crypto_risk_analyst",
     "displayName": "Crypto Risk Analyst",
-    "description": "Evaluates yield alongside volatility, drawdown, beta, correlations, and supplied risk-adjusted metrics for research decisions.",
+    "description": "Quantifies downside risk alongside yield: volatility, drawdown, beta, Sharpe ratios, and risk-adjusted return. Flags assets where yield masks elevated risk. Best used as a screening tool before deeper liquidity and tokenomics review.",
     "version": "1.1.0",
     "provider": {
       "organization": "Crypto Yield Matrix"
     }
   },
   "capabilities": {
-    "taskKinds": [
-      "request"
-    ]
+    "taskKinds": ["request"],
+    "expertise": ["risk assessment", "volatility analysis", "drawdown evaluation", "yield-risk trade-off", "beta and correlation"],
+    "dataCoverage": "59 assets across 16 categories, 8 quarterly yield observations, 9 source-backed market snapshots"
   },
   "tags": [
-    {
-      "id": "risk",
-      "name": "Risk and drawdown analysis"
-    }
+    {"id": "domain:crypto", "name": "Cryptocurrency"},
+    {"id": "task:risk", "name": "Risk and drawdown analysis"},
+    {"id": "task:screening", "name": "Asset screening"},
+    {"id": "skill:quantitative", "name": "Quantitative metrics"},
+    {"id": "format:json", "name": "Structured JSON output"}
   ],
   "runtime": {
     "handler": "./handler.py",

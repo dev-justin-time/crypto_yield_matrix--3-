@@ -33,7 +33,7 @@ PLACEHOLDERS = {"", "todo", "tbd", "pending", "replace_me", "your-value", "unkno
 
 def template() -> dict[str, Any]:
     record = {field: "" for field in REQUIRED_FIELDS}
-    record.update({"provider_registry_ids_and_versions": [], "a2a_grants_verified_for": [], "private_trigger_results": [], "paid_canary_task_ids": []})
+    record.update({"provider_registry_ids_and_versions": [], "a2a_grants_verified_for": [], "private_trigger_results": [], "paid_canary_task_ids": [], "paid_canary_max_approved_spend": 0, "actual_task_count_and_spend": {"task_count": 0, "spend_usd": 0}})
     return record
 
 
