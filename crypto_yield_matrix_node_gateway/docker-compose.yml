@@ -8,8 +8,11 @@ services:
     environment:
       NODE_ENV: production
       GATEWAY_PORT: 3000
+      GATEWAY_BUDGET_STATE_FILE: /app/.gateway-state/budget.json
     ports:
       - "127.0.0.1:3000:3000"
+    volumes:
+      - gateway-budget:/app/.gateway-state
     healthcheck:
       test:
         - CMD
@@ -22,3 +25,6 @@ services:
       timeout: 5s
       retries: 3
       start_period: 10s
+
+volumes:
+  gateway-budget:

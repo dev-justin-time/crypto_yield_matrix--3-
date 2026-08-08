@@ -14,7 +14,8 @@
  * handler-specific fields (question, symbol, category, source_file, ...)
  * pass through unchanged.
  */
-import { createHash, randomUUID, timingSafeEqual } from 'node:crypto';
+import { randomUUID, timingSafeEqual } from 'node:crypto';
+import { existsSync, readFileSync, renameSync, writeFileSync } from 'node:fs';
 import { createServer, type IncomingMessage, type ServerResponse } from 'node:http';
 import { TaskClient, textPart } from '@blocks-network/sdk';
 import type {
@@ -40,6 +41,8 @@ export interface GatewayOptions {
   apiKey: string;
   /** Gateway client id -> bearer secret. Never use the Blocks API key here. */
   clientKeys: Readonly<Record<string, string>>;
+  /** Optional client id -> allowed agent names. Missing ids may use '*'. */
+  clientAgents?: Readonly<Record<string, ReadonlySet<string>>>;
   taskTimeoutMs?: number;
   maxBodyBytes?: number;
   maxProgressEvents?: number;
@@ -54,6 +57,10 @@ export interface GatewayOptions {
   maxDailySpendUsd?: number;
   /** Estimated Blocks charge reserved for each accepted task. */
   taskCostUsd?: number;
+  /** Optional no-spend factory used by tests; production uses TaskClient.create. */
+  taskClientFactory?: () => Promise<TaskClient>;
+  /** Optional durable JSON ledger path for a single gateway instance. */
+  budgetStateFile?: string;
 }
 
 export interface Gateway {
@@ -115,10 +122,6 @@ function requestId(req: IncomingMessage): string {
   return randomUUID();
 }
 
-function safeTokenFingerprint(token: string): string {
-  return createHash('sha256').update(token).digest('hex').slice(0, 12);
-}
-
 function equalSecret(left: string, right: string): boolean {
   const a = Buffer.from(left);
   const b = Buffer.from(right);
@@ -139,9 +142,6 @@ function authenticate(req: IncomingMessage, clientKeys: Readonly<Record<string, 
       return { id };
     }
   }
-  // Keep a stable local fingerprint useful for operator correlation without
-  // logging the credential itself. It is deliberately not returned to callers.
-  void safeTokenFingerprint(token);
   throw new HttpError(401, 'invalid gateway credentials');
 }
 
@@ -386,6 +386,22 @@ export function parseClientKeys(raw: string): Record<string, string> {
   return keys;
 }
 
+export function parseClientAgents(raw: string | undefined): Record<string, ReadonlySet<string>> {
+  if (!raw || !raw.trim()) return {};
+  const result: Record<string, ReadonlySet<string>> = {};
+  for (const entry of raw.split(',')) {
+    const separator = entry.indexOf('=');
+    if (separator <= 0) throw new Error('GATEWAY_CLIENT_AGENTS entries must use clientId=agent|agent format');
+    const id = entry.slice(0, separator).trim();
+    const agents = entry.slice(separator + 1).split('|').map((name) => name.trim()).filter(Boolean);
+    if (!/^[A-Za-z0-9_.-]{1,64}$/.test(id) || agents.length === 0 || agents.some((name) => !getAgent(name))) {
+      throw new Error(`invalid gateway agent allowlist for client '${id}'`);
+    }
+    result[id] = new Set(agents);
+  }
+  return result;
+}
+
 export function createGateway(options: GatewayOptions): Gateway {
   const taskTimeoutMs = options.taskTimeoutMs ?? 120_000;
   const maxBodyBytes = options.maxBodyBytes ?? 1_000_000;
@@ -404,6 +420,9 @@ export function createGateway(options: GatewayOptions): Gateway {
   positiveInteger(maxRequestsPerMinute, 'maxRequestsPerMinute');
   positiveInteger(maxDailyTasks, 'maxDailyTasks');
   positiveInteger(Object.keys(options.clientKeys).length, 'clientKeys');
+  if (Object.values(options.clientKeys).some((secret) => equalSecret(secret, options.apiKey))) {
+    throw new Error('gateway client secrets must not equal the Blocks API key');
+  }
   nonnegativeNumber(maxDailySpendUsd, 'maxDailySpendUsd');
   nonnegativeNumber(taskCostUsd, 'taskCostUsd');
   if (taskCostUsd <= 0) throw new Error('taskCostUsd must be greater than zero');
@@ -413,10 +432,32 @@ export function createGateway(options: GatewayOptions): Gateway {
   let clientReady = false;
   const clientWindows = new Map<string, ClientWindow>();
   let budget: BudgetState = { day: utcDay(), tasks: 0, spendUsd: 0 };
+  if (options.budgetStateFile && existsSync(options.budgetStateFile)) {
+    try {
+      const parsed = JSON.parse(readFileSync(options.budgetStateFile, 'utf8')) as Partial<BudgetState>;
+      const tasks = parsed.tasks;
+      const spendUsd = parsed.spendUsd;
+      if (typeof parsed.day === 'string' && Number.isInteger(tasks) && tasks >= 0 && typeof spendUsd === 'number' && Number.isFinite(spendUsd) && spendUsd >= 0) {
+        budget = { day: parsed.day, tasks, spendUsd };
+      }
+    } catch {
+      throw new Error(`unable to read gateway budget state '${options.budgetStateFile}'`);
+    }
+  }
+
+  const persistBudget = (): void => {
+    if (!options.budgetStateFile) return;
+    const temporary = `${options.budgetStateFile}.${process.pid}.tmp`;
+    writeFileSync(temporary, JSON.stringify(budget), { encoding: 'utf8', mode: 0o600 });
+    renameSync(temporary, options.budgetStateFile);
+  };
 
   const resetBudgetIfNeeded = (): void => {
     const day = utcDay();
-    if (budget.day !== day) budget = { day, tasks: 0, spendUsd: 0 };
+    if (budget.day !== day) {
+      budget = { day, tasks: 0, spendUsd: 0 };
+      persistBudget();
+    }
   };
 
   const reserveBudget = (clientId: string): void => {
@@ -439,14 +480,17 @@ export function createGateway(options: GatewayOptions): Gateway {
     // counted conservatively because the remote billing outcome is uncertain.
     budget.tasks += 1;
     budget.spendUsd = Number((budget.spendUsd + taskCostUsd).toFixed(2));
+    persistBudget();
   };
 
   const getClient = async (): Promise<TaskClient> => {
     if (!clientPromise) {
-      clientPromise = TaskClient.create({
-        billingMode: BILLING_MODE,
-        apiKey: options.apiKey,
-      });
+      clientPromise = options.taskClientFactory
+        ? options.taskClientFactory()
+        : TaskClient.create({
+            billingMode: BILLING_MODE,
+            apiKey: options.apiKey,
+          });
       try {
         await clientPromise;
         clientReady = true;
@@ -491,11 +535,18 @@ export function createGateway(options: GatewayOptions): Gateway {
         }
 
         if (req.method === 'GET' && pathname === '/ready') {
+          try {
+            await getClient();
+          } catch {
+            throw new HttpError(503, 'Blocks client is not ready; no task was dispatched');
+          }
           resetBudgetIfNeeded();
           const budgetAvailable = budget.tasks < maxDailyTasks && budget.spendUsd + taskCostUsd <= maxDailySpendUsd;
           sendJson(res, budgetAvailable ? 200 : 503, {
             status: budgetAvailable ? 'ready' : 'budget_exhausted',
             configurationReady: true,
+            // Readiness initializes the SDK client but never sends a task;
+            // a successful paid canary is still required before promotion.
             clientReady,
             agents: AGENTS.length,
             billingMode: BILLING_MODE,
@@ -527,6 +578,10 @@ export function createGateway(options: GatewayOptions): Gateway {
           if (!getAgent(agentName)) {
             throw new HttpError(404, `unknown agent '${agentName}'`);
           }
+          const allowedAgents = options.clientAgents?.[clientId];
+          if (allowedAgents && !allowedAgents.has(agentName)) {
+            throw new HttpError(403, 'gateway client is not authorized for this agent');
+          }
           if (req.headers['content-type'] && !req.headers['content-type'].toLowerCase().includes('application/json')) {
             throw new HttpError(415, 'content-type must be application/json');
           }
@@ -534,6 +589,9 @@ export function createGateway(options: GatewayOptions): Gateway {
             throw new HttpError(400, 'request body must be a JSON object');
           }
           const request = payload as Record<string, unknown>;
+          if (request.source_file !== undefined && request.source_file !== 'yield_data.csv') {
+            throw new HttpError(400, 'source_file must be the canonical yield_data.csv');
+          }
           if (typeof request.question !== 'string' || request.question.trim() === '') {
             throw new HttpError(400, 'request body requires a non-empty string question');
           }

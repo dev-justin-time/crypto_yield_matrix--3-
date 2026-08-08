@@ -13,7 +13,7 @@
  *   POST /agents/:agentName/invoke  (Bearer gateway client auth required)
  */
 import 'dotenv/config';
-import { createGateway, parseClientKeys } from './server.js';
+import { createGateway, parseClientAgents, parseClientKeys } from './server.js';
 import { AGENTS } from './agents.js';
 
 const apiKey = process.env.BLOCKS_API_KEY;
@@ -51,7 +51,15 @@ if (!Number.isFinite(maxDailySpendUsd) || maxDailySpendUsd < 0 || !Number.isFini
   process.exit(1);
 }
 const maxQuestionChars = positiveIntegerEnv('GATEWAY_MAX_QUESTION_CHARS', 4_000);
+const budgetStateFile = process.env.GATEWAY_BUDGET_STATE_FILE || '.gateway-budget.json';
 const rawClientKeys = process.env.GATEWAY_CLIENT_KEYS;
+let clientAgents: Record<string, ReadonlySet<string>>;
+try {
+  clientAgents = parseClientAgents(process.env.GATEWAY_CLIENT_AGENTS);
+} catch (error) {
+  console.error(`[gateway] invalid GATEWAY_CLIENT_AGENTS: ${error instanceof Error ? error.message : String(error)}`);
+  process.exit(1);
+}
 if (!rawClientKeys) {
   console.error("GATEWAY_CLIENT_KEYS is not set. Configure clientId=secret entries before exposing the gateway.");
   process.exit(1);
@@ -67,6 +75,7 @@ try {
 const gateway = createGateway({
   apiKey,
   clientKeys,
+  clientAgents,
   taskTimeoutMs,
   maxBodyBytes,
   maxConcurrentTasks,
@@ -75,6 +84,7 @@ const gateway = createGateway({
   maxDailySpendUsd,
   taskCostUsd,
   maxQuestionChars,
+  budgetStateFile,
 });
 
 gateway.server.listen(port, () => {

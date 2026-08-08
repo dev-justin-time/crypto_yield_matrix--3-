@@ -6,7 +6,7 @@
  *
  *   npm run smoke
  */
-import { createGateway, parseClientKeys } from './server.js';
+import { createGateway, parseClientAgents, parseClientKeys } from './server.js';
 import { AGENTS } from './agents.js';
 
 const DUMMY_KEY = 'sk_test_placeholder_for_smoke_only';
@@ -21,18 +21,32 @@ async function expectStatus(url: string, init: RequestInit, expected: number): P
   return res;
 }
 
+function fakeTaskClient(): any {
+  return {
+    destroy() {},
+    sendMessage: async () => {
+      throw new Error('fake client must never dispatch a paid task');
+    },
+  };
+}
+
 async function main(): Promise<void> {
   if (parseClientKeys(`smoke=${CLIENT_SECRET}`).smoke !== CLIENT_SECRET) {
     throw new Error('client key parser failed');
   }
+  if (!parseClientAgents('smoke=crypto_risk_analyst').smoke?.has('crypto_risk_analyst')) {
+    throw new Error('client agent parser failed');
+  }
   const gateway = createGateway({
     apiKey: DUMMY_KEY,
     clientKeys: { smoke: CLIENT_SECRET },
+    clientAgents: { smoke: new Set(['crypto_risk_analyst']) },
     taskTimeoutMs: 5_000,
     maxRequestsPerMinute: 2,
-    maxDailyTasks: 2,
-    maxDailySpendUsd: 0.20,
+    maxDailyTasks: 1,
+    maxDailySpendUsd: 0.10,
     taskCostUsd: 0.10,
+    taskClientFactory: async () => fakeTaskClient(),
   });
   await new Promise<void>((resolve) => gateway.server.listen(0, resolve));
   const address = gateway.server.address();
@@ -92,6 +106,13 @@ async function main(): Promise<void> {
     400,
   );
 
+  // Invalid source file -> 400 before any paid dispatch.
+  await expectStatus(
+    `${base}/agents/crypto_risk_analyst/invoke`,
+    { method: 'POST', body: JSON.stringify({ question: 'test', source_file: 'yield_data1.csv' }), headers: invokeHeaders },
+    400,
+  );
+
   // Invalid content type -> 415 before any paid dispatch.
   await expectStatus(
     `${base}/agents/crypto_risk_analyst/invoke`,
@@ -110,12 +131,23 @@ async function main(): Promise<void> {
     400,
   );
 
+  // A valid-shaped request reaches the fake client and is rejected with 500;
+  // its reservation is retained conservatively, so the next request is 429.
+  await expectStatus(
+    `${base}/agents/crypto_risk_analyst/invoke`,
+    { method: 'POST', body: JSON.stringify({ question: 'test' }), headers: invokeHeaders },
+    500,
+  );
+  await expectStatus(
+    `${base}/agents/crypto_risk_analyst/invoke`,
+    { method: 'POST', body: JSON.stringify({ question: 'test again' }), headers: invokeHeaders },
+    429,
+  );
+
   // Unknown route -> 404.
   await expectStatus(`${base}/nope`, { method: 'GET' }, 404);
 
-  // No-spend budget reservations are tested directly through validation: the
-  // smoke suite never sends a valid paid invocation to the Blocks SDK.
-  console.log(`smoke: PASS (auth, readiness, health, ${agentsBody.agents.length} agents, validation; no paid dispatch)`);
+  console.log(`smoke: PASS (auth, readiness, budget, health, ${agentsBody.agents.length} agents, validation; no paid dispatch)`);
   await gateway.destroy();
   await new Promise<void>((resolve) => gateway.server.close(() => resolve()));
 }

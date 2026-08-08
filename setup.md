@@ -624,7 +624,7 @@ This is intentional. The project currently has embedded provenance rows and insu
 - `GET /health` — liveness and fleet summary.
 - `GET /agents` — lists the 12 served agents with descriptions.
 - `GET /ready` — no-spend configuration and budget readiness check.
-- `POST /agents/:agentName/invoke` — authenticated endpoint; requires `Authorization: Bearer <gateway-client-secret>` and forwards a JSON request to one published agent.
+- `POST /agents/:agentName/invoke` — authenticated endpoint; requires `Authorization: Bearer <gateway-client-secret>` and forwards a JSON request to one published agent. Optional per-client agent allowlists are enforced when configured.
 
 The request body is passed through verbatim as the `request` part, so handler-specific fields (`question`, `symbol`, `category`, `source_file`, `features`, `target`, `split`, ...) work unchanged. Because every published agent is paid ($0.10/task), the shared client uses `billingMode: 'paid'`. The API key stays server-side in the ignored `.env` and is never returned by any endpoint.
 
@@ -637,7 +637,7 @@ blocks login --write-env   # writes BLOCKS_API_KEY to the ignored .env
 npm start                  # http://localhost:3000
 ```
 
-Environment variables: `GATEWAY_PORT` (default 3000), `GATEWAY_TASK_TIMEOUT_MS` (default 120000), `GATEWAY_MAX_BODY_BYTES` (default 1000000), `GATEWAY_MAX_QUESTION_CHARS` (default 4000), `GATEWAY_MAX_CONCURRENT_TASKS` (default 8), `GATEWAY_MAX_REQUESTS_PER_MINUTE` (default 30), `GATEWAY_MAX_DAILY_TASKS` (default 100), `GATEWAY_MAX_DAILY_SPEND_USD` (default 10), `GATEWAY_TASK_COST_USD` (default 0.10), and required `GATEWAY_CLIENT_KEYS` (`clientId=secret,...`). The gateway client secret is separate from `BLOCKS_API_KEY`. The concurrency cap and daily ledger are process-local and deliberate; keep one gateway instance unless a shared quota ledger is added. Excess requests receive HTTP 429/503 instead of creating an unbounded billable backlog.
+Environment variables: `GATEWAY_PORT` (default 3000), `GATEWAY_TASK_TIMEOUT_MS` (default 120000), `GATEWAY_MAX_BODY_BYTES` (default 1000000), `GATEWAY_MAX_QUESTION_CHARS` (default 4000), `GATEWAY_MAX_CONCURRENT_TASKS` (default 8), `GATEWAY_MAX_REQUESTS_PER_MINUTE` (default 30), `GATEWAY_MAX_DAILY_TASKS` (default 100), `GATEWAY_MAX_DAILY_SPEND_USD` (default 10), `GATEWAY_TASK_COST_USD` (default 0.10), and required `GATEWAY_CLIENT_KEYS` (`clientId=secret,...`), plus optional `GATEWAY_CLIENT_AGENTS` (`clientId=agent|agent,...`). The gateway client secret is separate from `BLOCKS_API_KEY`. The concurrency cap and daily ledger are process-local and deliberate; keep one gateway instance unless a shared quota ledger is added. Excess requests receive HTTP 429/503 instead of creating an unbounded billable backlog.
 
 Example invocation:
 

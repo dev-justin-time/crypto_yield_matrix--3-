@@ -9,6 +9,7 @@ Copy the repository template into the deployment secret manager or local ignored
 ```dotenv
 BLOCKS_API_KEY=server_side_blocks_key
 GATEWAY_CLIENT_KEYS=research_app=replace_with_a_random_secret_at_least_16_chars
+GATEWAY_CLIENT_AGENTS=research_app=crypto_risk_analyst|matrix_research_insights_agent
 GATEWAY_MAX_DAILY_TASKS=100
 GATEWAY_MAX_DAILY_SPEND_USD=10
 GATEWAY_TASK_COST_USD=0.10
@@ -16,7 +17,7 @@ GATEWAY_MAX_REQUESTS_PER_MINUTE=30
 GATEWAY_MAX_CONCURRENT_TASKS=8
 ```
 
-`GATEWAY_CLIENT_KEYS` contains caller credentials in `clientId=secret` form. Use a different secret from the Blocks API key. Secrets are compared in constant time and are never logged. This built-in ledger is intentionally process-local; run one gateway instance unless an external shared quota ledger is added. Providers can scale independently through Blocks runtime settings.
+`GATEWAY_CLIENT_KEYS` contains caller credentials in `clientId=secret` form. Use a different secret from the Blocks API key. Secrets are compared in constant time and are never logged. `GATEWAY_CLIENT_AGENTS` can restrict each caller to named agents; omit it only for a trusted single-tenant gateway. This built-in ledger is intentionally single-instance and persisted at `GATEWAY_BUDGET_STATE_FILE`; the supplied Compose file mounts a durable volume. Run one gateway instance unless an external shared quota ledger is added. Providers can scale independently through Blocks runtime settings.
 
 The gateway reserves a task before calling Blocks. The reservation is conservative: uncertain, failed, or canceled remote outcomes still consume the configured daily allowance so a network ambiguity cannot cause uncontrolled spend. The `X-Idempotency-Key` header is forwarded to Blocks for caller retries; the gateway itself never retries an uncertain paid send.
 

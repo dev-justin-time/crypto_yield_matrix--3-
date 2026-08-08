@@ -7,7 +7,7 @@ COPY package.json package-lock.json ./
 RUN npm ci
 
 COPY tsconfig.json index.ts server.ts agents.ts smoke.ts ./
-RUN npm run check
+RUN mkdir -p /app/.gateway-state && npm run check && chown -R node:node /app
 
 USER node
 EXPOSE 3000
