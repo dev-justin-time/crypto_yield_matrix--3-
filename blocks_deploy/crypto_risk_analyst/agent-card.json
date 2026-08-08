@@ -43,7 +43,6 @@
             "source_file": {
               "type": "string",
               "enum": [
-                "yield_data.csv",
                 "yield_data.csv"
               ]
             },

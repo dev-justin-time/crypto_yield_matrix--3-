@@ -11,8 +11,6 @@ CONTEXT_ALLOWLIST = {
     "validate.md",
     "DATA_DICTIONARY.md",
     "yield_data.csv",
-    "yield_data.csv",
-    "yield_data.csv",
     "index.html",
     "matrix.js",
     "styles.css",

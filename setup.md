@@ -102,7 +102,7 @@ The handlers reject undeclared paths, absolute paths, traversal paths, and inval
 The project data has important limitations documented in [`validate.md`](validate.md):
 
 1. `yield_data.csv` and `yield_data.csv` have the same schema but disagree for every asset row.
-2. `yield_data.csv` preserves both versions; it is not automatically a canonical modeling table.
+2. `yield_data.csv` preserves the supplied 118 rows; it is not automatically a canonical modeling table.
 3. The data includes source-like, estimated, derived, and supplied target fields.
 4. The current panel has only eight quarterly yield observations per asset.
 5. **Corrected forecasting caveat:** The current dataset is not suitable for validated production forecasting until source identity is resolved, additional dated observations are added, leakage-controlled walk-forward testing is performed, and independently observed outcomes are available. The full audit wording is maintained in [`validate.md`](validate.md).
